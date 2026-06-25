@@ -58,10 +58,17 @@ def _game_win_prob(p: float) -> float:
 def _tiebreak_win_prob(p_a: float, p_b: float, target: int = 7) -> float:
     """
     P(A wins tiebreak) first-to-target win-by-2.
-    A serves first point. Serve alternates every 2 points (every 1 after target-1 each).
-    Uses memoized DP.
+    A serves first point. Serve alternates every 2 points (every 1 after both reach target-1).
+    Uses memoized DP with closed-form for deuce zone.
     """
     memo: dict = {}
+
+    def _server(total: int) -> int:
+        """0=A serves, 1=B serves. Alternates every 2 points; every 1 from 2*(target-1) on."""
+        if total < 2 * (target - 1):
+            return (total // 2) % 2
+        else:
+            return total % 2
 
     def dp(a: int, b: int) -> float:
         if a >= target and a - b >= 2:
@@ -71,15 +78,25 @@ def _tiebreak_win_prob(p_a: float, p_b: float, target: int = 7) -> float:
         key = (a, b)
         if key in memo:
             return memo[key]
+
+        # Deuce zone: a == b and both >= target-1 → closed-form to avoid infinite recursion
+        if a == b and a >= target - 1:
+            total = a + b
+            s0 = _server(total)       # server at (a,b)
+            s1 = _server(total + 1)   # server at (a+1,b) or (a,b+1)
+            p1 = p_a if s0 == 0 else (1.0 - p_b)  # P(A wins this point)
+            p2 = p_a if s1 == 0 else (1.0 - p_b)  # P(A wins next point)
+            # Closed form: D = p1*p2 / (p1*p2 + (1-p1)*(1-p2))
+            num = p1 * p2
+            denom = num + (1.0 - p1) * (1.0 - p2)
+            v = num / denom if denom > 0 else 0.5
+            memo[key] = v
+            return v
+
         total = a + b
-        # Serve rotation: A serves points 1 (total=0), B serves 2-3 (total=1,2),
-        # A serves 4-5 (total=3,4), ...; from 12+ alternate every point
-        if total < 2 * (target - 1):
-            server = (total // 2) % 2  # 0=A, 1=B
-        else:
-            server = total % 2  # alternate every point after penultimate
+        server = _server(total)
         p = p_a if server == 0 else (1.0 - p_b)
-        v = p * dp(a + 1, b) + (1 - p) * dp(a, b + 1)
+        v = p * dp(a + 1, b) + (1.0 - p) * dp(a, b + 1)
         memo[key] = v
         return v
 
