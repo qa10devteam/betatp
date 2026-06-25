@@ -151,6 +151,7 @@ PROB_COLS = ["pin_prob_w","max_prob_w","avg_prob_w"]
 
 # Chronologiczne — zachowuje Elo/form stan bez look-ahead
 holdout_records = []  # tylko mecze 2024+
+backtest_rng = np.random.default_rng(2024)  # deterministyczny flip A/B
 
 t0 = time.time()
 for i, row in enumerate(raw.itertuples(index=False)):
@@ -179,38 +180,71 @@ for i, row in enumerate(raw.itertuples(index=False)):
     odds_match = odds_idx.get((yr, wl_w, wl_l, rnd))
 
     if yr >= 2024 and odds_match:
-        # Buduj feature vector (A=winner zawsze — potem porównamy z modelem)
+        # WAŻNE: A/B flip musi być LOSOWY żeby model widział obie strony.
+        # flip=True  → A=winner  (y=1 jeśli model dobrze przewidzi A)
+        # flip=False → A=loser   (y=0 — A przegrywa)
+        flip = bool(backtest_rng.integers(0, 2))
+
+        if flip:
+            af, bf = wf, lf
+            a_age, b_age = w_age, l_age
+            a_hand = 1 if str(getattr(row,"winner_hand","R"))=="L" else 0
+            b_hand = 1 if str(getattr(row,"loser_hand","R"))=="L" else 0
+            a_surf = w_surf_spec; b_surf = l_surf_spec
+            psw_a, psw_b = odds_match["PSW"], odds_match["PSL"]
+            pin_a = odds_match["pin_prob_w"]
+            y_true = 1
+        else:
+            af, bf = lf, wf
+            a_age, b_age = l_age, w_age
+            a_hand = 1 if str(getattr(row,"loser_hand","R"))=="L" else 0
+            b_hand = 1 if str(getattr(row,"winner_hand","R"))=="L" else 0
+            a_surf = l_surf_spec; b_surf = w_surf_spec
+            psw_a, psw_b = odds_match["PSL"], odds_match["PSW"]
+            pin_a = 1.0 - odds_match["pin_prob_w"]
+            y_true = 0
+
+        # odds_match dla flipped: swap prob też
+        om_flipped = dict(odds_match)
+        if not flip:
+            om_flipped["pin_prob_w"] = 1.0 - odds_match["pin_prob_w"]
+            om_flipped["PSW"] = odds_match["PSL"]
+            om_flipped["PSL"] = odds_match["PSW"]
+
         feat = {
-            "a_ewma": wf["ewma"], "a_ewma_surf": wf["ewma_surf"],
-            "a_fat14": wf["fat14"], "a_fat28": wf["fat28"], "a_streak": wf["streak"],
-            "a_srv_pct": wf["srv_pct"], "a_ret_pct": wf["ret_pct"],
-            "a_surf_change": wf["surf_change"], "a_surf_spec": w_surf_spec,
-            "a_age": w_age, "a_hand": 1 if str(getattr(row,"winner_hand","R"))=="L" else 0,
-            "b_ewma": lf["ewma"], "b_ewma_surf": lf["ewma_surf"],
-            "b_fat14": lf["fat14"], "b_fat28": lf["fat28"], "b_streak": lf["streak"],
-            "b_srv_pct": lf["srv_pct"], "b_ret_pct": lf["ret_pct"],
-            "b_surf_change": lf["surf_change"], "b_surf_spec": l_surf_spec,
-            "b_age": l_age, "b_hand": 1 if str(getattr(row,"loser_hand","R"))=="L" else 0,
-            "ewma_diff": wf["ewma"]-lf["ewma"],
-            "ewma_surf_diff": wf["ewma_surf"]-lf["ewma_surf"],
-            "streak_diff": wf["streak"]-lf["streak"],
-            "fat14_diff": wf["fat14"]-lf["fat14"],
-            "srv_pct_diff": wf["srv_pct"]-lf["srv_pct"],
-            "surf_spec_diff": w_surf_spec-l_surf_spec,
-            "age_diff": w_age-l_age,
-            "h2h_a": h2h_pw, "h2h_n": h2h_n,
-            **odds_match,
+            "a_ewma": af["ewma"], "a_ewma_surf": af["ewma_surf"],
+            "a_fat14": af["fat14"], "a_fat28": af["fat28"], "a_streak": af["streak"],
+            "a_srv_pct": af["srv_pct"], "a_ret_pct": af["ret_pct"],
+            "a_surf_change": af["surf_change"], "a_surf_spec": a_surf,
+            "a_age": a_age, "a_hand": a_hand,
+            "b_ewma": bf["ewma"], "b_ewma_surf": bf["ewma_surf"],
+            "b_fat14": bf["fat14"], "b_fat28": bf["fat28"], "b_streak": bf["streak"],
+            "b_srv_pct": bf["srv_pct"], "b_ret_pct": bf["ret_pct"],
+            "b_surf_change": bf["surf_change"], "b_surf_spec": b_surf,
+            "b_age": b_age, "b_hand": b_hand,
+            "ewma_diff": af["ewma"]-bf["ewma"],
+            "ewma_surf_diff": af["ewma_surf"]-bf["ewma_surf"],
+            "streak_diff": af["streak"]-bf["streak"],
+            "fat14_diff": af["fat14"]-bf["fat14"],
+            "srv_pct_diff": af["srv_pct"]-bf["srv_pct"],
+            "surf_spec_diff": a_surf-b_surf,
+            "age_diff": a_age-b_age,
+            "h2h_a": h2h_pw if flip else 1.0-h2h_pw,
+            "h2h_n": h2h_n,
+            **om_flipped,
             "surf_hard": int(surf=="Hard"), "surf_clay": int(surf=="Clay"),
             "surf_grass": int(surf=="Grass"), "level_G": int(level=="G"),
             "level_M": int(level=="M"),
             "best_of_5": int(getattr(row,"best_of",3)==5),
             "indoor": indoor, "round_num": round_n,
-            # metadane
+            # metadane (nie wchodzą do modelu)
             "_date": mdate, "_year": yr, "_surface": surf,
             "_winner_id": wid, "_loser_id": lid,
             "_winner_name": str(getattr(row,"winner_name","?")),
             "_loser_name": str(getattr(row,"loser_name","?")),
-            "_psw": odds_match["PSW"], "_psl": odds_match["PSL"],
+            "_psw_a": psw_a, "_psw_b": psw_b,
+            "_pin_a": pin_a,
+            "_y_true": y_true,   # 1 = A wygra (A=winner); 0 = A przegra (A=loser)
         }
         holdout_records.append(feat)
 
@@ -227,147 +261,67 @@ log(f"  Holdout records (2024-2026 z odds): {len(holdout_records):,} | {time.tim
 # ─── 4. PREDYKCJE ─────────────────────────────────────────────────────────────
 log("=== BACKTEST v4 | ETAP 4: Predykcje ===")
 df_ho = pd.DataFrame(holdout_records)
-meta_cols = [c for c in df_ho.columns if c.startswith("_")]
 X_ho = df_ho[[c for c in feat_cols if c in df_ho.columns]].copy()
-# wypełnij brakujące NaN
 for c in feat_cols:
     if c not in X_ho.columns:
         X_ho[c] = np.nan
 
-prob_winner = model.predict_proba(X_ho[feat_cols])[:,1]  # prob że A(=winner) wygra
-df_ho["p_winner"] = prob_winner                 # model prob że wygrał faktyczny zwycięzca
-df_ho["pin_p_winner"] = df_ho["pin_prob_w"]    # Pinnacle prob że wygrał faktyczny zwycięzca
-df_ho["market_edge"] = prob_winner - df_ho["pin_prob_w"]  # edge modelu nad rynkiem
+# model.predict_proba[:,1] = P(A wygra) — A jest losowy (flip=True → A=winner, flip=False → A=loser)
+p_a = model.predict_proba(X_ho[feat_cols])[:,1]
+df_ho["p_a"]        = p_a
+df_ho["pin_a"]      = df_ho["_pin_a"]        # Pinnacle P(A wins)
+df_ho["y_true"]     = df_ho["_y_true"].astype(int)  # 1 = A wygra, 0 = A przegra
+df_ho["market_edge"] = p_a - df_ho["_pin_a"] # edge modelu nad rynkiem (z perspektywy A)
 
 # ─── 5. METRICS ───────────────────────────────────────────────────────────────
 log("=== BACKTEST v4 | ETAP 5: Metryki ===")
-# Zawsze y=1 bo rekord = faktyczny zwycięzca
-y_true = np.ones(len(df_ho))
-auc_model = roc_auc_score(y_true, prob_winner)  # Uwaga: y_true=1 zawsze → AUC na separacji prawdop
-bs_model  = brier_score_loss(y_true, prob_winner)
-auc_pin   = roc_auc_score(y_true, df_ho["pin_p_winner"])
-bs_pin    = brier_score_loss(y_true, df_ho["pin_p_winner"])
-log(f"  Uwaga: y=1 zawsze (rekord=winner) → metryki to kalibracja")
-log(f"  Model  avg_prob={prob_winner.mean():.4f}  BS={bs_model:.4f}")
-log(f"  Pinnacle avg_prob={df_ho['pin_p_winner'].mean():.4f}  BS={bs_pin:.4f}")
+y_true_arr = df_ho["y_true"].values
+auc_model  = roc_auc_score(y_true_arr, p_a)
+bs_model   = brier_score_loss(y_true_arr, p_a)
+auc_pin    = roc_auc_score(y_true_arr, df_ho["pin_a"])
+bs_pin     = brier_score_loss(y_true_arr, df_ho["pin_a"])
+win_rate_a = y_true_arr.mean()
+log(f"  Win rate A (powinno być ≈0.50): {win_rate_a:.3f}")
+log(f"  Model AUC={auc_model:.4f}  BS={bs_model:.4f}")
+log(f"  Pinnacle AUC={auc_pin:.4f}  BS={bs_pin:.4f}")
+log(f"  Avg model prob: {p_a.mean():.4f}  | avg pin prob: {df_ho['pin_a'].mean():.4f}")
 
-# ─── 6. KELLY BACKTEST ────────────────────────────────────────────────────────
+# ─── 6. BUDOWANIE df_sim ──────────────────────────────────────────────────────
 log("\n=== BACKTEST v4 | ETAP 6: Kelly Criterion Simulation ===")
 
-def kelly_fraction(p_model, odds_decimal, cap=0.25):
-    """Fractional Kelly. b = odds-1, f = (pb-q)/b, capped at cap"""
+def kelly_fraction(p_model, odds_decimal, cap=0.05):
+    """Fractional Kelly. b = odds-1, f = (pb-q)/b, capped at cap (default 5%)"""
     b = odds_decimal - 1.0
-    if b <= 0 or p_model <= 0 or p_model >= 1:
+    if b <= 0.01 or p_model <= 0 or p_model >= 1:
         return 0.0
     q = 1.0 - p_model
     f = (p_model * b - q) / b
-    return max(0.0, min(f, cap))  # no negative bets, cap at 25%
+    return max(0.0, min(f, cap))
 
-def simulate_strategy(df, strategy="half_kelly", edge_thresh=0.05, init_bankroll=1000.0):
-    """
-    strategy: 'full_kelly' | 'half_kelly' | 'quarter_kelly' | 'flat_1u' | 'flat_2pct'
-    edge_thresh: minimalny edge modelu nad Pinnacle aby postawić zakład
-    """
-    bankroll = init_bankroll
-    peak     = init_bankroll
-    history  = [init_bankroll]
-    bets     = 0
-    wins     = 0
-    profit   = 0.0
-    max_dd   = 0.0
-    df_sorted = df.sort_values("_date").reset_index(drop=True)
-
-    for _, row in df_sorted.iterrows():
-        edge = row["market_edge"]
-        if edge < edge_thresh:
-            history.append(bankroll)
-            continue
-
-        p_model = row["p_winner"]
-        psw     = row["_psw"]  # kurs na faktycznego zwycięzcę
-
-        # Oblicz stawkę
-        if strategy == "full_kelly":
-            f = kelly_fraction(p_model, psw, cap=0.25)
-        elif strategy == "half_kelly":
-            f = kelly_fraction(p_model, psw, cap=0.25) * 0.5
-        elif strategy == "quarter_kelly":
-            f = kelly_fraction(p_model, psw, cap=0.25) * 0.25
-        elif strategy == "flat_1u":
-            f = 1.0 / bankroll  # zawsze 1 jednostka
-        elif strategy == "flat_2pct":
-            f = 0.02  # 2% bankrollu
-        else:
-            f = 0.0
-
-        stake  = bankroll * f
-        if stake < 0.01: 
-            history.append(bankroll)
-            continue
-
-        # Wynik: zakład na zwycięzcę zawsze wygrywa (row = faktyczny winner)
-        pnl = stake * (psw - 1)  # wygrana
-        bankroll += pnl
-        profit   += pnl
-        bets     += 1
-        wins     += 1
-
-        # Drawdown (nigdy nie przegramy bo y=1 zawsze — to problem!)
-        # Symulacja A/B random (50% rekordów to przegrana strona)
-        peak = max(peak, bankroll)
-        dd   = (peak - bankroll) / peak
-        max_dd = max(max_dd, dd)
-        history.append(bankroll)
-
-    roi = (bankroll - init_bankroll) / init_bankroll
-    return {
-        "strategy": strategy,
-        "edge_thresh": edge_thresh,
-        "n_bets": bets,
-        "win_rate": wins/bets if bets>0 else 0,
-        "final_bankroll": round(bankroll, 2),
-        "roi": round(roi, 4),
-        "profit": round(profit, 2),
-        "max_drawdown": round(max_dd, 4),
-        "history": history,
-    }
-
-# WAŻNE: symulacja potrzebuje LOSOWEGO A/B żeby mierzyć rzeczywisty drawdown
-# Budujemy symulację gdzie każdy zakład może wygrać lub przegrać
-log("\n  Symulacja REALISTYCZNA (A/B random, z przegranymi):")
-log("  (dla każdego meczu model decyduje: bet on A czy B, wg edge)")
-
-# Re-buduj z random A/B
-rng = np.random.default_rng(2024)
+# Buduj df_sim: jeden wiersz = jeden potencjalny zakład (bet on A when edge > 0)
 sim_rows = []
-for idx, rec in enumerate(holdout_records):
-    flip = rng.integers(0, 2)
-    feat = {k: v for k, v in rec.items() if not k.startswith("_")}
-
-    if flip:  # A=winner (oryginał)
-        p_model = prob_winner[idx]
-        psw_bet = rec["_psw"]     # kurs na A (=winner)
-        y_bet   = 1               # wygrana
-        market_edge = p_model - rec["pin_prob_w"]
-    else:      # A=loser (odwrócony)
-        p_model = 1.0 - prob_winner[idx]
-        psw_bet = rec["_psl"]     # kurs na A (=loser)
-        y_bet   = 0               # przegrana
-        market_edge = p_model - (1.0 - rec["pin_prob_w"])
+for idx, rec in df_ho.iterrows():
+    pa      = rec["p_a"]
+    pin_a   = rec["pin_a"]
+    edge    = rec["market_edge"]
+    psw_a   = rec["_psw_a"]     # kurs na A
+    y       = rec["y_true"]      # 1=A wins, 0=A loses
 
     sim_rows.append({
-        "date": rec["_date"],
-        "p_model": p_model,
-        "p_pin": rec["pin_prob_w"] if flip else 1.0-rec["pin_prob_w"],
-        "psw_bet": psw_bet,
-        "y_bet": y_bet,
-        "market_edge": market_edge,
+        "date":        rec["_date"],
+        "p_model":     pa,
+        "p_pin":       pin_a,
+        "psw_bet":     psw_a,
+        "y_bet":       y,
+        "market_edge": edge,
         "winner_name": rec["_winner_name"],
-        "loser_name": rec["_loser_name"],
-        "surface": rec["_surface"],
+        "loser_name":  rec["_loser_name"],
+        "surface":     rec["_surface"],
     })
 
 df_sim = pd.DataFrame(sim_rows).sort_values("date").reset_index(drop=True)
+log(f"\n  Zbiór: {len(df_sim):,} rekordów | edge>5%: {(df_sim.market_edge>0.05).sum():,} | edge>8%: {(df_sim.market_edge>0.08).sum():,}")
+log(f"  Win rate A/B baseline: {df_sim['y_bet'].mean():.3f} (oczekiwane ≈0.50)")
 
 def simulate_ab(df, strategy="half_kelly", edge_thresh=0.05, init=1000.0):
     bankroll = init
@@ -387,11 +341,11 @@ def simulate_ab(df, strategy="half_kelly", edge_thresh=0.05, init=1000.0):
         y       = row["y_bet"]
 
         if strategy == "full_kelly":
-            f = kelly_fraction(p_model, psw, cap=0.25)
+            f = kelly_fraction(p_model, psw, cap=0.05)
         elif strategy == "half_kelly":
-            f = kelly_fraction(p_model, psw, cap=0.25) * 0.5
+            f = kelly_fraction(p_model, psw, cap=0.05) * 0.5
         elif strategy == "quarter_kelly":
-            f = kelly_fraction(p_model, psw, cap=0.25) * 0.25
+            f = kelly_fraction(p_model, psw, cap=0.05) * 0.25
         elif strategy == "flat_1u":
             f = min(1.0/bankroll, 0.05) if bankroll > 0 else 0
         elif strategy == "flat_2pct":
@@ -440,14 +394,40 @@ def simulate_ab(df, strategy="half_kelly", edge_thresh=0.05, init=1000.0):
 log(f"\n  Zbiór: {len(df_sim):,} rekordów | edge>5%: {(df_sim.market_edge>0.05).sum():,}")
 log(f"  Win rate A/B baseline: {df_sim['y_bet'].mean():.3f} (oczekiwane ≈0.50)")
 
-log("\n--- Porównanie strategii (edge>5%) ---")
+# ── FLAT BET ANALYSIS (najbardziej interpretowalny) ──
+log("\n--- FLAT BET ANALYSIS (1 unit per bet, NO compound) ---")
+for thresh in [0.02, 0.05, 0.08, 0.10, 0.15, 0.20]:
+    subset = df_sim[df_sim["market_edge"] >= thresh].copy()
+    if len(subset) == 0: continue
+    n_bets = len(subset)
+    wins = (subset["y_bet"] == 1).sum()
+    wr = wins / n_bets
+    # Flat profit: bet 1u każdy → pnl = sum(odds-1) for wins - sum(1) for losses
+    pnl = subset.apply(lambda r: (r["psw_bet"]-1) if r["y_bet"]==1 else -1.0, axis=1)
+    total_pnl = pnl.sum()
+    roi_flat = total_pnl / n_bets * 100
+    max_dd_units = 0
+    running = 0; peak = 0
+    for p in pnl.values:
+        running += p
+        peak = max(peak, running)
+        dd = peak - running
+        max_dd_units = max(max_dd_units, dd)
+    avg_odds_w = subset[subset["y_bet"]==1]["psw_bet"].mean()
+    avg_odds_l = subset[subset["y_bet"]==0]["psw_bet"].mean()
+    log(f"  edge≥{thresh:.0%}: bets={n_bets:4d}  W/L={wins}/{n_bets-wins}  "
+        f"WR={wr:.1%}  flat_ROI={roi_flat:+.1f}%  "
+        f"PnL={total_pnl:+.1f}u  MaxDD={max_dd_units:.1f}u  "
+        f"avg_odds_W={avg_odds_w:.2f}  avg_odds_L={avg_odds_l:.2f}")
+
+log("\n--- Porównanie strategii COMPOUND (edge>8%, Kelly caps) ---")
 strategies = ["full_kelly","half_kelly","quarter_kelly","flat_2pct"]
 results = []
 for strat in strategies:
-    r = simulate_ab(df_sim, strategy=strat, edge_thresh=0.05)
+    r = simulate_ab(df_sim, strategy=strat, edge_thresh=0.08)
     results.append(r)
     log(f"  {strat:16s}: bets={r['n_bets']:4d}  win={r['win_rate']:.3f}  "
-        f"bankroll={r['final_bankroll']:8.2f}  ROI={r['roi_pct']:+.1f}%  "
+        f"bankroll={r['final_bankroll']:12.2f}  ROI={r['roi_pct']:+.1f}%  "
         f"MaxDD={r['max_drawdown_pct']:.1f}%")
 
 log("\n--- Edge threshold analiza (half-Kelly) ---")
