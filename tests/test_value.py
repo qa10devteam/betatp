@@ -102,20 +102,20 @@ def test_devig_power_shin_sums_to_one():
 # -----------------------------------------------------------------------
 def test_devig_power_shin_flb_correction():
     """
+    Favourite-longshot bias: bettors overprice longshots. Shin corrects this by
+    increasing the favourite's probability and decreasing the longshot's.
     For asymmetric odds (1.30 vs 3.80), favourite (lower odds) gets
-    LOWER p in Shin vs proportional (corrects favourite-longshot bias).
-    Or equivalently, longshot gets higher p.
+    HIGHER p in Shin vs proportional, longshot gets LOWER p.
     """
     # Favourite: 1.30, Longshot: 3.80
     shin_a, shin_b = devig_power_shin(1.30, 3.80)
     prop_a, prop_b = devig_proportional(1.30, 3.80)
-    # Shin reduces favourite probability (FLB correction)
-    # So favourite (a) should have LOWER p in Shin than proportional
-    assert shin_a < prop_a, (
-        f"Shin favourite p={shin_a:.4f} should be < proportional p={prop_a:.4f}"
+    # Shin INCREASES favourite probability (corrects FLB — longshots are overpriced)
+    assert shin_a > prop_a, (
+        f"Shin favourite p={shin_a:.4f} should be > proportional p={prop_a:.4f}"
     )
-    # And longshot (b) should have HIGHER p in Shin
-    assert shin_b > prop_b
+    # And longshot (b) should have LOWER p in Shin
+    assert shin_b < prop_b
 
 
 # -----------------------------------------------------------------------

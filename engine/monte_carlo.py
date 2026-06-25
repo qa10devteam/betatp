@@ -55,20 +55,22 @@ def _game_win_prob(p: float) -> float:
     return no_deuce + p_deuce * p_win_deuce
 
 
-def _tiebreak_win_prob(p_a: float, p_b: float, target: int = 7) -> float:
+def _tiebreak_win_prob(p_a: float, p_b: float, target: int = 7, first_server: int = 0) -> float:
     """
     P(A wins tiebreak) first-to-target win-by-2.
-    A serves first point. Serve alternates every 2 points (every 1 after both reach target-1).
+    first_server: 0=A serves first point, 1=B serves first.
+    Serve alternates every 2 points; from 2*(target-1) on, alternates every point.
     Uses memoized DP with closed-form for deuce zone.
     """
     memo: dict = {}
 
     def _server(total: int) -> int:
-        """0=A serves, 1=B serves. Alternates every 2 points; every 1 from 2*(target-1) on."""
+        """0=A serves, 1=B serves relative to first_server."""
         if total < 2 * (target - 1):
-            return (total // 2) % 2
+            raw = (total // 2) % 2
         else:
-            return total % 2
+            raw = total % 2
+        return (raw + first_server) % 2
 
     def dp(a: int, b: int) -> float:
         if a >= target and a - b >= 2:
@@ -165,6 +167,20 @@ def _dp_match(p_a: float, p_b: float, sets_to_win: int, final_set_format: str) -
         key = (sa, sb, ga, gb, pa, pb, srv)
         if key in memo:
             return memo[key]
+
+        # ----- Special: tiebreak at 6-6 (game-level shortcut) -----
+        if ga == 6 and gb == 6 and pa == 0 and pb == 0:
+            is_final = (sa == sets_to_win - 1) and (sb == sets_to_win - 1)
+            if not (is_final and final_set_format == 'advantage'):
+                tb_target = 10 if (is_final and final_set_format == 'super_tiebreak') else 7
+                p_tb = _tiebreak_win_prob(p_a, p_b, target=tb_target, first_server=srv)
+                nsrv_after = 1 - srv  # next set starts with the other player serving
+                sa_aw, sb_aw, ga_aw, gb_aw, _ = _advance_game(sa, sb, 7, 6, nsrv_after)
+                sa_bw, sb_bw, ga_bw, gb_bw, _ = _advance_game(sa, sb, 6, 7, nsrv_after)
+                v = p_tb * V(sa_aw, sb_aw, ga_aw, gb_aw, 0, 0, nsrv_after) + \
+                    (1 - p_tb) * V(sa_bw, sb_bw, ga_bw, gb_bw, 0, 0, nsrv_after)
+                memo[key] = v
+                return v
 
         p_point = p_a if srv == 0 else (1.0 - p_b)
         q_point = 1.0 - p_point
