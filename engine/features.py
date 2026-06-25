@@ -250,28 +250,28 @@ class FeatureBuilder:
         < 22: 0.92, 22-24: 0.97, 25-27: 1.00, 28-30: 0.98,
         31-33: 0.95, 34-36: 0.91, > 36: 0.85
         """
-        breakpoints = [
-            (22.0, 0.92),
-            (24.0, 0.97),
-            (27.0, 1.00),
-            (30.0, 0.98),
-            (33.0, 0.95),
-            (36.0, 0.91),
-            (float("inf"), 0.85),
-        ]
-        # Linear interpolation between breakpoints
-        prev_age, prev_factor = 0.0, 0.92
-        for bp_age, bp_factor in breakpoints:
-            if age <= bp_age:
-                if bp_age == float("inf"):
-                    return prev_factor
-                # interpolate
-                if bp_age == prev_age:
-                    return bp_factor
-                t = (age - prev_age) / (bp_age - prev_age)
-                return prev_factor + t * (bp_factor - prev_factor)
-            prev_age, prev_factor = bp_age, bp_factor
-        return 0.85
+        # Piecewise linear LOESS approximation
+        # Defined as flat ranges then interpolated at boundaries
+        if age < 22.0:
+            return 0.92
+        elif age < 25.0:
+            # 22-25: interpolate 0.92 -> 1.00 (we set start of prime at 25)
+            t = (age - 22.0) / (25.0 - 22.0)
+            return 0.92 + t * (1.00 - 0.92)
+        elif age <= 27.0:
+            return 1.00
+        elif age <= 30.0:
+            t = (age - 27.0) / (30.0 - 27.0)
+            return 1.00 + t * (0.98 - 1.00)
+        elif age <= 33.0:
+            t = (age - 30.0) / (33.0 - 30.0)
+            return 0.98 + t * (0.95 - 0.98)
+        elif age <= 36.0:
+            t = (age - 33.0) / (36.0 - 33.0)
+            return 0.95 + t * (0.91 - 0.95)
+        else:
+            t = min((age - 36.0) / 4.0, 1.0)
+            return 0.91 + t * (0.85 - 0.91)
 
     def _career_stage(self, age: float) -> str:
         if age < 22:

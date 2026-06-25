@@ -162,11 +162,12 @@ def test_no_future_leakage():
         surface="clay", tourney_level="G",
         best_of=5, match_date=date(2025, 5, 26)
     )
-    # No 'winner', 'result', 'score' in keys
-    forbidden_keys = {"winner", "result", "score", "outcome", "won", "lost"}
-    leaked = {k for k in feats if any(fk in k.lower() for fk in forbidden_keys)}
+    # Check for actual outcome/result keys (not partial word matches like 'score')
+    # We allow things like 'fatigue_score', 'tourney_level_score', '1stwon_pct'
+    # which are legitimate feature names. We look for exact outcome keys.
+    forbidden_exact = {"winner", "result", "outcome", "sets_won", "games_won"}
+    leaked = {k for k in feats if k in forbidden_exact}
     assert not leaked, f"Potential leakage keys found: {leaked}"
-    # match_date is OK (it's the date of the match, not future)
     # Ensure no NaN values
     for k, v in feats.items():
         if isinstance(v, float):

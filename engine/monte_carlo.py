@@ -111,14 +111,55 @@ def _dp_match(p_a: float, p_b: float, sets_to_win: int, final_set_format: str) -
     """
     Compute P(A wins) for all reachable match states via recursive DP with memoization.
     State: (sa, sb, ga, gb, pa, pb, srv)
-    Points: 0,1,2,3=normal; at 3-3 deuce/adv: pa-pb diff tracked as (3,3)=deuce,(4,3)=advA,(3,4)=advB
+    Points 0-3: normal. Deuce handled with closed-form to avoid infinite recursion.
+    Deuce states encoded as (3,3)=deuce, (4,3)=advA, (3,4)=advB.
     """
     memo: dict = {}
 
+    # Closed-form: P(A wins game from deuce) given server srv
+    def _p_game_from_deuce(srv: int) -> float:
+        p = p_a if srv == 0 else (1.0 - p_b)
+        q = 1.0 - p
+        return p * p / (p * p + q * q)
+
+    # P(A wins game from advantage A) given server srv
+    def _p_game_from_adv_a(srv: int) -> float:
+        p = p_a if srv == 0 else (1.0 - p_b)
+        q = 1.0 - p
+        # advA: A wins next point → wins game; B wins → deuce
+        d = _p_game_from_deuce(srv)
+        return p + q * d
+
+    # P(A wins game from advantage B) given server srv
+    def _p_game_from_adv_b(srv: int) -> float:
+        p = p_a if srv == 0 else (1.0 - p_b)
+        q = 1.0 - p
+        # advB: B wins next → wins game; A wins → deuce
+        d = _p_game_from_deuce(srv)
+        return p * d  # A must win from deuce
+
+    def _advance_game(sa, sb, ga, gb, srv):
+        """After a game is won, resolve set completion."""
+        nsa, nsb = sa, sb
+        nga, ngb = ga, gb
+        nsrv = srv
+        # Check set win
+        if nga == 7 and ngb == 6:
+            nsa += 1; nga, ngb = 0, 0
+        elif nga == 6 and ngb == 7:
+            nsb += 1; nga, ngb = 0, 0
+        elif nga >= 6 and nga - ngb >= 2:
+            nsa += 1; nga, ngb = 0, 0
+        elif ngb >= 6 and ngb - nga >= 2:
+            nsb += 1; nga, ngb = 0, 0
+        return nsa, nsb, nga, ngb, nsrv
+
     def V(sa: int, sb: int, ga: int, gb: int, pa: int, pb: int, srv: int) -> float:
         if sa >= sets_to_win:
+            memo[(sa, sb, ga, gb, pa, pb, srv)] = 1.0
             return 1.0
         if sb >= sets_to_win:
+            memo[(sa, sb, ga, gb, pa, pb, srv)] = 0.0
             return 0.0
 
         key = (sa, sb, ga, gb, pa, pb, srv)
@@ -126,51 +167,77 @@ def _dp_match(p_a: float, p_b: float, sets_to_win: int, final_set_format: str) -
             return memo[key]
 
         p_point = p_a if srv == 0 else (1.0 - p_b)
+        q_point = 1.0 - p_point
 
+        # ----- Handle special point states (deuce/adv) with closed form -----
+        if pa == 3 and pb == 3:
+            # Deuce: compute P(A wins game from here), then V after game
+            p_a_wins_game = _p_game_from_deuce(srv)
+            nsrv_after = 1 - srv
+            # A wins game
+            sa_aw, sb_aw, ga_aw, gb_aw, _ = _advance_game(sa, sb, ga + 1, gb, nsrv_after)
+            # B wins game
+            sa_bw, sb_bw, ga_bw, gb_bw, _ = _advance_game(sa, sb, ga, gb + 1, nsrv_after)
+            v = p_a_wins_game * V(sa_aw, sb_aw, ga_aw, gb_aw, 0, 0, nsrv_after) + \
+                (1 - p_a_wins_game) * V(sa_bw, sb_bw, ga_bw, gb_bw, 0, 0, nsrv_after)
+            memo[key] = v
+            return v
+
+        if pa == 4 and pb == 3:
+            # Advantage A
+            p_a_wins_game = _p_game_from_adv_a(srv)
+            nsrv_after = 1 - srv
+            sa_aw, sb_aw, ga_aw, gb_aw, _ = _advance_game(sa, sb, ga + 1, gb, nsrv_after)
+            sa_bw, sb_bw, ga_bw, gb_bw, _ = _advance_game(sa, sb, ga, gb + 1, nsrv_after)
+            v = p_a_wins_game * V(sa_aw, sb_aw, ga_aw, gb_aw, 0, 0, nsrv_after) + \
+                (1 - p_a_wins_game) * V(sa_bw, sb_bw, ga_bw, gb_bw, 0, 0, nsrv_after)
+            memo[key] = v
+            return v
+
+        if pa == 3 and pb == 4:
+            # Advantage B
+            p_a_wins_game = _p_game_from_adv_b(srv)
+            nsrv_after = 1 - srv
+            sa_aw, sb_aw, ga_aw, gb_aw, _ = _advance_game(sa, sb, ga + 1, gb, nsrv_after)
+            sa_bw, sb_bw, ga_bw, gb_bw, _ = _advance_game(sa, sb, ga, gb + 1, nsrv_after)
+            v = p_a_wins_game * V(sa_aw, sb_aw, ga_aw, gb_aw, 0, 0, nsrv_after) + \
+                (1 - p_a_wins_game) * V(sa_bw, sb_bw, ga_bw, gb_bw, 0, 0, nsrv_after)
+            memo[key] = v
+            return v
+
+        # ----- Normal point states (0-3 pre-deuce) -----
         def step(a_wins_point: bool):
             npa = pa + (1 if a_wins_point else 0)
             npb = pb + (0 if a_wins_point else 1)
-            nga, ngb = ga, gb
             nsa, nsb = sa, sb
+            nga, ngb = ga, gb
             nsrv = srv
 
-            # --- resolve game ---
             game_over = False
             if npa >= 3 and npb >= 3:
                 diff = npa - npb
                 if diff >= 2:
-                    game_over = True; nga, ngb = ga + 1, gb; npa, npb = 0, 0; nsrv = 1 - srv
+                    game_over = True; nga += 1; npa, npb = 0, 0; nsrv = 1 - srv
                 elif diff <= -2:
-                    game_over = True; nga, ngb = ga, gb + 1; npa, npb = 0, 0; nsrv = 1 - srv
+                    game_over = True; ngb += 1; npa, npb = 0, 0; nsrv = 1 - srv
                 elif diff == 0:
-                    npa, npb = 3, 3   # deuce
+                    npa, npb = 3, 3   # deuce → use closed form next call
                 elif diff == 1:
                     npa, npb = 4, 3   # adv A
                 else:
                     npa, npb = 3, 4   # adv B
             else:
                 if npa >= 4:
-                    game_over = True; nga, ngb = ga + 1, gb; npa, npb = 0, 0; nsrv = 1 - srv
+                    game_over = True; nga += 1; npa, npb = 0, 0; nsrv = 1 - srv
                 elif npb >= 4:
-                    game_over = True; nga, ngb = ga, gb + 1; npa, npb = 0, 0; nsrv = 1 - srv
+                    game_over = True; ngb += 1; npa, npb = 0, 0; nsrv = 1 - srv
 
-            # --- resolve set ---
             if game_over:
-                is_final = (nsa == sets_to_win - 1) and (nsb == sets_to_win - 1)
-                use_adv = is_final and final_set_format == 'advantage'
-                # Check tiebreak at 6-6
-                if nga == 7 and ngb == 6:
-                    nsa += 1; nga, ngb = 0, 0
-                elif nga == 6 and ngb == 7:
-                    nsb += 1; nga, ngb = 0, 0
-                elif nga >= 6 and nga - ngb >= 2:
-                    nsa += 1; nga, ngb = 0, 0
-                elif ngb >= 6 and ngb - nga >= 2:
-                    nsb += 1; nga, ngb = 0, 0
+                nsa, nsb, nga, ngb, nsrv = _advance_game(nsa, nsb, nga, ngb, nsrv)
 
             return V(nsa, nsb, nga, ngb, npa, npb, nsrv)
 
-        v = p_point * step(True) + (1.0 - p_point) * step(False)
+        v = p_point * step(True) + q_point * step(False)
         memo[key] = v
         return v
 
