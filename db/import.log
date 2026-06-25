@@ -1,0 +1,64 @@
+[20:50:59] ✓ Połączono z betatp (PostgreSQL)
+[20:50:59] 
+=== ETAP 1: Players ===
+[20:51:11]   Players: 7,561
+[20:51:11] 
+=== ETAP 2: Tournaments + Editions ===
+[20:51:24]   Tournaments: 4,304
+[20:51:24]   Editions: 8,580
+[20:51:24] 
+=== ETAP 3: Matches ===
+[20:51:27]   1970: matches=10,555
+[20:51:34]   1975: matches=30,777
+[20:51:40]   1980: matches=50,616
+[20:51:46]   1985: matches=68,687
+[20:51:52]   1990: matches=86,487
+[20:51:59]   1995: matches=105,603
+[20:52:05]   2000: matches=123,303
+[20:52:11]   2005: matches=139,596
+[20:52:16]   2010: matches=155,293
+[20:52:22]   2015: matches=170,107
+[20:52:26]   2020: matches=183,200
+[20:52:31]   2025: matches=197,359
+[20:52:31]   TOTAL Matches: 197,495
+[20:52:31] 
+=== ETAP 4: Odds ===
+[20:52:35]   Odds: 0 (matched 0 meczów)
+[20:52:35] 
+=== ETAP 5: Weather ===
+[20:52:35]   Stations: 123
+[20:52:35]   Weather daily: 1,426
+[20:52:35]   Tournament weather: 822
+[20:52:35] 
+=== ETAP 6: Weryfikacja ===
+[20:52:35]   players                       :    7,561
+[20:52:35]   tournaments                   :    4,304
+[20:52:35]   tournament_editions           :    8,580
+[20:52:35]   matches                       :  197,495
+[20:52:35]   odds                          :        0
+[20:52:35]   weather_stations              :      123
+[20:52:35]   weather_daily                 :    1,426
+[20:52:35]   tournament_weather            :      822
+[20:52:35] 
+  Sample: najgorętsze turnieje z kursami Pinnacle:
+[20:52:35]   Rio De Janeiro            2025  temp=38.6°C  rain=0mm  wind=16kmh  odds=0
+[20:52:35]   Australian Open           2014  temp=38.2°C  rain=0mm  wind=20kmh  odds=0
+[20:52:35]   Antalya                   2019  temp=38.0°C  rain=0mm  wind=17kmh  odds=0
+[20:52:35]   Los Cabos                 2021  temp=35.6°C  rain=0mm  wind=27kmh  odds=0
+[20:52:35]   ATP Cup                   2020  temp=35.5°C  rain=2mm  wind=34kmh  odds=0
+[20:52:35]   Cordoba                   2023  temp=35.2°C  rain=0mm  wind=16kmh  odds=0
+[20:52:35]   Winston Salem             2023  temp=35.2°C  rain=0mm  wind=12kmh  odds=0
+[20:52:35]   Buenos Aires              2025  temp=34.8°C  rain=21mm  wind=19kmh  odds=0
+[20:52:35]   Mallorca                  2025  temp=34.6°C  rain=0mm  wind=11kmh  odds=0
+[20:52:35]   Los Cabos                 2023  temp=34.4°C  rain=1mm  wind=17kmh  odds=0
+[20:52:35] 
+  Sample: mecze z wartością pogodową (Roland Garros 2024):
+[20:52:35]   Brandon Nakashima def. Nicolas Moreno De Alboran [R128] pin=None temp=15.15°C rain_days=2
+[20:52:35]   Andrey Rublev def. Taro Daniel [R128] pin=None temp=15.15°C rain_days=2
+[20:52:35]   Pedro Martinez def. Thiago Agustin Tirante [R128] pin=None temp=15.15°C rain_days=2
+[20:52:35]   Lorenzo Sonego def. Ugo Humbert [R128] pin=None temp=15.15°C rain_days=2
+[20:52:35]   Zhizhen Zhang def. Aleksandar Vukic [R128] pin=None temp=15.15°C rain_days=2
+[20:52:35] 
+============================================================
+[20:52:35] IMPORT DONE — PostgreSQL betatp gotowy!
+[20:52:35] ============================================================

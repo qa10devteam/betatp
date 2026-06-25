@@ -389,7 +389,12 @@ log(f"  Meczów: {before:,} | z weather features: {after:,} ({100*after/before:.
 
 # Indoor: ustaw NaN dla pogody (bez wpływu)
 # Nie usuwamy — model może nauczyć się indoor vs outdoor
-matches["indoor_flag"] = matches["indoor_x"].fillna(matches.get("indoor_y", False)).fillna(False) if "indoor_x" in matches.columns else matches.get("indoor", pd.Series(False, index=matches.index)).fillna(False)
+for _col in ["indoor_x", "indoor_y", "indoor"]:
+    if _col in matches.columns:
+        matches["indoor_flag"] = matches[_col].fillna(False)
+        break
+else:
+    matches["indoor_flag"] = False
 
 matches.to_parquet(OUT_PATH / "matches_with_weather.parquet", index=False)
 log(f"  Zapisano: matches_with_weather.parquet")

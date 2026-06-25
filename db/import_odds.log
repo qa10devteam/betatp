@@ -1,0 +1,10 @@
+[20:57:53] Budowanie match_lookup z full_name...
+[20:57:53] Lookup: 69,228
+[20:57:53] Parquet: 78,022 wierszy
+[20:57:57] Matched mecze: 18,020 | Odds rows: 31,162
+[20:57:58] Odds w DB: 30,088
+[20:57:58]   bet365      : 9,522
+[20:57:58]   pinnacle    : 8,452
+[20:57:58]   avg         : 6,057
+[20:57:58]   max         : 6,057
+[20:57:58] DONE
