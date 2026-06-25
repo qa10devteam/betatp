@@ -1,0 +1,17 @@
+[21:01:03] Budowanie lookup (bez rundy)...
+[21:01:03] Lookup: 61,395 uniq | zduplikowanych kluczy: 5,921
+[21:01:03] Parquet: 78,022 wierszy
+[21:01:08] Matched mecze: 61,393/78,022 | Missed: 16,567 | Odds rows: 66,504
+[21:01:09] Odds w DB: 66,444
+[21:01:09]   bet365      : 21,175
+[21:01:09]   pinnacle    : 18,713
+[21:01:09]   max         : 13,278
+[21:01:09]   avg         : 13,278
+[21:01:10] 
+Sample Pinnacle 2024:
+[21:01:10]   Jannik Sinner             def. Alexander Zverev          | 2024 Cincinnati Masters   | 1.62 vs 2.47
+[21:01:10]   Yannick Hanfmann          def. Pedro Martinez            | 2024 Chengdu              | 1.83 vs 2.10
+[21:01:10]   Thanasi Kokkinakis        def. Marcos Giron              | 2024 Indian Wells Masters | 2.84 vs 1.48
+[21:01:10]   Frances Tiafoe            def. Jiri Lehecka              | 2024 Cincinnati Masters   | 1.78 vs 2.16
+[21:01:10]   Thanasi Kokkinakis        def. Felix Auger-Aliassime     | 2024 Wimbledon            | 3.29 vs 1.39
+[21:01:10] DONE
