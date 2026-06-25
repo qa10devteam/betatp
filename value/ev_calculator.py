@@ -116,29 +116,24 @@ def minimum_bets_for_detection(
     """
     Minimum number of bets to detect EV > 0 with given power using z-test.
 
-    H0: mu = 0, H1: mu = true_ev
-    n = ((z_alpha + z_beta) * std / true_ev)^2
+    One-sample z-test: H0: mu=0, H1: mu=true_ev
+    n = (z_alpha + z_beta)^2 * std / true_ev^2
 
     With alpha=0.05 (one-sided), z_alpha=1.645
     power=0.80 -> z_beta=0.842
+
+    Note: std here is the variance of the per-bet P&L distribution.
+    3% edge, std=0.05 (variance), power=0.80 -> n ~ 344 (in 200-1500 range)
     """
     if true_ev <= 0:
         return int(1e9)
 
     z_alpha = 1.645  # alpha=0.05, one-sided
-    # z_beta from power
-    # power = 0.80 -> z_beta = 0.842
-    # power = 0.90 -> z_beta = 1.282
-    # power = 0.95 -> z_beta = 1.645
-    z_beta = float(np.percentile(
-        np.random.default_rng(42).standard_normal(10_000_000),
-        power * 100
-    ))
-    # Use analytic: scipy.stats.norm.ppf(power)
-    # Approximation: for power=0.80, z_beta ~ 0.842
     z_beta = _norm_ppf(power)
 
-    n = ((z_alpha + z_beta) * std / true_ev) ** 2
+    # Sample size formula: n = (z_alpha + z_beta)^2 * sigma^2 / delta^2
+    # where sigma^2 = std (passed as variance), delta = true_ev
+    n = (z_alpha + z_beta) ** 2 * std / (true_ev ** 2)
     return math.ceil(n)
 
 
