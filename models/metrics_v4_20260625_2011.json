@@ -1,0 +1,285 @@
+{
+  "version": "v4",
+  "trained_at": "20260625_2011",
+  "train_period": "2004-2023 (z Pinnacle)",
+  "holdout_period": "2024-2026",
+  "n_train": 23048,
+  "n_holdout": 1989,
+  "n_features": 43,
+  "features_used": [
+    "a_ewma",
+    "a_ewma_surf",
+    "a_fat14",
+    "a_fat28",
+    "a_streak",
+    "a_srv_pct",
+    "a_ret_pct",
+    "a_surf_change",
+    "a_surf_spec",
+    "a_age",
+    "a_hand",
+    "b_ewma",
+    "b_ewma_surf",
+    "b_fat14",
+    "b_fat28",
+    "b_streak",
+    "b_srv_pct",
+    "b_ret_pct",
+    "b_surf_change",
+    "b_surf_spec",
+    "b_age",
+    "b_hand",
+    "ewma_diff",
+    "ewma_surf_diff",
+    "streak_diff",
+    "fat14_diff",
+    "srv_pct_diff",
+    "surf_spec_diff",
+    "age_diff",
+    "h2h_a",
+    "h2h_n",
+    "pin_prob_w",
+    "max_prob_w",
+    "avg_prob_w",
+    "odds_consensus_w",
+    "surf_hard",
+    "surf_clay",
+    "surf_grass",
+    "level_G",
+    "level_M",
+    "best_of_5",
+    "indoor",
+    "round_num"
+  ],
+  "walk_forward": [
+    {
+      "split": "2004-2012\u21922015",
+      "n_tr": 9601,
+      "n_val": 3663,
+      "auc": 0.9072,
+      "acc": 0.825,
+      "bs": 0.1229,
+      "best_iter": 636,
+      "dur": 155.5
+    },
+    {
+      "split": "2004-2015\u21922018",
+      "n_tr": 13264,
+      "n_val": 3625,
+      "auc": 0.9058,
+      "acc": 0.8185,
+      "bs": 0.1249,
+      "best_iter": 1204,
+      "dur": 303.5
+    },
+    {
+      "split": "2004-2018\u21922021",
+      "n_tr": 16889,
+      "n_val": 2823,
+      "auc": 0.8975,
+      "acc": 0.8038,
+      "bs": 0.1309,
+      "best_iter": 682,
+      "dur": 151.3
+    },
+    {
+      "split": "2004-2021\u21922023",
+      "n_tr": 19712,
+      "n_val": 2244,
+      "auc": 0.8939,
+      "acc": 0.8075,
+      "bs": 0.1324,
+      "best_iter": 552,
+      "dur": 125.1
+    },
+    {
+      "split": "2004-2023\u21922024",
+      "n_tr": 21956,
+      "n_val": 1092,
+      "auc": 0.9062,
+      "acc": 0.815,
+      "bs": 0.125,
+      "best_iter": 1905,
+      "dur": 322.4
+    }
+  ],
+  "mean_wf_auc": 0.9021,
+  "mean_wf_acc": 0.814,
+  "holdout_auc": 0.8995,
+  "holdout_acc": 0.8105,
+  "holdout_bs": 0.1297,
+  "feature_importance": [
+    {
+      "feat": "odds_consensus_w",
+      "imp": 5905
+    },
+    {
+      "feat": "pin_prob_w",
+      "imp": 4758
+    },
+    {
+      "feat": "b_ret_pct",
+      "imp": 3359
+    },
+    {
+      "feat": "b_surf_spec",
+      "imp": 3164
+    },
+    {
+      "feat": "a_ret_pct",
+      "imp": 3042
+    },
+    {
+      "feat": "a_surf_spec",
+      "imp": 3024
+    },
+    {
+      "feat": "b_age",
+      "imp": 3005
+    },
+    {
+      "feat": "max_prob_w",
+      "imp": 2949
+    },
+    {
+      "feat": "srv_pct_diff",
+      "imp": 2869
+    },
+    {
+      "feat": "a_age",
+      "imp": 2851
+    },
+    {
+      "feat": "age_diff",
+      "imp": 2851
+    },
+    {
+      "feat": "a_srv_pct",
+      "imp": 2844
+    },
+    {
+      "feat": "b_srv_pct",
+      "imp": 2760
+    },
+    {
+      "feat": "surf_spec_diff",
+      "imp": 2549
+    },
+    {
+      "feat": "a_ewma",
+      "imp": 2521
+    },
+    {
+      "feat": "ewma_surf_diff",
+      "imp": 2493
+    },
+    {
+      "feat": "b_ewma_surf",
+      "imp": 2428
+    },
+    {
+      "feat": "fat14_diff",
+      "imp": 2316
+    },
+    {
+      "feat": "avg_prob_w",
+      "imp": 2298
+    },
+    {
+      "feat": "a_ewma_surf",
+      "imp": 2288
+    },
+    {
+      "feat": "ewma_diff",
+      "imp": 2243
+    },
+    {
+      "feat": "b_ewma",
+      "imp": 2221
+    },
+    {
+      "feat": "streak_diff",
+      "imp": 2205
+    },
+    {
+      "feat": "a_fat14",
+      "imp": 2032
+    },
+    {
+      "feat": "b_fat14",
+      "imp": 1972
+    },
+    {
+      "feat": "round_num",
+      "imp": 1915
+    },
+    {
+      "feat": "a_fat28",
+      "imp": 1903
+    },
+    {
+      "feat": "a_streak",
+      "imp": 1843
+    },
+    {
+      "feat": "b_streak",
+      "imp": 1828
+    },
+    {
+      "feat": "b_fat28",
+      "imp": 1625
+    },
+    {
+      "feat": "h2h_a",
+      "imp": 703
+    },
+    {
+      "feat": "b_surf_change",
+      "imp": 602
+    },
+    {
+      "feat": "a_surf_change",
+      "imp": 601
+    },
+    {
+      "feat": "h2h_n",
+      "imp": 595
+    },
+    {
+      "feat": "level_G",
+      "imp": 412
+    },
+    {
+      "feat": "level_M",
+      "imp": 376
+    },
+    {
+      "feat": "best_of_5",
+      "imp": 364
+    },
+    {
+      "feat": "a_hand",
+      "imp": 216
+    },
+    {
+      "feat": "surf_hard",
+      "imp": 210
+    },
+    {
+      "feat": "surf_grass",
+      "imp": 208
+    },
+    {
+      "feat": "b_hand",
+      "imp": 138
+    },
+    {
+      "feat": "indoor",
+      "imp": 123
+    },
+    {
+      "feat": "surf_clay",
+      "imp": 111
+    }
+  ]
+}

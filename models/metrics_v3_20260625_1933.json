@@ -1,0 +1,295 @@
+{
+  "version": "v3",
+  "trained_at": "20260625_1933",
+  "train_period": "1990-2023",
+  "holdout_period": "2024-2026",
+  "n_train": 109086,
+  "n_holdout": 6156,
+  "n_features": 58,
+  "walk_forward": [
+    {
+      "split": "1990-2008\u21922012",
+      "n_tr": 63282,
+      "n_val": 12253,
+      "auc": 1.0,
+      "acc": 1.0,
+      "bs": 0.2315,
+      "dur": 11.7
+    },
+    {
+      "split": "1990-2012\u21922016",
+      "n_tr": 75535,
+      "n_val": 11799,
+      "auc": 1.0,
+      "acc": 1.0,
+      "bs": 0.2313,
+      "dur": 13.2
+    },
+    {
+      "split": "1990-2016\u21922020",
+      "n_tr": 87334,
+      "n_val": 11638,
+      "auc": 1.0,
+      "acc": 1.0,
+      "bs": 0.2314,
+      "dur": 16.0
+    },
+    {
+      "split": "1990-2020\u21922022",
+      "n_tr": 98972,
+      "n_val": 4201,
+      "auc": 1.0,
+      "acc": 1.0,
+      "bs": 0.2314,
+      "dur": 9.2
+    },
+    {
+      "split": "1990-2022\u21922024",
+      "n_tr": 103173,
+      "n_val": 5913,
+      "auc": 1.0,
+      "acc": 1.0,
+      "bs": 0.2316,
+      "dur": 11.6
+    }
+  ],
+  "mean_wf_auc": 1.0,
+  "mean_wf_acc": 1.0,
+  "holdout_auc": 1.0,
+  "holdout_acc": 1.0,
+  "holdout_bs": 0.2376,
+  "feature_importance": [
+    {
+      "feat": "a_fat14",
+      "imp": 14
+    },
+    {
+      "feat": "b_fat14",
+      "imp": 14
+    },
+    {
+      "feat": "b_streak",
+      "imp": 8
+    },
+    {
+      "feat": "elo_diff",
+      "imp": 8
+    },
+    {
+      "feat": "streak_diff",
+      "imp": 7
+    },
+    {
+      "feat": "rp_diff",
+      "imp": 5
+    },
+    {
+      "feat": "b_rp",
+      "imp": 2
+    },
+    {
+      "feat": "a_rp",
+      "imp": 1
+    },
+    {
+      "feat": "b_ret_elo",
+      "imp": 1
+    },
+    {
+      "feat": "b_ewma",
+      "imp": 1
+    },
+    {
+      "feat": "srv_ret_matchup",
+      "imp": 1
+    },
+    {
+      "feat": "best_of_5",
+      "imp": 1
+    },
+    {
+      "feat": "a_elo",
+      "imp": 0
+    },
+    {
+      "feat": "a_srf_elo",
+      "imp": 0
+    },
+    {
+      "feat": "a_srv_elo",
+      "imp": 0
+    },
+    {
+      "feat": "a_ret_elo",
+      "imp": 0
+    },
+    {
+      "feat": "a_n",
+      "imp": 0
+    },
+    {
+      "feat": "a_prov",
+      "imp": 0
+    },
+    {
+      "feat": "a_rank",
+      "imp": 0
+    },
+    {
+      "feat": "a_age",
+      "imp": 0
+    },
+    {
+      "feat": "a_ht",
+      "imp": 0
+    },
+    {
+      "feat": "a_hand",
+      "imp": 0
+    },
+    {
+      "feat": "a_ewma",
+      "imp": 0
+    },
+    {
+      "feat": "a_ewma_surf",
+      "imp": 0
+    },
+    {
+      "feat": "a_fat28",
+      "imp": 0
+    },
+    {
+      "feat": "a_streak",
+      "imp": 0
+    },
+    {
+      "feat": "a_srv_pct",
+      "imp": 0
+    },
+    {
+      "feat": "a_ret_pct",
+      "imp": 0
+    },
+    {
+      "feat": "b_elo",
+      "imp": 0
+    },
+    {
+      "feat": "b_srf_elo",
+      "imp": 0
+    },
+    {
+      "feat": "b_srv_elo",
+      "imp": 0
+    },
+    {
+      "feat": "b_n",
+      "imp": 0
+    },
+    {
+      "feat": "b_prov",
+      "imp": 0
+    },
+    {
+      "feat": "b_rank",
+      "imp": 0
+    },
+    {
+      "feat": "b_age",
+      "imp": 0
+    },
+    {
+      "feat": "b_ht",
+      "imp": 0
+    },
+    {
+      "feat": "b_hand",
+      "imp": 0
+    },
+    {
+      "feat": "b_ewma_surf",
+      "imp": 0
+    },
+    {
+      "feat": "b_fat28",
+      "imp": 0
+    },
+    {
+      "feat": "b_srv_pct",
+      "imp": 0
+    },
+    {
+      "feat": "b_ret_pct",
+      "imp": 0
+    },
+    {
+      "feat": "p_elo",
+      "imp": 0
+    },
+    {
+      "feat": "rank_diff",
+      "imp": 0
+    },
+    {
+      "feat": "age_diff",
+      "imp": 0
+    },
+    {
+      "feat": "ht_diff",
+      "imp": 0
+    },
+    {
+      "feat": "ewma_diff",
+      "imp": 0
+    },
+    {
+      "feat": "ewma_surf_diff",
+      "imp": 0
+    },
+    {
+      "feat": "fat14_diff",
+      "imp": 0
+    },
+    {
+      "feat": "srv_pct_diff",
+      "imp": 0
+    },
+    {
+      "feat": "surf_hard",
+      "imp": 0
+    },
+    {
+      "feat": "surf_clay",
+      "imp": 0
+    },
+    {
+      "feat": "surf_grass",
+      "imp": 0
+    },
+    {
+      "feat": "level_G",
+      "imp": 0
+    },
+    {
+      "feat": "level_M",
+      "imp": 0
+    },
+    {
+      "feat": "indoor",
+      "imp": 0
+    },
+    {
+      "feat": "round_num",
+      "imp": 0
+    },
+    {
+      "feat": "h2h_pw",
+      "imp": 0
+    },
+    {
+      "feat": "h2h_n",
+      "imp": 0
+    }
+  ]
+}

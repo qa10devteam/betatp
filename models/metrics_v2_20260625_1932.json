@@ -1,0 +1,210 @@
+{
+  "version": "v2",
+  "trained_at": "20260625_1932",
+  "train_period": "1990-2023",
+  "holdout_period": "2024-2026",
+  "n_train": 109086,
+  "n_holdout": 6156,
+  "walk_forward": [
+    {
+      "split": "1990-2008\u21922012",
+      "n_tr": 63282,
+      "n_val": 12253,
+      "auc": 0.9998,
+      "acc": 0.9922,
+      "bs": 0.0056,
+      "dur": 174.3
+    },
+    {
+      "split": "1990-2012\u21922016",
+      "n_tr": 75535,
+      "n_val": 11799,
+      "auc": 0.9998,
+      "acc": 0.9906,
+      "bs": 0.006,
+      "dur": 78.6
+    },
+    {
+      "split": "1990-2016\u21922020",
+      "n_tr": 87334,
+      "n_val": 11638,
+      "auc": 1.0,
+      "acc": 0.9977,
+      "bs": 0.0014,
+      "dur": 101.9
+    },
+    {
+      "split": "1990-2020\u21922022",
+      "n_tr": 98972,
+      "n_val": 4201,
+      "auc": 1.0,
+      "acc": 0.9986,
+      "bs": 0.0022,
+      "dur": 41.2
+    },
+    {
+      "split": "1990-2022\u21922024",
+      "n_tr": 103173,
+      "n_val": 5913,
+      "auc": 1.0,
+      "acc": 0.9976,
+      "bs": 0.0015,
+      "dur": 110.5
+    }
+  ],
+  "mean_wf_auc": 0.9999,
+  "mean_wf_acc": 0.9953,
+  "holdout_auc": 1.0,
+  "holdout_acc": 0.9968,
+  "holdout_bs": 0.0018,
+  "feature_importance": [
+    {
+      "feat": "age_diff",
+      "imp": 1614
+    },
+    {
+      "feat": "srv_ret_matchup",
+      "imp": 1562
+    },
+    {
+      "feat": "b_age",
+      "imp": 1459
+    },
+    {
+      "feat": "a_age",
+      "imp": 1454
+    },
+    {
+      "feat": "a_n",
+      "imp": 1398
+    },
+    {
+      "feat": "rank_diff",
+      "imp": 1332
+    },
+    {
+      "feat": "elo_diff",
+      "imp": 1265
+    },
+    {
+      "feat": "b_n",
+      "imp": 1160
+    },
+    {
+      "feat": "rp_diff",
+      "imp": 1140
+    },
+    {
+      "feat": "a_rank",
+      "imp": 1108
+    },
+    {
+      "feat": "b_rank",
+      "imp": 1092
+    },
+    {
+      "feat": "a_elo",
+      "imp": 1028
+    },
+    {
+      "feat": "b_elo",
+      "imp": 973
+    },
+    {
+      "feat": "a_srf_elo",
+      "imp": 917
+    },
+    {
+      "feat": "b_rp",
+      "imp": 889
+    },
+    {
+      "feat": "b_srf_elo",
+      "imp": 860
+    },
+    {
+      "feat": "p_elo",
+      "imp": 812
+    },
+    {
+      "feat": "b_srv_elo",
+      "imp": 796
+    },
+    {
+      "feat": "a_srv_elo",
+      "imp": 771
+    },
+    {
+      "feat": "a_rp",
+      "imp": 719
+    },
+    {
+      "feat": "b_ret_elo",
+      "imp": 699
+    },
+    {
+      "feat": "a_ret_elo",
+      "imp": 635
+    },
+    {
+      "feat": "ht_diff",
+      "imp": 583
+    },
+    {
+      "feat": "a_ht",
+      "imp": 541
+    },
+    {
+      "feat": "b_ht",
+      "imp": 521
+    },
+    {
+      "feat": "round_num",
+      "imp": 274
+    },
+    {
+      "feat": "best_of_5",
+      "imp": 171
+    },
+    {
+      "feat": "surf_clay",
+      "imp": 112
+    },
+    {
+      "feat": "surf_hard",
+      "imp": 104
+    },
+    {
+      "feat": "b_hand",
+      "imp": 66
+    },
+    {
+      "feat": "indoor",
+      "imp": 39
+    },
+    {
+      "feat": "level_G",
+      "imp": 36
+    },
+    {
+      "feat": "a_prov",
+      "imp": 26
+    },
+    {
+      "feat": "a_hand",
+      "imp": 22
+    },
+    {
+      "feat": "b_prov",
+      "imp": 17
+    },
+    {
+      "feat": "level_M",
+      "imp": 17
+    },
+    {
+      "feat": "surf_grass",
+      "imp": 14
+    }
+  ]
+}
