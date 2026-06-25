@@ -36,8 +36,8 @@ def compute_all_elos(matches_df: pd.DataFrame, elo_engine: EloEngine) -> EloEngi
         if pd.isna(winner_id) or pd.isna(loser_id):
             continue
 
-        winner_id = int(winner_id)
-        loser_id = int(loser_id)
+        winner_id = str(winner_id).strip()
+        loser_id = str(loser_id).strip()
 
         surface = row.get("surface", "Hard")
         tourney_level = row.get("tourney_level", "250")

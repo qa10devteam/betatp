@@ -93,9 +93,12 @@ def _cast_columns(df: pd.DataFrame) -> pd.DataFrame:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    # Ensure winner_id / loser_id are integers (coerce bad values to NaN then drop)
+    # winner_id / loser_id can be strings (e.g. "GH92") — keep as string, strip whitespace
     for id_col in ("winner_id", "loser_id"):
-        df[id_col] = pd.to_numeric(df[id_col], errors="coerce")
+        df[id_col] = df[id_col].astype(str).str.strip()
+        # drop rows where id is empty/NaN string
+        df = df[df[id_col].str.len() > 0]
+        df = df[~df[id_col].isin(["nan", "None", ""])]
 
     return df
 
@@ -108,8 +111,8 @@ def _build_match_id(df: pd.DataFrame) -> pd.Series:
     year = df["tourney_date"].dt.year.astype(str)
     tourney = df["tourney_id"].str.replace(r"\s+", "_", regex=True)
     rnd = df["round"].str.replace(r"\s+", "_", regex=True)
-    w = df["winner_id"].astype(int).astype(str)
-    l = df["loser_id"].astype(int).astype(str)
+    w = df["winner_id"].astype(str)
+    l = df["loser_id"].astype(str)
     return year + "_" + tourney + "_" + rnd + "_" + w + "_" + l
 
 
@@ -162,9 +165,10 @@ def load_all_matches(tml_path: str | Path) -> pd.DataFrame:
 
     # Drop rows with missing essential IDs or date
     initial_len = len(df)
-    df = df.dropna(subset=["winner_id", "loser_id", "tourney_date"])
-    df["winner_id"] = df["winner_id"].astype(int)
-    df["loser_id"] = df["loser_id"].astype(int)
+    df = df.dropna(subset=["tourney_date"])
+    # winner_id/loser_id are already strings; drop empty/null
+    for _col in ("winner_id", "loser_id"):
+        df = df[df[_col].notna() & (df[_col].str.strip() != "") & (~df[_col].isin(["nan", "None"]))]  # type: ignore[index]
     dropped = initial_len - len(df)
     if dropped:
         logger.warning("Dropped %d rows with null winner_id/loser_id/tourney_date", dropped)

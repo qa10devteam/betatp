@@ -31,7 +31,7 @@ SURFACE_MAP = {
 
 @dataclass
 class PlayerElo:
-    player_id: int
+    player_id: str
     overall: float = 1500.0
     hard: float = 1500.0
     clay: float = 1500.0
@@ -48,12 +48,13 @@ class PlayerElo:
 
 class EloEngine:
     def __init__(self):
-        self.ratings: dict[int, PlayerElo] = {}
+        self.ratings: dict[str, PlayerElo] = {}
 
-    def get_or_create(self, player_id: int) -> PlayerElo:
-        if player_id not in self.ratings:
-            self.ratings[player_id] = PlayerElo(player_id=player_id)
-        return self.ratings[player_id]
+    def get_or_create(self, player_id: str) -> PlayerElo:
+        pid = str(player_id)
+        if pid not in self.ratings:
+            self.ratings[pid] = PlayerElo(player_id=pid)
+        return self.ratings[pid]
 
     def win_probability(self, ra: float, rb: float) -> float:
         """P(A beats B) = 1 / (1 + 10^((Rb-Ra)/400))"""
@@ -81,7 +82,7 @@ class EloEngine:
         alpha = 1.0 - math.exp(-n_surface / SURFACE_BLEND_N0)
         return alpha * r_surface + (1.0 - alpha) * r_overall
 
-    def get_blended_surface_elo(self, player_id: int, surface: str) -> float:
+    def get_blended_surface_elo(self, player_id: str, surface: str) -> float:
         """Returns blended surface Elo: alpha*surface + (1-alpha)*overall"""
         elo = self.get_or_create(player_id)
         surf = SURFACE_MAP.get(surface, surface.lower())
@@ -110,8 +111,8 @@ class EloEngine:
 
     def update_match(
         self,
-        winner_id: int,
-        loser_id: int,
+        winner_id: str,
+        loser_id: str,
         surface: str,
         tourney_level: str,
         match_date: date,
@@ -211,7 +212,7 @@ class EloEngine:
         return w, l
 
     def predict_match(
-        self, player_a_id: int, player_b_id: int, surface: str
+        self, player_a_id: str, player_b_id: str, surface: str
     ) -> dict:
         """
         Returns probabilities and Elo info for a matchup.
