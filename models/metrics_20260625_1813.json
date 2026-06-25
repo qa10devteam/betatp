@@ -1,0 +1,160 @@
+{
+  "trained_at": "20260625_1813",
+  "n_train": 200876,
+  "n_holdout": 29608,
+  "walk_forward": [
+    {
+      "split": "1990-2002 \u2192 2002-2004",
+      "n_train": 87682,
+      "n_val": 12862,
+      "auc": 0.9995,
+      "brier": 0.0087,
+      "log_loss": 0.0245,
+      "accuracy": 0.9853,
+      "best_iter": 854,
+      "duration_s": 6.3
+    },
+    {
+      "split": "1990-2004 \u2192 2004-2008",
+      "n_train": 100544,
+      "n_val": 26020,
+      "auc": 0.9996,
+      "brier": 0.0076,
+      "log_loss": 0.0226,
+      "accuracy": 0.987,
+      "best_iter": 736,
+      "duration_s": 5.9
+    },
+    {
+      "split": "1990-2008 \u2192 2008-2012",
+      "n_train": 126564,
+      "n_val": 24506,
+      "auc": 0.9997,
+      "brier": 0.0065,
+      "log_loss": 0.0185,
+      "accuracy": 0.9891,
+      "best_iter": 752,
+      "duration_s": 6.3
+    },
+    {
+      "split": "1990-2012 \u2192 2012-2016",
+      "n_train": 151070,
+      "n_val": 23598,
+      "auc": 0.9997,
+      "brier": 0.0064,
+      "log_loss": 0.0184,
+      "accuracy": 0.9895,
+      "best_iter": 835,
+      "duration_s": 6.6
+    },
+    {
+      "split": "1990-2016 \u2192 2016-2020",
+      "n_train": 174668,
+      "n_val": 23276,
+      "auc": 1.0,
+      "brier": 0.0012,
+      "log_loss": 0.0036,
+      "accuracy": 0.9979,
+      "best_iter": 1539,
+      "duration_s": 12.1
+    }
+  ],
+  "mean_wf_auc": 0.9997,
+  "mean_wf_accuracy": 0.9898,
+  "holdout_lgbm_auc": 1.0,
+  "holdout_lgbm_accuracy": 0.9973,
+  "holdout_lgbm_brier": 0.0015,
+  "holdout_ensemble_auc": 0.9999,
+  "holdout_ensemble_accuracy": 0.9972,
+  "holdout_ensemble_brier": 0.0136,
+  "meta_coefs": {
+    "lgbm_weight": 6.68682932217305,
+    "elo_weight": 5.460565943682213
+  },
+  "feature_importance": [
+    {
+      "feature": "a_n_matches",
+      "importance": 7185
+    },
+    {
+      "feature": "b_n_matches",
+      "importance": 7112
+    },
+    {
+      "feature": "b_overall_elo",
+      "importance": 6769
+    },
+    {
+      "feature": "a_overall_elo",
+      "importance": 6742
+    },
+    {
+      "feature": "b_surf_elo",
+      "importance": 6663
+    },
+    {
+      "feature": "a_surf_elo",
+      "importance": 6457
+    },
+    {
+      "feature": "elo_diff",
+      "importance": 6050
+    },
+    {
+      "feature": "p_elo",
+      "importance": 4590
+    },
+    {
+      "feature": "serve_return_matchup",
+      "importance": 4187
+    },
+    {
+      "feature": "a_return_elo",
+      "importance": 3246
+    },
+    {
+      "feature": "b_return_elo",
+      "importance": 3061
+    },
+    {
+      "feature": "a_serve_elo",
+      "importance": 2976
+    },
+    {
+      "feature": "b_serve_elo",
+      "importance": 2907
+    },
+    {
+      "feature": "best_of_5",
+      "importance": 858
+    },
+    {
+      "feature": "surface_hard",
+      "importance": 710
+    },
+    {
+      "feature": "surface_clay",
+      "importance": 654
+    },
+    {
+      "feature": "level_G",
+      "importance": 580
+    },
+    {
+      "feature": "level_M",
+      "importance": 324
+    },
+    {
+      "feature": "b_is_prov",
+      "importance": 190
+    },
+    {
+      "feature": "a_is_prov",
+      "importance": 158
+    },
+    {
+      "feature": "surface_grass",
+      "importance": 129
+    }
+  ]
+}

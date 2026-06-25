@@ -1,0 +1,174 @@
+[18:11:55] === ETAP 1: Wczytywanie danych TML-Database ===
+[18:11:56]   Wczytano 115,243 meczów (1990-2025)
+[18:11:56]   Po normalizacji: 115,242 meczów
+[18:11:56]   Zakres: 1990-01-01 → 2026-01-17
+[18:11:56]   Surface dist: {'Hard': 66090, 'Clay': 38008, 'Grass': 11144}
+[18:11:56] 
+=== ETAP 2: Obliczanie Elo (6 wariantów) dla 198k meczów ===
+[18:11:56]   Przetwarzam 115,242 meczów...
+[18:11:56]   [20,000/115,242] 0s — n_players=1065
+[18:11:57]   [40,000/115,242] 1s — n_players=1611
+[18:11:57]   [60,000/115,242] 1s — n_players=2280
+[18:11:58]   [80,000/115,242] 2s — n_players=2832
+[18:11:58]   [100,000/115,242] 3s — n_players=3377
+[18:11:59]   Elo gotowe w 2.9s — 3775 graczy
+[18:11:59]   Dataset: (115242, 29)
+[18:11:59]   Elo ratings zapisane: /home/ubuntu/betatp/models/elo_ratings_2025.joblib
+[18:11:59] 
+=== ETAP 3: Budowanie dataset ML ===
+[18:12:28]   Symetryczny dataset: (230484, 24)
+[18:12:28] 
+=== ETAP 4: Walk-Forward Cross-Validation ===
+[18:12:34]   1990-2002 → 2002-2004: AUC=0.9995 Acc=0.9853 BS=0.0087 [6.3s]
+[18:12:40]   1990-2004 → 2004-2008: AUC=0.9996 Acc=0.9870 BS=0.0076 [5.9s]
+[18:12:46]   1990-2008 → 2008-2012: AUC=0.9997 Acc=0.9891 BS=0.0065 [6.3s]
+[18:12:53]   1990-2012 → 2012-2016: AUC=0.9997 Acc=0.9895 BS=0.0064 [6.6s]
+[18:13:05]   1990-2016 → 2016-2020: AUC=1.0000 Acc=0.9979 BS=0.0012 [12.1s]
+[18:13:05] 
+  WALK-FORWARD ŚREDNIE: AUC=0.9997 Acc=0.9898 BS=0.0061
+[18:13:05] 
+=== ETAP 5: Trenowanie finalnego modelu (1990-2020) ===
+[18:13:05]   Train: 200,876 | Holdout 2021-2025: 29,608
+[100]	valid_0's binary_logloss: 0.187146
+[200]	valid_0's binary_logloss: 0.0685409
+[300]	valid_0's binary_logloss: 0.0273292
+[400]	valid_0's binary_logloss: 0.0131991
+[500]	valid_0's binary_logloss: 0.00725179
+[600]	valid_0's binary_logloss: 0.005305
+[700]	valid_0's binary_logloss: 0.00457746
+[800]	valid_0's binary_logloss: 0.00434204
+[900]	valid_0's binary_logloss: 0.00427277
+[1000]	valid_0's binary_logloss: 0.00424778
+[1100]	valid_0's binary_logloss: 0.00424095
+[1200]	valid_0's binary_logloss: 0.00424074
+[18:13:16]   HOLDOUT 2021-2025: AUC=1.0000 Acc=0.9973 BS=0.0015 [11.3s]
+[18:13:16] 
+=== ETAP 6: Feature Importance ===
+[18:13:16]   a_n_matches: 7185
+[18:13:16]   b_n_matches: 7112
+[18:13:16]   b_overall_elo: 6769
+[18:13:16]   a_overall_elo: 6742
+[18:13:16]   b_surf_elo: 6663
+[18:13:16]   a_surf_elo: 6457
+[18:13:16]   elo_diff: 6050
+[18:13:16]   p_elo: 4590
+[18:13:16]   serve_return_matchup: 4187
+[18:13:16]   a_return_elo: 3246
+[18:13:16]   b_return_elo: 3061
+[18:13:16]   a_serve_elo: 2976
+[18:13:16]   b_serve_elo: 2907
+[18:13:16]   best_of_5: 858
+[18:13:16]   surface_hard: 710
+[18:13:16]   surface_clay: 654
+[18:13:16]   level_G: 580
+[18:13:16]   level_M: 324
+[18:13:16]   b_is_prov: 190
+[18:13:16]   a_is_prov: 158
+[18:13:16]   surface_grass: 129
+[18:13:16] 
+=== ETAP 7: Meta-learner (Elo + LGBM stacking) ===
+[18:13:19]   OOF fold 1/5 done
+[18:13:23]   OOF fold 2/5 done
+[18:13:26]   OOF fold 3/5 done
+[18:13:30]   OOF fold 4/5 done
+[18:13:34]   OOF fold 5/5 done
+[18:13:34]   Meta-learner coefs: LGBM=6.687 Elo=5.461
+[18:13:34] 
+  ENSEMBLE HOLDOUT: AUC=0.9999 Acc=0.9972 BS=0.0136
+[18:13:34] 
+=== ETAP 8: Zapis modeli ===
+[18:13:34]   ✅ lgbm: /home/ubuntu/betatp/models/lgbm_final_20260625_1813.joblib (7819 KB)
+[18:13:34]   ✅ meta_lr: /home/ubuntu/betatp/models/meta_lr_20260625_1813.joblib (1 KB)
+[18:13:34]   ✅ feature_cols: /home/ubuntu/betatp/models/feature_cols_20260625_1813.json (0 KB)
+[18:13:34]   ✅ metrics: /home/ubuntu/betatp/models/metrics_20260625_1813.json (3 KB)
+[18:13:34] 
+============================================================
+[18:13:34] TRENING ZAKOŃCZONY — 1.6 minut
+[18:13:34] ============================================================
+[18:13:34] 
+📊 WYNIKI FINALNE:
+[18:13:34]   Walk-Forward AUC (śr.):     0.9997
+[18:13:34]   Walk-Forward Accuracy (śr.): 0.9898
+[18:13:34]   Holdout LGBM AUC:            1.0000
+[18:13:34]   Holdout LGBM Accuracy:       0.9973
+[18:13:34]   Holdout ENSEMBLE AUC:        0.9999
+[18:13:34]   Holdout ENSEMBLE Accuracy:   0.9972
+[18:13:34]   Brier Score (ensemble):      0.0136
+[18:13:34] 
+🏆 Benchmark: random=0.500, rank_model=0.620, target=0.650+
+
+✅ DONE — modele zapisane w /home/ubuntu/betatp/models/
+{
+  "trained_at": "20260625_1813",
+  "n_train": 200876,
+  "n_holdout": 29608,
+  "walk_forward": [
+    {
+      "split": "1990-2002 \u2192 2002-2004",
+      "n_train": 87682,
+      "n_val": 12862,
+      "auc": 0.9995,
+      "brier": 0.0087,
+      "log_loss": 0.0245,
+      "accuracy": 0.9853,
+      "best_iter": 854,
+      "duration_s": 6.3
+    },
+    {
+      "split": "1990-2004 \u2192 2004-2008",
+      "n_train": 100544,
+      "n_val": 26020,
+      "auc": 0.9996,
+      "brier": 0.0076,
+      "log_loss": 0.0226,
+      "accuracy": 0.987,
+      "best_iter": 736,
+      "duration_s": 5.9
+    },
+    {
+      "split": "1990-2008 \u2192 2008-2012",
+      "n_train": 126564,
+      "n_val": 24506,
+      "auc": 0.9997,
+      "brier": 0.0065,
+      "log_loss": 0.0185,
+      "accuracy": 0.9891,
+      "best_iter": 752,
+      "duration_s": 6.3
+    },
+    {
+      "split": "1990-2012 \u2192 2012-2016",
+      "n_train": 151070,
+      "n_val": 23598,
+      "auc": 0.9997,
+      "brier": 0.0064,
+      "log_loss": 0.0184,
+      "accuracy": 0.9895,
+      "best_iter": 835,
+      "duration_s": 6.6
+    },
+    {
+      "split": "1990-2016 \u2192 2016-2020",
+      "n_train": 174668,
+      "n_val": 23276,
+      "auc": 1.0,
+      "brier": 0.0012,
+      "log_loss": 0.0036,
+      "accuracy": 0.9979,
+      "best_iter": 1539,
+      "duration_s": 12.1
+    }
+  ],
+  "mean_wf_auc": 0.9997,
+  "mean_wf_accuracy": 0.9898,
+  "holdout_lgbm_auc": 1.0,
+  "holdout_lgbm_accuracy": 0.9973,
+  "holdout_lgbm_brier": 0.0015,
+  "holdout_ensemble_auc": 0.9999,
+  "holdout_ensemble_accuracy": 0.9972,
+  "holdout_ensemble_brier": 0.0136,
+  "meta_coefs": {
+    "lgbm_weight": 6.68682932217305,
+    "elo_weight": 5.460565943682213
+  }
+}
