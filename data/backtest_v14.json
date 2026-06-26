@@ -1,5 +1,5 @@
 {
-  "backtest_date": "2026-06-26T17:20:53.990774",
+  "backtest_date": "2026-06-26T21:42:25.241478",
   "model": "lgbm_v14_20260626_1706.joblib",
   "version": "v14",
   "holdout": "2024-2026",

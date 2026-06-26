@@ -23,7 +23,7 @@ def _get_ctx():
         raise HTTPException(status_code=503, detail=f"Model nie załadowany: {e}")
 
 
-def _load_recent_bets(min_edge: float = 0.05, days_back: int = 30) -> list[dict]:
+def _load_recent_bets(min_edge: float = 0.15, days_back: int = 30) -> list[dict]:
     """
     Ładuje zakłady z ostatniego backtestowego CSV (najnowszy dostępny).
     Sortuje po edge malejąco, zwraca top picki.
@@ -57,7 +57,7 @@ def _build_coupon_from_bets(
         ev_pct = round((p_model * odds - 1) * 100, 2)
         kelly = float(row.get("kelly_stake_pct", 0))
 
-        confidence = "HIGH" if edge >= 0.15 else "MEDIUM" if edge >= 0.08 else "LOW"
+        confidence = "HIGH" if edge >= 0.20 else "MEDIUM" if edge >= 0.15 else "LOW"
         backed = str(row.get("winner_name", "?")) if row.get("y_bet", 0) == 1 else str(row.get("loser_name", "?"))
         opp    = str(row.get("loser_name", "?")) if row.get("y_bet", 0) == 1 else str(row.get("winner_name", "?"))
 
@@ -110,7 +110,7 @@ def _build_coupon_from_bets(
 async def get_daily_coupons(
     coupon_date: Optional[date_type] = Query(default=None),
     max_selections: int = Query(default=5, ge=1, le=20),
-    min_edge: float = Query(default=0.05, ge=0.0, le=0.5),
+    min_edge: float = Query(default=0.15, ge=0.0, le=0.5),
 ):
     """
     Pobierz dzisiejsze kupony (zakłady z edge nad Pinnacle).
@@ -122,22 +122,16 @@ async def get_daily_coupons(
 
     coupons = []
 
-    # TOP PICK: edge >= 15%
-    top = [b for b in bets if float(b.get("market_edge", 0)) >= 0.15]
+    # TOP PICK: edge >= 20% — najwyższy konwikt (backtested ROI +58% @ v14)
+    top = [b for b in bets if float(b.get("market_edge", 0)) >= 0.20]
     if top:
         c = _build_coupon_from_bets(top, target_date, "TOP PICK", min(3, max_selections))
         if c: coupons.append(c)
 
-    # RECOMMENDED: edge 8-15%
-    rec = [b for b in bets if 0.08 <= float(b.get("market_edge", 0)) < 0.15]
+    # RECOMMENDED: edge 15-20% — sprawdzone empirycznie edge>15%
+    rec = [b for b in bets if 0.15 <= float(b.get("market_edge", 0)) < 0.20]
     if rec:
         c = _build_coupon_from_bets(rec, target_date, "RECOMMENDED", min(max_selections, 5))
-        if c: coupons.append(c)
-
-    # SPECULATIVE: edge 5-8%
-    spec = [b for b in bets if 0.05 <= float(b.get("market_edge", 0)) < 0.08]
-    if spec:
-        c = _build_coupon_from_bets(spec, target_date, "SPECULATIVE", min(max_selections, 5))
         if c: coupons.append(c)
 
     if not coupons:

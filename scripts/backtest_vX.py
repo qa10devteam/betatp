@@ -297,10 +297,21 @@ def build_features(feat_cols, wf, lf, wid, lid, w_age, l_age, w_hand, l_hand,
         "h2h_wins_delta_3_a": a_h2h_delta, "h2h_wins_delta_3_b": b_h2h_delta,
         "h2h_surf_winrate_w": a_h2h_surf_wr, "h2h_surf_winrate_l": b_h2h_surf_wr,
         "h2h_surf_winrate_a": a_h2h_surf_wr, "h2h_surf_winrate_b": b_h2h_surf_wr,
-        # Ranking (v10+)
+        # v23 clean H2H names
+        "h2h_delta_a": a_h2h_delta, "h2h_delta_b": b_h2h_delta,
+        "h2h_surf_wr_a": a_h2h_surf_wr, "h2h_surf_wr_b": b_h2h_surf_wr,
+        # v23 forma (EWMA + streak)
+        "ewma_a": af["ewma"], "ewma_b": bf["ewma"],
+        "ewma_surf_a": af["ewma_surf"], "ewma_surf_b": bf["ewma_surf"],
+        "streak_a": af["streak"], "streak_b": bf["streak"],
+        # Ranking (v10+) — DUPLIKATY z czystymi nazwami (v23+)
         "winner_rank_a": a_rank, "winner_rank_b": b_rank,
         "winner_age_a": a_age, "winner_age_b": b_age,
+        "player_rank_a": a_rank, "player_rank_b": b_rank,   # v23 clean names
+        "player_age_a": a_age, "player_age_b": b_age,       # v23 clean names
+        "rank_inv_a": 1.0 / (a_rank + 1), "rank_inv_b": 1.0 / (b_rank + 1),  # v23
         "rank_traj_w": a_rank_traj, "rank_traj_l": b_rank_traj,
+        "rank_traj_a": a_rank_traj, "rank_traj_b": b_rank_traj,  # v23 alias
         "rank_traj_diff": a_rank_traj - b_rank_traj,
         # Serve/return (v11+)
         "a_1st_in_pct_a": af["srv_pct"], "a_1st_in_pct_b": bf["srv_pct"],
@@ -612,8 +623,19 @@ def main():
     with open(json_out, "w") as f:
         json.dump(out, f, indent=2, default=str)
     df_bets = df_sim[df_sim["market_edge"] > 0.05].copy()
+    # FIXED: kelly_fraction(cap=0.05)*50 zawsze = 2.5 (0.05*50).
+    # Poprawnie: raw Kelly fraction (bez cap) * 100 = % bankrolla.
+    # Wyświetlamy HALF-Kelly (bezpieczny standard).
+    def kelly_pct_half(p, odds):
+        b = odds - 1.0
+        if b <= 0 or p <= 0 or p >= 1:
+            return 0.0
+        q = 1.0 - p
+        raw = (p * b - q) / b
+        return max(0.0, raw) * 0.5 * 100  # half-Kelly jako % bankrolla
+
     df_bets["kelly_stake_pct"] = df_bets.apply(
-        lambda r: round(kelly_fraction(r["p_model"], r["psw_bet"])*50, 2), axis=1
+        lambda r: round(kelly_pct_half(r["p_model"], r["psw_bet"]), 2), axis=1
     )
     df_bets.to_csv(csv_out, index=False)
     log(f"  Zapisano: {json_out.name}, {csv_out.name}")
