@@ -1,0 +1,73 @@
+[20:39:25] === ETAP 1: Wczytywanie meczów ATP 2013-2026 ===
+[20:39:25]   Turnieje-lata: 823 | geocoded: 823
+[20:39:25] 
+=== ETAP 2: Pobieranie pogody z Open-Meteo Archive API ===
+[20:39:25]   Cache: 575 wpisów
+[20:39:25]   [50/823] fetched=0 cached=575 missed=0
+[20:39:25]   [100/823] fetched=0 cached=575 missed=0
+[20:39:25]   [150/823] fetched=0 cached=575 missed=0
+[20:39:25]   [200/823] fetched=0 cached=575 missed=0
+[20:39:25]   [300/823] fetched=0 cached=575 missed=0
+[20:39:25]   [350/823] fetched=0 cached=575 missed=0
+[20:39:25]   [450/823] fetched=0 cached=575 missed=0
+[20:39:25]   [500/823] fetched=0 cached=575 missed=0
+[20:39:25]   [550/823] fetched=0 cached=575 missed=0
+[20:39:25]   [600/823] fetched=0 cached=575 missed=0
+[20:39:25]   [650/823] fetched=0 cached=575 missed=0
+[20:39:25]   [700/823] fetched=0 cached=575 missed=0
+[20:39:25]   [800/823] fetched=0 cached=575 missed=0
+[20:39:25] 
+  Gotowe: fetched=0 | skipped_indoor=247 | missed=0
+[20:39:25]   Cache: 575 lokalizacji
+[20:39:25]   Wierszy pogody: 1,426
+[20:39:25]   Zapisano: weather_raw.parquet
+[20:39:25] 
+=== ETAP 3: Budowanie weather features per turniej-rok ===
+[20:39:27]   Weather features: (823, 22) | turnieje-lata: 823
+[20:39:27]   Zapisano: weather_features.parquet
+[20:39:27] 
+=== ETAP 4: Merge weather features z meczami TML ===
+[20:39:27]   Meczów: 33,137 | z weather features: 25,252 (76.2%)
+[20:39:27]   Zapisano: matches_with_weather.parquet
+[20:39:27] 
+=== ETAP 5: Statystyki ===
+[20:39:27] 
+  TOP-10 najgorętszych turniejów (avg max temp):
+[20:39:27]     Winston Salem                 : 33.5°C
+[20:39:27]     Cabo San Lucas                : 33.2°C
+[20:39:27]     Los Cabos                     : 32.6°C
+[20:39:27]     Adelaide-2                    : 32.0°C
+[20:39:27]     Rio de Janeiro                : 31.5°C
+[20:39:27]     Cordoba                       : 30.9°C
+[20:39:27]     Mallorca                      : 30.7°C
+[20:39:27]     Acapulco                      : 30.5°C
+[20:39:27]     Rio De Janeiro                : 30.3°C
+[20:39:27]     Santiago                      : 30.1°C
+[20:39:27] 
+  TOP-10 najbardziej deszczowych:
+[20:39:27]     Rio de Janeiro                : 26.8 mm/turniej
+[20:39:27]     Banja Luka                    : 23.3 mm/turniej
+[20:39:27]     Brisbane                      : 20.6 mm/turniej
+[20:39:27]     Atlanta                       : 15.2 mm/turniej
+[20:39:27]     Gstaad                        : 15.0 mm/turniej
+[20:39:27]     Quito                         : 13.4 mm/turniej
+[20:39:27]     Kitzbuhel                     : 12.8 mm/turniej
+[20:39:27]     Sao Paulo                     : 12.6 mm/turniej
+[20:39:27]     Athens                        : 12.4 mm/turniej
+[20:39:27]     Almaty                        : 12.3 mm/turniej
+[20:39:27] 
+  TOP-10 najbardziej wietrznych:
+[20:39:27]     Adelaide-2                    : 30.6 km/h
+[20:39:27]     Sardinia                      : 30.0 km/h
+[20:39:27]     Cabo San Lucas                : 28.5 km/h
+[20:39:27]     Adelaide-1                    : 27.0 km/h
+[20:39:27]     Oeiras                        : 26.6 km/h
+[20:39:27]     Cagliari                      : 26.6 km/h
+[20:39:27]     Murray River Open             : 26.5 km/h
+[20:39:27]     Great Ocean Road Open         : 26.5 km/h
+[20:39:27]     ATP Cup                       : 24.8 km/h
+[20:39:27]     Nottingham                    : 24.3 km/h
+[20:39:27] 
+============================================================
+[20:39:27] DONE | weather_raw.parquet + weather_features.parquet + matches_with_weather.parquet
+[20:39:27] ============================================================

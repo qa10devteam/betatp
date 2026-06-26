@@ -1,0 +1,68 @@
+{
+  "version": "v16",
+  "trained_at": "20260626_1542",
+  "train_period": "2004-2023",
+  "holdout_period": "2024-2026",
+  "n_train": 71872,
+  "n_holdout": 6150,
+  "n_features": 55,
+  "mean_wf_auc": 0.9221,
+  "mean_wf_bs": 0.1138,
+  "holdout_auc": 0.8825,
+  "holdout_bs": 0.1392,
+  "wf_splits": [
+    {
+      "train_end": 2014,
+      "val_end": 2017,
+      "auc": 0.9142603681160142,
+      "bs": 0.11975937910470985,
+      "iters": 144
+    },
+    {
+      "train_end": 2017,
+      "val_end": 2020,
+      "auc": 0.9211882989169169,
+      "bs": 0.11378771658853998,
+      "iters": 173
+    },
+    {
+      "train_end": 2020,
+      "val_end": 2023,
+      "auc": 0.922278216003346,
+      "bs": 0.11329028793857868,
+      "iters": 163
+    },
+    {
+      "train_end": 2023,
+      "val_end": 2024,
+      "auc": 0.9306113882277289,
+      "bs": 0.10829237040329358,
+      "iters": 185
+    }
+  ],
+  "top_features": {
+    "winner_rank_a": 1085,
+    "winner_rank_b": 1056,
+    "pw_heat_edge": 790,
+    "mkt_avg_pin_w": 715,
+    "mkt_spread_w": 610,
+    "winner_age_b": 555,
+    "h2h_wins_delta_3": 521,
+    "winner_age_a": 487,
+    "a_1st_won_pct_b": 380,
+    "a_1st_in_pct_a": 350,
+    "a_1st_in_pct_b": 344,
+    "a_2nd_won_pct_b": 326,
+    "a_ace_pct_a": 308,
+    "a_2nd_won_pct_a": 290,
+    "a_1st_won_pct_a": 288,
+    "pin_prob_a": 283,
+    "a_df_pct_a": 276,
+    "a_ace_pct_b": 276,
+    "a_df_pct_b": 260,
+    "pin_prob_b": 221
+  },
+  "model_file": "lgbm_v16_20260626_1542.joblib",
+  "duration_sec": 251.9,
+  "hypothesis": "full features: odds+weather+H2H+rank_traj+market_div+serve"
+}

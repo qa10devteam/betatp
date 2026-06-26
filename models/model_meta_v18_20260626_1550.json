@@ -1,0 +1,23 @@
+{
+  "version": "v18",
+  "trained_at": "20260626_1550",
+  "holdout_auc": 0.8165,
+  "holdout_bs": 0.1791,
+  "model_file": "lgbm_v18_20260626_1550.joblib",
+  "hypothesis": "stacking ensemble: v4+v9+v12 \u2192 LogReg meta",
+  "meta_feats": [
+    "oof_v9",
+    "oof_v12",
+    "surface_enc"
+  ],
+  "meta_coefs": {
+    "oof_v9": 7.0334,
+    "oof_v12": 1.0532,
+    "surface_enc": -0.0108
+  },
+  "base_models": [
+    "v4",
+    "v9",
+    "v12"
+  ]
+}

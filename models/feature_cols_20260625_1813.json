@@ -1,0 +1,23 @@
+[
+  "a_overall_elo",
+  "a_surf_elo",
+  "a_serve_elo",
+  "a_return_elo",
+  "a_n_matches",
+  "b_overall_elo",
+  "b_surf_elo",
+  "b_serve_elo",
+  "b_return_elo",
+  "b_n_matches",
+  "elo_diff",
+  "p_elo",
+  "serve_return_matchup",
+  "surface_hard",
+  "surface_clay",
+  "surface_grass",
+  "level_G",
+  "level_M",
+  "best_of_5",
+  "a_is_prov",
+  "b_is_prov"
+]

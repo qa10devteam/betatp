@@ -1,0 +1,84 @@
+{
+  "version": "v22",
+  "trained_at": "20260626_0934",
+  "train_period": "2004-2023",
+  "holdout_period": "2024-2026",
+  "n_train": 71872,
+  "n_holdout": 6150,
+  "n_features": 46,
+  "mean_wf_auc": 0.9998,
+  "mean_wf_bs": 0.0059,
+  "holdout_auc": 0.9999,
+  "holdout_bs": 0.0046,
+  "wf_splits": [
+    {
+      "train_end": 2014,
+      "val_end": 2017,
+      "auc": 0.9997502667634305,
+      "bs": 0.006551673709621331,
+      "iters": 413
+    },
+    {
+      "train_end": 2017,
+      "val_end": 2020,
+      "auc": 0.9997764229031822,
+      "bs": 0.0066835527822572795,
+      "iters": 329
+    },
+    {
+      "train_end": 2020,
+      "val_end": 2023,
+      "auc": 0.9998489116659011,
+      "bs": 0.00523225818718248,
+      "iters": 321
+    },
+    {
+      "train_end": 2023,
+      "val_end": 2024,
+      "auc": 0.9999071150745983,
+      "bs": 0.005015438673938244,
+      "iters": 283
+    }
+  ],
+  "top_features": {
+    "winner_rank_a": 9448,
+    "winner_rank_b": 9239,
+    "rank_ratio": 6996,
+    "winner_age_b": 2596,
+    "winner_age_a": 2480,
+    "age_a": 1558,
+    "draw_diff_a": 1545,
+    "draw_diff_b": 1540,
+    "age_b": 1265,
+    "h2h_wins_delta_3": 1257,
+    "pw_heat_edge": 1157,
+    "pin_prob_a": 781,
+    "pin_prob_b": 718,
+    "pin_log_odds": 679,
+    "pw_wind_edge": 674,
+    "pin_sq_w": 615,
+    "odds_ratio": 477,
+    "h2h_surf_winrate": 456,
+    "b365_log_odds": 436,
+    "wind_max_mean": 384
+  },
+  "model_file": "lgbm_v22_20260626_0934.joblib",
+  "duration_sec": 427.1,
+  "hypothesis": "champion: full features + tuned hyperparams + calibration",
+  "prev_version_aucs": {
+    "v10": 0.8621,
+    "v11": 0.8611,
+    "v12": 0.9226,
+    "v13": 0.951,
+    "v14": 0.9469,
+    "v15": 0.8704,
+    "v16": 0.9224,
+    "v17": 0.9167,
+    "v21": 0.9998,
+    "v5": 0.8608,
+    "v6": 0.9986,
+    "v7": 0.8621,
+    "v8": 0.8621,
+    "v9": 0.8705
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "version": "v19",
+  "holdout_auc": 0.8755,
+  "holdout_bs": 0.1413,
+  "mean_wf_auc": 0.901,
+  "model_file": "lgbm_v19_20260626_1104.joblib",
+  "hypothesis": "XGBoost benchmark vs LightGBM",
+  "trained_at": "20260626_1104"
+}

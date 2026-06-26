@@ -1,0 +1,58 @@
+[19:33:20] === ETAP 1: Wczytywanie TML-Database ===
+[19:33:21]   TML: 78,090 meczów | 2000–2026
+[19:33:21] === ETAP 2: Wczytywanie tennis-data odds ===
+[19:33:22]   Odds: 64,832 meczów | 2002–2026
+[19:33:22]   PSW coverage: 54,283 | B365W: 62,026 | MaxW: 41,189
+[19:33:22] === ETAP 3: Merge TML ↔ Odds (wl + ll + rnd + year) ===
+[19:33:22]   Przed dedup: 80,169 | Po dedup: 78,022
+[19:33:22]   Mecze z Pinnacle: 25,038 (32.1%)
+[19:33:22]   Mecze z B365:     28,373 (36.4%)
+[19:33:22]   Mecze z Max/Avg:  17,801 (22.8%)
+[19:33:22] === ETAP 4: Implied probabilities (de-vig Pinnacle) ===
+[19:33:25]   pin_prob_w coverage: 25,036
+[19:33:25]   max_prob_w coverage: 17,801
+[19:33:25]   Sample implied probs:
+[19:33:25] 
+   winner_name         loser_name   PSW   PSL  pin_prob_w  max_prob_w
+Nicolas Escude      Ivan Ljubicic 1.629 2.430    0.598670         NaN
+ Ivan Ljubicic         Tim Henman 2.800 1.488    0.347015         NaN
+    Tim Henman    Sargis Sargsian 1.328 3.600    0.730519         NaN
+ Ivan Ljubicic Sebastien Grosjean 2.480 1.602    0.392455         NaN
+Nicolas Escude     Hyung-Taik Lee 1.500 2.780    0.649533         NaN
+[19:33:25] 
+=== ETAP 5: Statystyki coverage per rok ===
+[19:33:25] 
+ year  total  has_pin  has_b365  has_max  pin_pct  b365_pct
+ 2002   3210        0       658        0      0.0      20.5
+ 2003   3215        0      1375        0      0.0      42.8
+ 2004   3288     1359      1326        0     41.3      40.3
+ 2005   3257     1503      1475        0     46.1      45.3
+ 2006   3264     1474      1454        0     45.2      44.5
+ 2007   3186     1425      1417        0     44.7      44.5
+ 2008   3119     1242      1246        0     39.8      39.9
+ 2009   3083        0      1285        0      0.0      41.7
+ 2010   3030     1322      1322      968     43.6      43.6
+ 2011   3013     1275      1270     1278     42.3      42.2
+ 2012   3007     1165      1166     1174     38.7      38.8
+ 2013   2944     1240      1244     1244     42.1      42.3
+ 2014   2900     1258      1258     1264     43.4      43.4
+ 2015   2943     1243      1241     1245     42.2      42.2
+ 2016   2968     1201      1201     1203     40.5      40.5
+ 2017   2928     1181      1183     1184     40.3      40.4
+ 2018   2921     1144      1147     1151     39.2      39.3
+ 2019   2805     1156      1154     1157     41.2      41.1
+ 2020   1464      523       522      523     35.7      35.7
+ 2021   2733     1167      1153     1170     42.7      42.2
+ 2022   2916     1077      1081     1082     36.9      37.1
+ 2023   2993     1092      1095     1096     36.5      36.6
+ 2024   3073     1064      1065     1067     34.6      34.7
+ 2025   2941      915       966      969     31.1      32.8
+ 2026    136       10        26       26      7.4      19.1
+[19:33:25] 
+=== ETAP 6: Zapis ===
+[19:33:25]   Parquet: /home/ubuntu/betatp/data/matches_with_odds.parquet (4.5 MB)
+[19:33:26]   Stats: /home/ubuntu/betatp/data/matches_with_odds_stats.json
+[19:33:26] 
+============================================================
+[19:33:26] DONE | 78,022 meczów | Pinnacle: 25,036 | Max/Avg: 17,801
+[19:33:26] ============================================================

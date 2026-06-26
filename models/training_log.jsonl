@@ -1,0 +1,12 @@
+{"ts": "18:11:56", "msg": "  Wczytano 115,243 mecz\u00f3w (1990-2025)", "n_raw": 115243}
+{"ts": "18:11:56", "msg": "  Po normalizacji: 115,242 mecz\u00f3w", "n_clean": 115242}
+{"ts": "18:11:59", "msg": "  Elo gotowe w 2.9s \u2014 3775 graczy", "elo_players": 3775}
+{"ts": "18:12:34", "msg": "  1990-2002 \u2192 2002-2004: AUC=0.9995 Acc=0.9853 BS=0.0087 [6.3s]", "split": "1990-2002 \u2192 2002-2004", "n_train": 87682, "n_val": 12862, "auc": 0.9995, "brier": 0.0087, "log_loss": 0.0245, "accuracy": 0.9853, "best_iter": 854, "duration_s": 6.3}
+{"ts": "18:12:40", "msg": "  1990-2004 \u2192 2004-2008: AUC=0.9996 Acc=0.9870 BS=0.0076 [5.9s]", "split": "1990-2004 \u2192 2004-2008", "n_train": 100544, "n_val": 26020, "auc": 0.9996, "brier": 0.0076, "log_loss": 0.0226, "accuracy": 0.987, "best_iter": 736, "duration_s": 5.9}
+{"ts": "18:12:46", "msg": "  1990-2008 \u2192 2008-2012: AUC=0.9997 Acc=0.9891 BS=0.0065 [6.3s]", "split": "1990-2008 \u2192 2008-2012", "n_train": 126564, "n_val": 24506, "auc": 0.9997, "brier": 0.0065, "log_loss": 0.0185, "accuracy": 0.9891, "best_iter": 752, "duration_s": 6.3}
+{"ts": "18:12:53", "msg": "  1990-2012 \u2192 2012-2016: AUC=0.9997 Acc=0.9895 BS=0.0064 [6.6s]", "split": "1990-2012 \u2192 2012-2016", "n_train": 151070, "n_val": 23598, "auc": 0.9997, "brier": 0.0064, "log_loss": 0.0184, "accuracy": 0.9895, "best_iter": 835, "duration_s": 6.6}
+{"ts": "18:13:05", "msg": "  1990-2016 \u2192 2016-2020: AUC=1.0000 Acc=0.9979 BS=0.0012 [12.1s]", "split": "1990-2016 \u2192 2016-2020", "n_train": 174668, "n_val": 23276, "auc": 1.0, "brier": 0.0012, "log_loss": 0.0036, "accuracy": 0.9979, "best_iter": 1539, "duration_s": 12.1}
+{"ts": "18:13:05", "msg": "\n  WALK-FORWARD \u015aREDNIE: AUC=0.9997 Acc=0.9898 BS=0.0061", "mean_auc": 0.9997, "mean_acc": 0.9897600000000001, "mean_bs": 0.0060799999999999995}
+{"ts": "18:13:16", "msg": "  HOLDOUT 2021-2025: AUC=1.0000 Acc=0.9973 BS=0.0015 [11.3s]", "hold_auc": 0.9999856542127955, "hold_acc": 0.9973318022156173, "hold_bs": 0.0014793528291700958}
+{"ts": "18:13:34", "msg": "  Meta-learner coefs: LGBM=6.687 Elo=5.461", "lgbm_weight": 6.68682932217305, "elo_weight": 5.460565943682213}
+{"ts": "18:13:34", "msg": "\n  ENSEMBLE HOLDOUT: AUC=0.9999 Acc=0.9972 BS=0.0136", "ensemble_auc": 0.9999426168511822, "ensemble_acc": 0.9971629289381249, "ensemble_bs": 0.013598917661844243}

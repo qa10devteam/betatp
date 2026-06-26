@@ -1,0 +1,68 @@
+{
+  "version": "v6",
+  "trained_at": "20260625_2235",
+  "train_period": "2004-2023",
+  "holdout_period": "2024-2026",
+  "n_train": 71872,
+  "n_holdout": 6150,
+  "n_features": 35,
+  "mean_wf_auc": 0.9976,
+  "mean_wf_bs": 0.0187,
+  "holdout_auc": 0.9991,
+  "holdout_bs": 0.0133,
+  "wf_splits": [
+    {
+      "train_end": 2014,
+      "val_end": 2017,
+      "auc": 0.9930927749312247,
+      "bs": 0.034363450096624205,
+      "iters": 654
+    },
+    {
+      "train_end": 2017,
+      "val_end": 2020,
+      "auc": 0.9987809813977019,
+      "bs": 0.014549894823898155,
+      "iters": 546
+    },
+    {
+      "train_end": 2020,
+      "val_end": 2023,
+      "auc": 0.9994363638232384,
+      "bs": 0.010416438370620444,
+      "iters": 738
+    },
+    {
+      "train_end": 2023,
+      "val_end": 2024,
+      "auc": 0.9992194093769119,
+      "bs": 0.01538125426412148,
+      "iters": 199
+    }
+  ],
+  "top_features": {
+    "winner_rank_a": 5876,
+    "winner_age_a": 5804,
+    "winner_rank_b": 5713,
+    "winner_age_b": 5689,
+    "pw_heat_wr_b": 1643,
+    "pw_heat_wr_a": 1551,
+    "pw_heat_edge": 1516,
+    "pw_wind_edge": 1181,
+    "pw_wind_wr_a": 826,
+    "pin_prob_a": 818,
+    "surface_enc": 817,
+    "pw_wind_wr_b": 810,
+    "b365_prob_w": 777,
+    "b365_log_odds": 756,
+    "pin_log_odds": 679,
+    "pin_prob_b": 659,
+    "wind_max_mean": 257,
+    "temp_mean": 189,
+    "temp_max_mean": 163,
+    "humidity_mean": 162
+  },
+  "model_file": "lgbm_v6_20260625_2235.joblib",
+  "duration_sec": 593.7,
+  "hypothesis": "+player\u00d7weather interaction"
+}
