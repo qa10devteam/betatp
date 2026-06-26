@@ -1,0 +1,68 @@
+{
+  "version": "v14",
+  "trained_at": "20260626_1706",
+  "train_period": "2004-2023",
+  "holdout_period": "2024-2026",
+  "n_train": 71872,
+  "n_holdout": 6150,
+  "n_features": 44,
+  "mean_wf_auc": 0.9482,
+  "mean_wf_bs": 0.0929,
+  "holdout_auc": 0.9031,
+  "holdout_bs": 0.1242,
+  "wf_splits": [
+    {
+      "train_end": 2014,
+      "val_end": 2017,
+      "auc": 0.9498187946147282,
+      "bs": 0.09159939731399871,
+      "iters": 402
+    },
+    {
+      "train_end": 2017,
+      "val_end": 2020,
+      "auc": 0.9481068264828086,
+      "bs": 0.09274826126464196,
+      "iters": 281
+    },
+    {
+      "train_end": 2020,
+      "val_end": 2023,
+      "auc": 0.9509766188628765,
+      "bs": 0.09062655140115619,
+      "iters": 322
+    },
+    {
+      "train_end": 2023,
+      "val_end": 2024,
+      "auc": 0.9436978917801306,
+      "bs": 0.09664313557625208,
+      "iters": 325
+    }
+  ],
+  "top_features": {
+    "winner_age_b": 2237,
+    "winner_rank_a": 2229,
+    "winner_rank_b": 2106,
+    "age_surf_diff": 1968,
+    "winner_age_a": 1883,
+    "age_peak_dist_a": 1644,
+    "age_peak_dist_b": 1624,
+    "age_a": 1033,
+    "age_b": 749,
+    "age_surf_a": 683,
+    "age_surf_b": 657,
+    "b365_prob_a": 518,
+    "b365_prob_b": 415,
+    "pin_prob_a": 411,
+    "b365_log_odds_b": 349,
+    "wind_max_mean": 347,
+    "pin_prob_b": 346,
+    "temp_mean": 290,
+    "humidity_mean": 279,
+    "odds_consensus_b": 276
+  },
+  "model_file": "lgbm_v14_20260626_1706.joblib",
+  "duration_sec": 444.7,
+  "hypothesis": "+age\u00d7surface + peak_age_distance"
+}
