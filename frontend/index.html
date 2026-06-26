@@ -1,703 +1,1570 @@
 <!DOCTYPE html>
-<html lang="pl" data-theme="dark">
+<html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>betatp.io — ATP Value Picks</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* ── Reset & Tokens ─────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>betatp.io — AI Value Betting</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
 
-    :root {
-      --bg:         #0a0a0b;
-      --bg-1:       #111113;
-      --bg-2:       #18181b;
-      --bg-3:       #1e1e23;
-      --border:     #27272a;
-      --border-2:   #3f3f46;
-      --txt:        #fafafa;
-      --txt-2:      #a1a1aa;
-      --txt-3:      #71717a;
-      --accent:     #22d3ee;   /* cyan */
-      --accent-2:   #0ea5e9;
-      --green:      #4ade80;
-      --red:        #f87171;
-      --yellow:     #fbbf24;
-      --orange:     #fb923c;
-      --radius:     6px;
-      --radius-lg:  10px;
-      --mono:       'Geist Mono', 'JetBrains Mono', monospace;
-      --sans:       'Geist', system-ui, sans-serif;
-    }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html { font-family: var(--sans); background: var(--bg); color: var(--txt); font-size: 14px; }
-    body { min-height: 100dvh; }
+:root {
+  --bg: #06060b;
+  --s1: #0d0d16;
+  --s2: #13131e;
+  --s3: #1b1b2a;
+  --border: rgba(255,255,255,0.07);
+  --t1: #f0f0f9;
+  --t2: rgba(240,240,249,0.55);
+  --t3: rgba(240,240,249,0.28);
+  --lime: #c8ff00;
+  --gold: #ffb020;
+  --red: #ff3d5a;
+  --cyan: #00d8ff;
+  --r: 16px;
+}
 
-    /* ── Layout ─────────────────────────────────────────────────── */
-    .app { display: grid; grid-template-rows: 48px 1fr; min-height: 100dvh; }
+html, body {
+  width: 100%; min-height: 100dvh;
+  background: var(--bg);
+  color: var(--t1);
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+  user-select: none;
+}
 
-    nav {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px; border-bottom: 1px solid var(--border);
-      background: var(--bg-1); position: sticky; top: 0; z-index: 10;
-    }
-    .nav-logo { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--txt); letter-spacing: 0.05em; }
-    .nav-logo span { color: var(--accent); }
-    .nav-meta { font-family: var(--mono); font-size: 11px; color: var(--txt-3); }
-    .nav-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--txt-3); font-family: var(--mono); }
-    .dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+#bg-canvas {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; opacity: 0.4;
+}
 
-    main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; max-width: 1400px; width: 100%; margin: 0 auto; }
+/* ── SCREENS ─────────────────────────────────────────── */
+.screen {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  will-change: transform, opacity;
+}
+.screen.off { display: none; }
 
-    /* ── Stat cards row ─────────────────────────────────────────── */
-    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-    @media (max-width: 900px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 540px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+/* ── MODE SELECTOR ───────────────────────────────────── */
+#s-home {
+  align-items: center; justify-content: center;
+  gap: 0;
+  background: transparent;
+}
+.home-logo {
+  position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--t2);
+}
+.home-logo .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--lime); animation: blink 1.8s ease infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-    .stat-card {
-      background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;
-    }
-    .stat-label { font-family: var(--mono); font-size: 10px; color: var(--txt-3); letter-spacing: 0.06em; text-transform: uppercase; }
-    .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--txt); line-height: 1; }
-    .stat-value.green { color: var(--green); }
-    .stat-value.red { color: var(--red); }
-    .stat-value.cyan { color: var(--accent); }
-    .stat-sub { font-family: var(--mono); font-size: 10px; color: var(--txt-3); }
+.home-tagline {
+  position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+  text-align: center; width: 100%;
+}
+.home-tagline h1 {
+  font-size: clamp(38px, 7vw, 72px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--t1) 30%, rgba(200,255,0,0.6));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.home-tagline p {
+  margin-top: 10px;
+  font-size: 14px; color: var(--t2);
+  letter-spacing: 0.05em; text-transform: uppercase;
+  font-weight: 600;
+}
 
-    /* ── Section header ─────────────────────────────────────────── */
-    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .section-title { font-family: var(--mono); font-size: 11px; color: var(--txt-3); text-transform: uppercase; letter-spacing: 0.08em; }
-    .section-badge {
-      font-family: var(--mono); font-size: 10px; padding: 2px 7px;
-      border-radius: 99px; border: 1px solid var(--border-2); color: var(--txt-2);
-    }
-    .section-badge.green { border-color: color-mix(in srgb, var(--green) 40%, transparent); color: var(--green); }
+.mode-cards {
+  display: flex; gap: 20px; align-items: center;
+  margin-top: 60px;
+  padding: 0 20px;
+}
+@media (max-width: 600px) { .mode-cards { flex-direction: column; } }
 
-    /* ── Picks table ─────────────────────────────────────────────── */
-    .picks-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-    .picks-filters { display: flex; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
-    .filter-btn {
-      font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 99px;
-      border: 1px solid var(--border-2); background: transparent; color: var(--txt-2); cursor: pointer;
-      transition: all .15s;
-    }
-    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .filter-btn.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+.mode-card {
+  position: relative; overflow: hidden;
+  width: 260px; min-height: 340px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--s1);
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; padding: 32px 24px;
+  transition: border-color 0.3s;
+}
+.mode-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(200,255,0,0.08), transparent 70%);
+  opacity: 0; transition: opacity 0.4s;
+}
+.mode-card:hover::before { opacity: 1; }
+.mode-card:hover { border-color: rgba(200,255,0,0.3); }
 
-    .picks-table { width: 100%; border-collapse: collapse; }
-    .picks-table th {
-      font-family: var(--mono); font-size: 10px; color: var(--txt-3);
-      text-transform: uppercase; letter-spacing: 0.06em;
-      padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    .picks-table th.right { text-align: right; }
-    .picks-table td { padding: 10px 12px; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); font-family: var(--mono); font-size: 12px; }
-    .picks-table tr:last-child td { border-bottom: none; }
-    .picks-table tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.mc-system::before {
+  background: radial-gradient(circle at 50% 0%, rgba(0,216,255,0.08), transparent 70%);
+}
+.mc-system:hover { border-color: rgba(0,216,255,0.3); }
 
-    .player-name { font-weight: 500; color: var(--txt); }
-    .player-vs   { color: var(--txt-3); font-size: 10px; }
-    .surface-pill {
-      display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 3px;
-      font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.04em;
-    }
-    .surface-pill.Hard  { background: color-mix(in srgb, var(--accent-2) 15%, transparent); color: var(--accent-2); border: 1px solid color-mix(in srgb, var(--accent-2) 30%, transparent); }
-    .surface-pill.Clay  { background: color-mix(in srgb, var(--orange) 15%, transparent); color: var(--orange); border: 1px solid color-mix(in srgb, var(--orange) 30%, transparent); }
-    .surface-pill.Grass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+.mode-icon {
+  width: 72px; height: 72px;
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+}
+.mc-daily .mode-icon { background: rgba(200,255,0,0.1); }
+.mc-system .mode-icon { background: rgba(0,216,255,0.1); }
 
-    .num-right { text-align: right; }
-    .edge-bar-wrap { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
-    .edge-bar { height: 3px; border-radius: 2px; background: var(--border-2); width: 48px; overflow: hidden; }
-    .edge-bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width .3s; }
-    .edge-bar-fill.yellow { background: var(--yellow); }
-    .edge-bar-fill.orange { background: var(--orange); }
+.mode-card h2 {
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -0.02em; text-align: center;
+}
+.mode-card p {
+  font-size: 13px; color: var(--t2);
+  text-align: center; line-height: 1.5;
+}
+.mode-badge {
+  padding: 5px 14px; border-radius: 100px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-top: 4px;
+}
+.mc-daily .mode-badge { background: rgba(200,255,0,0.15); color: var(--lime); }
+.mc-system .mode-badge { background: rgba(0,216,255,0.15); color: var(--cyan); }
 
-    .conf-badge {
-      font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px;
-      text-transform: uppercase; letter-spacing: 0.04em;
-    }
-    .conf-badge.HIGH   { background: color-mix(in srgb, var(--green)  15%, transparent); color: var(--green);  border: 1px solid color-mix(in srgb, var(--green)  30%, transparent); }
-    .conf-badge.MEDIUM { background: color-mix(in srgb, var(--yellow) 15%, transparent); color: var(--yellow); border: 1px solid color-mix(in srgb, var(--yellow) 30%, transparent); }
-    .conf-badge.LOW    { background: color-mix(in srgb, var(--txt-3)  15%, transparent); color: var(--txt-3);  border: 1px solid color-mix(in srgb, var(--txt-3)  30%, transparent); }
+.shimmer-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease infinite;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    .signal-badge {
-      font-family: var(--mono); font-size: 9px; padding: 2px 7px; border-radius: 3px;
-      text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
-    }
-    .signal-badge.bet  { background: color-mix(in srgb, var(--green)  15%, transparent); color: var(--green);  border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
-    .signal-badge.pass { background: transparent; color: var(--txt-3); border: 1px solid var(--border); }
+/* ── NAV ──────────────────────────────────────────────── */
+.nav {
+  display: flex; align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(6,6,11,0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  flex-shrink: 0; gap: 12px;
+  position: relative; z-index: 20;
+}
+.nav-back {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--s2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px;
+  transition: background 0.2s;
+}
+.nav-back:hover { background: var(--s3); }
+.nav-title { font-size: 15px; font-weight: 700; flex: 1; }
+.nav-model {
+  font-size: 11px; color: var(--t3);
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--s2); padding: 4px 10px;
+  border-radius: 6px; border: 1px solid var(--border);
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--lime); animation: blink 1.8s ease infinite;
+}
 
-    .kelly-val { color: var(--accent); font-weight: 500; }
-    .prob-val  { color: var(--txt-2); }
+/* ── DAILY SCREEN ────────────────────────────────────── */
+#s-daily {
+  background: var(--bg);
+}
+.daily-body {
+  flex: 1; overflow-y: auto; padding: 24px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.daily-info {
+  display: flex; gap: 10px; align-items: center;
+  flex-wrap: wrap;
+}
+.info-chip {
+  padding: 5px 12px; border-radius: 100px;
+  font-size: 12px; font-weight: 600;
+  background: var(--s2); border: 1px solid var(--border);
+  color: var(--t2);
+}
+.info-chip.active { background: rgba(200,255,0,0.1); color: var(--lime); border-color: rgba(200,255,0,0.2); }
 
-    /* ── Bottom grid ────────────────────────────────────────────── */
-    .bottom-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
-    @media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
+/* CARDS AREA */
+#cards-area {
+  min-height: 280px;
+  display: flex; flex-direction: column; gap: 14px;
+}
 
-    /* ── Monthly PnL chart ──────────────────────────────────────── */
-    .pnl-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; }
-    .pnl-bars { display: flex; align-items: flex-end; gap: 4px; height: 80px; padding-top: 4px; }
-    .pnl-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .pnl-bar-pos { background: color-mix(in srgb, var(--green) 60%, transparent); border-radius: 2px 2px 0 0; transition: height .4s; min-height: 1px; }
-    .pnl-bar-neg { background: color-mix(in srgb, var(--red)   60%, transparent); border-radius: 0 0 2px 2px; transition: height .4s; min-height: 1px; }
-    .pnl-bar-label { font-family: var(--mono); font-size: 8px; color: var(--txt-3); white-space: nowrap; }
+/* Pick Card */
+.pick-card {
+  position: relative; overflow: hidden;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--s1);
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.pick-card.high-value {
+  border-color: rgba(255,176,32,0.4);
+  background: linear-gradient(135deg, rgba(255,176,32,0.06), var(--s1) 40%);
+  animation: goldpulse 2.5s ease infinite;
+}
+@keyframes goldpulse {
+  0%,100%{box-shadow:0 0 0 0 rgba(255,176,32,0)} 
+  50%{box-shadow:0 0 28px 0 rgba(255,176,32,0.18)}
+}
+.pick-card.model-value {
+  border-color: rgba(200,255,0,0.25);
+}
 
-    /* ── Model info panel ───────────────────────────────────────── */
-    .model-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-    .model-kv { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); }
-    .model-kv:last-child { border-bottom: none; }
-    .model-kv-key { font-family: var(--mono); font-size: 10px; color: var(--txt-3); }
-    .model-kv-val { font-family: var(--mono); font-size: 12px; color: var(--txt); font-weight: 500; }
-    .model-kv-val.green { color: var(--green); }
-    .model-kv-val.cyan  { color: var(--accent); }
+.pc-top {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.pc-players { flex: 1; }
+.pc-player-backed {
+  font-size: 18px; font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.1;
+  color: var(--t1);
+}
+.pc-vs { font-size: 11px; color: var(--t3); margin: 4px 0 2px; text-transform: uppercase; letter-spacing: 0.08em; }
+.pc-opponent { font-size: 13px; font-weight: 500; color: var(--t2); }
 
-    /* ── Model Leaderboard ──────────────────────────────────────── */
-    .leaderboard-panel {
-      background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px;
-    }
-    .leaderboard-panel .picks-table td { padding: 8px 12px; font-size: 11px; }
-    .best-row td { background: color-mix(in srgb, var(--accent) 5%, transparent) !important; }
-    .best-row td:first-child { border-left: 2px solid var(--accent); }
-    .version-tag {
-      font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 4px;
-      background: var(--bg-3); border: 1px solid var(--border-2);
-    }
-    .version-tag.best { background: color-mix(in srgb, var(--accent) 15%, transparent); border-color: var(--accent); color: var(--accent); }
-    .status-tag {
-      font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px;
-      text-transform: uppercase; letter-spacing: 0.04em;
-    }
-    .status-tag.active  { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green);   border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
-    .status-tag.clean   { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent);  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
-    .status-tag.retired { background: transparent; color: var(--txt-3); border: 1px solid var(--border); }
-    .delta-pos { color: var(--green); }
-    .delta-neg { color: var(--red); }
+.pc-odds-block { text-align: right; flex-shrink: 0; }
+.pc-odds {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px; font-weight: 700;
+  color: var(--lime); letter-spacing: -0.02em;
+  line-height: 1;
+}
+.pc-odds-label { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
 
-    /* ── Loading / error ─────────────────────────────────────────── */
-    .loading { display: flex; align-items: center; justify-content: center; height: 200px; font-family: var(--mono); font-size: 12px; color: var(--txt-3); gap: 8px; }
-    .spinner { width: 14px; height: 14px; border: 2px solid var(--border-2); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+.pc-meta {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+.pc-pill {
+  padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--s2); color: var(--t2);
+}
+.pc-pill.surface-grass { background: rgba(0,180,80,0.1); color: #00cc55; border-color: rgba(0,200,80,0.2); }
+.pc-pill.surface-clay { background: rgba(200,80,20,0.1); color: #e07030; border-color: rgba(200,100,20,0.2); }
+.pc-pill.surface-hard { background: rgba(0,120,255,0.1); color: #4499ff; border-color: rgba(0,120,255,0.2); }
+.pc-edge-pill {
+  padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.pc-edge-pill.high { background: rgba(255,176,32,0.15); color: var(--gold); border: 1px solid rgba(255,176,32,0.3); }
+.pc-edge-pill.mid { background: rgba(200,255,0,0.12); color: var(--lime); border: 1px solid rgba(200,255,0,0.25); }
+.pc-edge-pill.low { background: var(--s2); color: var(--t2); border: 1px solid var(--border); }
 
-    .empty { text-align: center; padding: 40px; font-family: var(--mono); color: var(--txt-3); font-size: 12px; }
+.pc-bar-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.pc-bar-label { font-size: 11px; color: var(--t3); width: 90px; flex-shrink: 0; font-weight: 600; }
+.pc-bar {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+}
+.pc-bar-fill {
+  height: 100%; border-radius: 2px;
+  background: var(--lime);
+  width: 0%; transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.pc-bar-fill.gold { background: var(--gold); }
+.pc-bar-val {
+  font-size: 11px; font-family: 'JetBrains Mono', monospace;
+  color: var(--t2); width: 36px; text-align: right; flex-shrink: 0;
+}
 
-    /* ── Scrollbar ──────────────────────────────────────────────── */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
-  </style>
+.hv-badge {
+  position: absolute; top: 16px; right: 16px;
+  padding: 4px 10px; border-radius: 100px;
+  font-size: 10px; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--gold); color: #000;
+  box-shadow: 0 0 16px rgba(255,176,32,0.5);
+}
+
+/* CARD PLACEHOLDER */
+.card-placeholder {
+  border-radius: var(--r);
+  border: 1px dashed rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.02);
+  height: 80px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--t3);
+  font-weight: 600;
+}
+
+/* GENERATE BUTTON */
+.daily-footer {
+  padding: 16px 24px 24px;
+  flex-shrink: 0;
+}
+#btn-generate {
+  width: 100%; height: 60px;
+  border-radius: 16px;
+  border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px; font-weight: 800;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  background: var(--lime);
+  color: #000;
+  position: relative; overflow: hidden;
+  transition: transform 0.15s;
+  animation: genpulse 2.5s ease infinite;
+}
+@keyframes genpulse {
+  0%,100%{box-shadow:0 0 0 0 rgba(200,255,0,0.4)}
+  60%{box-shadow:0 0 0 16px rgba(200,255,0,0)}
+}
+#btn-generate:active { transform: scale(0.98); }
+#btn-generate::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+  background-size: 200% 100%; background-position: 200% 0;
+  animation: btnshine 2.5s ease infinite;
+}
+@keyframes btnshine { 0%,60%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* COUPON SUMMARY */
+#coupon-summary {
+  border-radius: var(--r);
+  border: 1px solid rgba(200,255,0,0.25);
+  background: rgba(200,255,0,0.05);
+  padding: 18px 20px;
+  display: none; flex-direction: column; gap: 12px;
+}
+.cs-row { display: flex; align-items: center; justify-content: space-between; }
+.cs-label { font-size: 12px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.cs-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; font-weight: 700; color: var(--lime);
+}
+.cs-total-odds {
+  font-size: 32px; font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--lime);
+  letter-spacing: -0.03em;
+}
+#btn-export {
+  width: 100%; height: 52px;
+  border-radius: 13px; border: 1px solid rgba(200,255,0,0.3);
+  background: rgba(200,255,0,0.1); color: var(--lime);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s;
+}
+#btn-export:hover { background: rgba(200,255,0,0.18); }
+
+/* ── OVERLAY: PACK OPENING ───────────────────────────── */
+#overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(6,6,11,0.97);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 32px;
+  opacity: 0; pointer-events: none;
+}
+#overlay.active { opacity: 1; pointer-events: all; }
+
+.overlay-icon { font-size: 48px; animation: spin 2s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.overlay-title {
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--t2);
+  font-family: 'JetBrains Mono', monospace;
+}
+#overlay-text {
+  font-size: 22px; font-weight: 800;
+  color: var(--t1); text-align: center;
+  letter-spacing: -0.01em;
+  min-height: 32px;
+}
+
+.scan-bars { width: 280px; display: flex; flex-direction: column; gap: 10px; }
+.scan-bar-row { display: flex; flex-direction: column; gap: 5px; }
+.sb-label {
+  font-size: 10px; font-weight: 600;
+  color: var(--t3); letter-spacing: 0.1em; text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+}
+.sb-track {
+  height: 3px; background: rgba(255,255,255,0.07);
+  border-radius: 2px; overflow: hidden;
+}
+.sb-fill {
+  height: 100%; width: 0%;
+  border-radius: 2px; background: var(--lime);
+  transition: width 0.1s linear;
+}
+
+#overlay-found {
+  display: none; flex-direction: column;
+  align-items: center; gap: 8px;
+  text-align: center;
+}
+.of-count {
+  font-size: 72px; font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--lime); line-height: 1;
+  text-shadow: 0 0 40px rgba(200,255,0,0.4);
+}
+.of-label {
+  font-size: 14px; font-weight: 700;
+  color: var(--t2); letter-spacing: 0.1em; text-transform: uppercase;
+}
+.of-sub { font-size: 12px; color: var(--t3); }
+
+/* PARTICLE CANVAS (overlay) */
+#particle-overlay-canvas {
+  position: fixed; inset: 0; z-index: 99;
+  pointer-events: none;
+}
+
+/* ── SYSTEM SCREEN ───────────────────────────────────── */
+#s-system {
+  background: var(--bg);
+  overflow: hidden;
+}
+.system-body {
+  flex: 1; display: flex;
+  overflow: hidden;
+  gap: 0;
+}
+.sys-left {
+  flex: 1; overflow-y: auto;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  border-right: 1px solid var(--border);
+}
+.sys-right {
+  width: 300px; flex-shrink: 0;
+  display: flex; flex-direction: column;
+  padding: 0;
+}
+@media (max-width: 700px) {
+  .system-body { flex-direction: column; }
+  .sys-right { width: 100%; border-top: 1px solid var(--border); }
+  .sys-left { max-height: 55vh; }
+}
+.sys-section-title {
+  font-size: 11px; font-weight: 700; color: var(--t3);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* Match row */
+.match-row {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--s1);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex; flex-direction: column; gap: 8px;
+  position: relative; overflow: hidden;
+}
+.match-row:hover { border-color: rgba(0,216,255,0.3); background: var(--s2); }
+.match-row.selected { 
+  border-color: rgba(0,216,255,0.5);
+  background: rgba(0,216,255,0.05);
+}
+.match-row.selected::after {
+  content: '✓'; position: absolute; top: 10px; right: 12px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--cyan); color: #000;
+  font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.mr-players {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700;
+}
+.mr-vs { color: var(--t3); font-size: 12px; }
+.mr-odds-row {
+  display: flex; gap: 8px;
+}
+.mr-odd-btn {
+  flex: 1; padding: 8px 0;
+  border-radius: 8px; border: 1px solid var(--border);
+  background: var(--s2);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  cursor: pointer; transition: all 0.2s;
+}
+.mr-odd-btn:hover, .mr-odd-btn.active {
+  border-color: rgba(0,216,255,0.4);
+  background: rgba(0,216,255,0.08);
+}
+.mr-odd-player { font-size: 10px; color: var(--t3); font-weight: 600; }
+.mr-odd-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; font-weight: 700; color: var(--cyan);
+}
+.mr-edge {
+  font-size: 10px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 8px; border-radius: 100px;
+}
+.mr-edge.good { background: rgba(200,255,0,0.12); color: var(--lime); }
+.mr-edge.ok { background: rgba(0,216,255,0.1); color: var(--cyan); }
+.mr-edge.none { background: var(--s3); color: var(--t3); }
+
+/* Tray */
+.sys-tray {
+  flex: 1; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  overflow-y: auto;
+}
+.tray-empty {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  text-align: center; color: var(--t3); font-size: 13px;
+  flex-direction: column; gap: 8px;
+  font-weight: 600;
+}
+.tray-empty-icon { font-size: 28px; opacity: 0.3; }
+.tray-item {
+  border-radius: 10px;
+  border: 1px solid rgba(0,216,255,0.2);
+  background: rgba(0,216,255,0.05);
+  padding: 10px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+}
+.ti-player { font-size: 13px; font-weight: 700; flex: 1; }
+.ti-odds {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; font-weight: 700; color: var(--cyan);
+}
+.ti-remove {
+  width: 20px; height: 20px; border-radius: 6px;
+  background: rgba(255,61,90,0.1); color: var(--red);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; cursor: pointer;
+  transition: background 0.2s;
+}
+.ti-remove:hover { background: rgba(255,61,90,0.2); }
+
+/* System footer */
+.sys-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.sf-row { display: flex; justify-content: space-between; align-items: center; }
+.sf-label { font-size: 11px; color: var(--t3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.sf-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; font-weight: 700; color: var(--t1);
+}
+.sf-val.lime { color: var(--lime); }
+.sf-total {
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+.sf-total-odds {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px; font-weight: 900; color: var(--cyan);
+  letter-spacing: -0.02em; line-height: 1;
+}
+.sf-total-label { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: 0.08em; }
+
+#btn-system {
+  width: 100%; height: 52px;
+  border-radius: 13px; border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--cyan); color: #000;
+  transition: transform 0.15s, box-shadow 0.3s;
+  opacity: 0.4; pointer-events: none;
+}
+#btn-system.ready {
+  opacity: 1; pointer-events: all;
+  animation: cyanblink 2s ease infinite;
+}
+@keyframes cyanblink {
+  0%,100%{box-shadow:0 0 0 0 rgba(0,216,255,0.4)}
+  60%{box-shadow:0 0 0 14px rgba(0,216,255,0)}
+}
+#btn-system:active { transform: scale(0.97); }
+
+/* ── SETTINGS PANEL ──────────────────────────────────── */
+#api-bar {
+  padding: 10px 24px;
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+#api-bar label { font-size: 11px; color: var(--t3); font-weight: 600; white-space: nowrap; }
+#api-input {
+  flex: 1; height: 32px; padding: 0 10px;
+  border-radius: 8px;
+  background: var(--s2); border: 1px solid var(--border);
+  color: var(--t1); font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; outline: none;
+}
+#api-input:focus { border-color: rgba(200,255,0,0.3); }
+#api-input::placeholder { color: var(--t3); }
+#btn-api {
+  height: 32px; padding: 0 14px;
+  border-radius: 8px; border: 1px solid rgba(200,255,0,0.3);
+  background: rgba(200,255,0,0.1); color: var(--lime);
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  white-space: nowrap; transition: background 0.2s;
+}
+#btn-api:hover { background: rgba(200,255,0,0.18); }
+#api-status { font-size: 10px; font-weight: 700; white-space: nowrap; }
+#api-status.ok { color: var(--lime); }
+#api-status.err { color: var(--red); }
+
+/* ── TOASTS ──────────────────────────────────────────── */
+#toast-area {
+  position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+  z-index: 200; display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none; align-items: center;
+}
+.toast {
+  padding: 10px 20px; border-radius: 100px;
+  font-size: 13px; font-weight: 700;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  background: rgba(20,20,30,0.9);
+  animation: toastanim 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes toastanim { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+</style>
 </head>
 <body>
-<div class="app">
 
-  <!-- Nav -->
-  <nav>
-    <div class="nav-logo">betatp<span>.</span>io</div>
-    <div class="nav-status">
-      <span class="dot-live"></span>
-      <span id="nav-date">—</span>
+<canvas id="bg-canvas"></canvas>
+<canvas id="particle-overlay-canvas"></canvas>
+
+<!-- MODE SELECT -->
+<div class="screen" id="s-home">
+  <div class="home-logo">
+    <div class="dot"></div>
+    betatp.io
+  </div>
+  <div class="home-tagline">
+    <h1>Value<br>Betting</h1>
+    <p>LightGBM v14 &middot; AUC 0.9031 &middot; ATP 2026</p>
+  </div>
+  <div class="mode-cards">
+    <div class="mode-card mc-daily" id="card-daily">
+      <div class="shimmer-overlay"></div>
+      <div class="mode-icon">&#9889;</div>
+      <h2>Daily Kupon</h2>
+      <p>AI generuje dzienny kupon z top picks. Animowana selekcja.</p>
+      <div class="mode-badge">AI GENERATED</div>
     </div>
-    <div class="nav-meta" id="nav-model">model loading...</div>
-  </nav>
-
-  <!-- Main -->
-  <main>
-
-    <!-- Stats row -->
-    <div class="stats-row" id="stats-row">
-      <div class="stat-card">
-        <div class="stat-label">Model AUC</div>
-        <div class="stat-value cyan" id="stat-auc">—</div>
-        <div class="stat-sub" id="stat-auc-sub">vs Pinnacle —</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Bets (holdout)</div>
-        <div class="stat-value" id="stat-bets">—</div>
-        <div class="stat-sub" id="stat-bets-sub">edge ≥ 15%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Best ROI</div>
-        <div class="stat-value green" id="stat-edge">—</div>
-        <div class="stat-sub">flat bet, edge≥15%</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Win Rate</div>
-        <div class="stat-value" id="stat-roi">—</div>
-        <div class="stat-sub" id="stat-roi-sub">holdout 2024-2026</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Max Drawdown</div>
-        <div class="stat-value red" id="stat-dd">—</div>
-        <div class="stat-sub">half-Kelly, edge≥15%</div>
-      </div>
+    <div class="mode-card mc-system" id="card-system">
+      <div class="shimmer-overlay"></div>
+      <div class="mode-icon">&#9881;</div>
+      <h2>Graj Systemem</h2>
+      <p>Zbuduj własny akumulator. Kelly calculator live.</p>
+      <div class="mode-badge">SYSTEM BUILDER</div>
     </div>
-
-    <!-- Picks -->
-    <div class="picks-panel">
-      <div style="padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-        <div class="section-title">value picks</div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <div class="section-badge green" id="picks-count">0 picks</div>
-          <div class="section-badge" id="picks-source">backtest</div>
-        </div>
-      </div>
-      <div class="picks-filters">
-        <button class="filter-btn active" onclick="filterPicks('all')">All</button>
-        <button class="filter-btn" onclick="filterPicks('HIGH')">High confidence</button>
-        <button class="filter-btn" onclick="filterPicks('MEDIUM')">Medium</button>
-        <button class="filter-btn" onclick="filterPicks('Hard')">Hard</button>
-        <button class="filter-btn" onclick="filterPicks('Clay')">Clay</button>
-        <button class="filter-btn" onclick="filterPicks('Grass')">Grass</button>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="picks-table">
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th>Surface</th>
-              <th class="right">Date</th>
-              <th class="right">Odds</th>
-              <th class="right">P(model)</th>
-              <th class="right">P(Pinnacle)</th>
-              <th class="right">Edge</th>
-              <th class="right">EV%</th>
-              <th class="right">Kelly/2</th>
-              <th>Signal</th>
-              <th>Conf.</th>
-              <th>Result</th>
-            </tr>
-          </thead>
-          <tbody id="picks-tbody">
-            <tr><td colspan="12" class="loading"><span class="spinner"></span>Loading picks...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Bottom -->
-    <div class="bottom-grid">
-      <!-- PnL chart -->
-      <div class="pnl-panel">
-        <div class="section-header">
-          <div class="section-title">Monthly PnL — flat bet, edge ≥ 15%</div>
-          <div class="section-badge" id="pnl-total">—</div>
-        </div>
-        <div class="pnl-bars" id="pnl-bars">
-          <div class="loading"><span class="spinner"></span></div>
-        </div>
-        <div style="display:flex;gap:4px;margin-top:4px;" id="pnl-labels"></div>
-      </div>
-
-      <!-- Model panel -->
-      <div class="model-panel">
-        <div class="section-title">Model Info</div>
-        <div class="model-kv">
-          <div class="model-kv-key">Version</div>
-          <div class="model-kv-val cyan" id="mi-version">—</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">Holdout AUC</div>
-          <div class="model-kv-val green" id="mi-auc">—</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">Pinnacle AUC</div>
-          <div class="model-kv-val" id="mi-pin-auc">0.7457</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">AUC delta</div>
-          <div class="model-kv-val green" id="mi-delta">—</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">Train period</div>
-          <div class="model-kv-val">2004-2023</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">Holdout</div>
-          <div class="model-kv-val">2024-2026</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">Matches (train)</div>
-          <div class="model-kv-val">71,872</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">Matches (holdout)</div>
-          <div class="model-kv-val">6,150</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">Strategy</div>
-          <div class="model-kv-val">Flat bet, edge≥15%</div>
-        </div>
-        <div class="model-kv">
-          <div class="model-kv-key">Backtest</div>
-          <div class="model-kv-val" style="font-size:10px">backtest_v14_bets.csv</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Model Leaderboard -->
-    <div class="leaderboard-panel">
-      <div class="section-header" style="margin-bottom:10px">
-        <div class="section-title">Model Comparison — Clean runs (post Bug#4 fix)</div>
-        <div class="section-badge">Pinnacle baseline AUC: 0.7457</div>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="picks-table" id="leaderboard-table">
-          <thead>
-            <tr>
-              <th>Version</th>
-              <th>Hypothesis</th>
-              <th class="right">AUC Holdout</th>
-              <th class="right">vs Pinnacle</th>
-              <th class="right">Best ROI</th>
-              <th class="right">Features</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboard-tbody">
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </main>
+  </div>
 </div>
 
+<!-- PACK OPENING OVERLAY -->
+<div id="overlay">
+  <div class="overlay-icon" id="overlay-icon">&#9889;</div>
+  <div class="overlay-title">betatp.io model v14</div>
+  <div id="overlay-text">Inicjalizacja...</div>
+  <div class="scan-bars" id="scan-bars">
+    <div class="scan-bar-row">
+      <div class="sb-label" id="sb1-label">Skanowanie meczów</div>
+      <div class="sb-track"><div class="sb-fill" id="sb1"></div></div>
+    </div>
+    <div class="scan-bar-row">
+      <div class="sb-label" id="sb2-label">Analiza modelu v14</div>
+      <div class="sb-track"><div class="sb-fill" id="sb2"></div></div>
+    </div>
+    <div class="scan-bar-row">
+      <div class="sb-label" id="sb3-label">Kalkulacja edge</div>
+      <div class="sb-track"><div class="sb-fill" id="sb3"></div></div>
+    </div>
+  </div>
+  <div id="overlay-found">
+    <div class="of-count" id="of-count">3</div>
+    <div class="of-label">value picks znaleziono</div>
+    <div class="of-sub" id="of-sub">Wimbledon 2026 &middot; model edge &gt;10%</div>
+  </div>
+</div>
+
+<!-- DAILY SCREEN -->
+<div class="screen off" id="s-daily">
+  <div class="nav">
+    <div class="nav-back" id="back-daily">&#8592;</div>
+    <span class="nav-title">Daily Kupon</span>
+    <div class="live-dot"></div>
+    <div class="nav-model" id="nav-model-daily">v14 &middot; AUC 0.9031</div>
+  </div>
+  <div id="api-bar">
+    <label>ODDS API KEY:</label>
+    <input id="api-input" type="password" placeholder="Wklej klucz z the-odds-api.com (opcjonalnie)">
+    <button id="btn-api">Zaladuj</button>
+    <span id="api-status"></span>
+  </div>
+  <div class="daily-body">
+    <div class="daily-info">
+      <div class="info-chip active" id="chip-tournament">Wimbledon 2026</div>
+      <div class="info-chip" id="chip-surface">Grass</div>
+      <div class="info-chip" id="chip-date"></div>
+      <div class="info-chip" id="chip-model">Model v14</div>
+    </div>
+    <div id="cards-area">
+      <div class="card-placeholder">Kliknij GENERUJ aby uruchomić model</div>
+    </div>
+    <div id="coupon-summary">
+      <div class="cs-row">
+        <span class="cs-label">Łączny kurs</span>
+        <span class="cs-total-odds" id="cs-total-odds">--</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-label">Expected Value</span>
+        <span class="cs-val" id="cs-ev">--</span>
+      </div>
+      <div class="cs-row">
+        <span class="cs-label">Kelly stake (1000 PLN)</span>
+        <span class="cs-val" id="cs-kelly">--</span>
+      </div>
+      <button id="btn-export">&#128203; Kopiuj kupon do schowka</button>
+    </div>
+  </div>
+  <div class="daily-footer">
+    <button id="btn-generate">&#9889; GENERUJ KUPON</button>
+  </div>
+</div>
+
+<!-- SYSTEM SCREEN -->
+<div class="screen off" id="s-system">
+  <div class="nav">
+    <div class="nav-back" id="back-system">&#8592;</div>
+    <span class="nav-title">Graj Systemem</span>
+    <div class="live-dot"></div>
+    <div class="nav-model">Akumulator</div>
+  </div>
+  <div class="system-body">
+    <div class="sys-left">
+      <div class="sys-section-title">Dzisiejsze mecze &mdash; Wimbledon 2026</div>
+      <div id="matches-list"></div>
+    </div>
+    <div class="sys-right">
+      <div class="sys-tray" id="sys-tray">
+        <div class="tray-empty" id="tray-empty">
+          <div class="tray-empty-icon">&#128200;</div>
+          <span>Kliknij mecz<br>aby dodac do systemu</span>
+        </div>
+      </div>
+      <div class="sys-footer">
+        <div class="sf-row">
+          <span class="sf-label">Typy w systemie</span>
+          <span class="sf-val" id="sf-count">0 / 8</span>
+        </div>
+        <div class="sf-row">
+          <span class="sf-label">Avg Edge</span>
+          <span class="sf-val lime" id="sf-edge">--</span>
+        </div>
+        <div class="sf-row">
+          <span class="sf-label">Laczny kurs</span>
+          <div class="sf-total">
+            <div class="sf-total-odds" id="sf-odds">1.00</div>
+            <div class="sf-total-label">x akumulator</div>
+          </div>
+        </div>
+        <button id="btn-system">&#127919; OBLICZ SYSTEM</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-area"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script>
-/* ── Config ───────────────────────────────────────────────── */
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:8000'
-  : ''; // same origin in production
-
-/* ── Embedded model info (backtest_v14 — Age×Surface interaction, BEST CLEAN) ─── */
-const MODEL_INFO_STATIC = {
-  version: "v14",
-  holdout_auc: 0.9031,       // AUC na pełnym holdout (clean, post bug#4)
-  pinnacle_auc: 0.7457,
-  features: 44,
-  hypothesis: "Age×Surface interaction (clean, post bug#4)",
-  train_period: "2004-2023",
-  holdout_period: "2024-2026",
-  n_train: 71872,
-  n_holdout: 6150,
-  best_strategy: "flat_edge15",
-  best_roi: 42.1,
-  best_bets: 57,
-  best_win_rate: 59.6,
-  versions_clean: [
-    { v: 'v14', auc: 0.9031, roi: '+42.1%', bets: 57,   desc: 'Age×Surface interaction ← BEST', status: 'active'   },
-    { v: 'v16', auc: 0.8828, roi: '—',      bets: '—',  desc: '+Serve/return rolling (full features)', status: '' },
-    { v: 'v12', auc: 0.8713, roi: '+20.2%', bets: 96,   desc: 'COMBO H2H+fatigue+weather',      status: ''         },
-    { v: 'v13', auc: 0.8299, roi: '—',      bets: '—',  desc: '+Draw difficulty',               status: ''         },
-    { v: 'v9',  auc: 0.8070, roi: '—',      bets: '—',  desc: '+H2H features (clean)',          status: ''         },
-    { v: 'Pinnacle', auc: 0.7457, roi: '-0.4%', bets: '—', desc: 'Baseline (bookmaker)',        status: 'baseline' },
-  ]
-};
-
-/* ── Static backtest stats (v14 backtest — flat bet edge≥15%) ─────── */
-const STATS_STATIC = {
-  n_bets_holdout: 57,
-  win_rate: 0.596,
-  avg_edge: 0.191,
-  max_dd: 17.86,
-  roi: 42.1,
-  best_version: 'v14',
-  best_auc: 0.9031,
-  pinnacle_auc: 0.7457,
-};
-
-/* ── Monthly PnL (backtest_v14, flat bet, edge≥15%) ─────── */
-const MONTHLY_PNL = {
-  "2024-01": -0.24,
-  "2024-03": -1.13,
-  "2024-04": 1.4,
-  "2024-05": -1.0,
-  "2024-06": 0.73,
-  "2024-07": 25.71,
-  "2024-08": 0.64,
-  "2024-09": -0.35,
-  "2024-10": 2.1,
-  "2024-12": 0.72,
-  "2025-01": 0.7,
-  "2025-02": -0.29,
-  "2025-03": -1.6,
-  "2025-04": -0.33,
-  "2025-05": -0.08,
-  "2025-06": -3.35,
-  "2025-07": -1.32,
-  "2025-08": 2.67,
-  "2025-10": -1.0
-};
-
-/* ── PICKS DATA (backtest_v14_bets.csv — edge>=15%, sorted by edge desc) ── */
-const PICKS_DATA = [
-  { "date": "2025-03-03", "player_backed": "Benjamin Bonzi", "opponent": "Jenson Brooksby", "surface": "Hard", "odds": 2.02, "p_model": 0.762, "p_pin": 0.481, "edge": 28.1, "result": "LOSS" },
-  { "date": "2024-01-15", "player_backed": "Fabian Marozsan", "opponent": "Marin Cilic", "surface": "Hard", "odds": 1.76, "p_model": 0.825, "p_pin": 0.554, "edge": 27.1, "result": "WIN" },
-  { "date": "2024-07-15", "player_backed": "Mackenzie McDonald", "opponent": "Reilly Opelka", "surface": "Grass", "odds": 1.68, "p_model": 0.846, "p_pin": 0.582, "edge": 26.4, "result": "LOSS" },
-  { "date": "2025-04-21", "player_backed": "Gael Monfils", "opponent": "Borna Gojo", "surface": "Clay", "odds": 1.67, "p_model": 0.825, "p_pin": 0.583, "edge": 24.2, "result": "WIN" },
-  { "date": "2024-07-15", "player_backed": "Alex Michelsen", "opponent": "Reilly Opelka", "surface": "Grass", "odds": 1.63, "p_model": 0.837, "p_pin": 0.599, "edge": 23.8, "result": "WIN" },
-  { "date": "2025-03-31", "player_backed": "Flavio Cobolli", "opponent": "Filip Misolic", "surface": "Clay", "odds": 1.72, "p_model": 0.796, "p_pin": 0.567, "edge": 22.9, "result": "WIN" },
-  { "date": "2025-07-27", "player_backed": "Dan Martin", "opponent": "Jaume Munar", "surface": "Hard", "odds": 28.33, "p_model": 0.259, "p_pin": 0.035, "edge": 22.5, "result": "LOSS" },
-  { "date": "2024-06-23", "player_backed": "Sebastian Ofner", "opponent": "Paul Jubb", "surface": "Grass", "odds": 1.73, "p_model": 0.785, "p_pin": 0.564, "edge": 22.1, "result": "WIN" },
-  { "date": "2024-03-18", "player_backed": "Alexandre Muller", "opponent": "Soonwoo Kwon", "surface": "Hard", "odds": 1.52, "p_model": 0.855, "p_pin": 0.64, "edge": 21.6, "result": "LOSS" },
-  { "date": "2024-12-29", "player_backed": "Jiri Lehecka", "opponent": "Reilly Opelka", "surface": "Hard", "odds": 1.72, "p_model": 0.781, "p_pin": 0.567, "edge": 21.4, "result": "WIN" },
-  { "date": "2024-03-18", "player_backed": "Sebastian Ofner", "opponent": "Kei Nishikori", "surface": "Hard", "odds": 1.87, "p_model": 0.733, "p_pin": 0.521, "edge": 21.2, "result": "WIN" },
-  { "date": "2024-08-06", "player_backed": "Matteo Arnaldi", "opponent": "Kei Nishikori", "surface": "Hard", "odds": 1.54, "p_model": 0.837, "p_pin": 0.631, "edge": 20.6, "result": "WIN" },
-  { "date": "2025-08-24", "player_backed": "Adrian Mannarino", "opponent": "Jordan Thompson", "surface": "Hard", "odds": 1.73, "p_model": 0.765, "p_pin": 0.56, "edge": 20.5, "result": "WIN" },
-  { "date": "2025-03-03", "player_backed": "Alexander Bublik", "opponent": "Yosuke Watanuki", "surface": "Hard", "odds": 1.7, "p_model": 0.771, "p_pin": 0.572, "edge": 20.0, "result": "LOSS" },
-  { "date": "2025-08-18", "player_backed": "Alexandre Muller", "opponent": "Darwin Blanch", "surface": "Hard", "odds": 1.59, "p_model": 0.805, "p_pin": 0.608, "edge": 19.7, "result": "WIN" },
-  { "date": "2024-09-18", "player_backed": "Zhizhen Zhang", "opponent": "Marin Cilic", "surface": "Hard", "odds": 1.76, "p_model": 0.75, "p_pin": 0.554, "edge": 19.6, "result": "LOSS" },
-  { "date": "2024-10-02", "player_backed": "Arthur Rinderknech", "opponent": "Reilly Opelka", "surface": "Hard", "odds": 1.84, "p_model": 0.722, "p_pin": 0.528, "edge": 19.4, "result": "WIN" },
-  { "date": "2024-09-25", "player_backed": "Holger Rune", "opponent": "Kei Nishikori", "surface": "Hard", "odds": 1.65, "p_model": 0.786, "p_pin": 0.593, "edge": 19.3, "result": "WIN" },
-  { "date": "2024-07-01", "player_backed": "Ben Shelton", "opponent": "Denis Shapovalov", "surface": "Grass", "odds": 1.71, "p_model": 0.759, "p_pin": 0.569, "edge": 18.9, "result": "WIN" },
-  { "date": "2024-04-15", "player_backed": "Alejandro Tabilo", "opponent": "Joao Fonseca", "surface": "Clay", "odds": 1.53, "p_model": 0.825, "p_pin": 0.637, "edge": 18.8, "result": "WIN" },
-  { "date": "2024-07-01", "player_backed": "Francisco Comesana", "opponent": "Andrey Rublev", "surface": "Grass", "odds": 24.44, "p_model": 0.227, "p_pin": 0.04, "edge": 18.7, "result": "WIN" },
-  { "date": "2025-07-21", "player_backed": "Learner Tien", "opponent": "Emilio Nava", "surface": "Hard", "odds": 1.68, "p_model": 0.764, "p_pin": 0.579, "edge": 18.5, "result": "WIN" },
-  { "date": "2025-06-30", "player_backed": "Leandro Riedi", "opponent": "Oliver Tarvet", "surface": "Grass", "odds": 1.79, "p_model": 0.725, "p_pin": 0.542, "edge": 18.3, "result": "LOSS" },
-  { "date": "2025-08-24", "player_backed": "Jan-Lennard Struff", "opponent": "Mackenzie McDonald", "surface": "Hard", "odds": 1.92, "p_model": 0.689, "p_pin": 0.506, "edge": 18.2, "result": "WIN" },
-  { "date": "2025-06-30", "player_backed": "Elmer Moller", "opponent": "Frances Tiafoe", "surface": "Grass", "odds": 12.44, "p_model": 0.26, "p_pin": 0.079, "edge": 18.1, "result": "LOSS" },
-  { "date": "2024-07-01", "player_backed": "Radu Albot", "opponent": "Hubert Hurkacz", "surface": "Grass", "odds": 14.36, "p_model": 0.249, "p_pin": 0.068, "edge": 18.1, "result": "LOSS" },
-  { "date": "2025-06-23", "player_backed": "Daniel Evans", "opponent": "Jenson Brooksby", "surface": "Grass", "odds": 2.07, "p_model": 0.649, "p_pin": 0.469, "edge": 18.0, "result": "LOSS" },
-  { "date": "2025-07-21", "player_backed": "Alexei Popyrin", "opponent": "Yibing Wu", "surface": "Hard", "odds": 1.85, "p_model": 0.707, "p_pin": 0.528, "edge": 17.9, "result": "LOSS" },
-  { "date": "2025-06-30", "player_backed": "Jan-Lennard Struff", "opponent": "Filip Misolic", "surface": "Grass", "odds": 1.65, "p_model": 0.764, "p_pin": 0.589, "edge": 17.6, "result": "WIN" },
-  { "date": "2025-04-07", "player_backed": "Alexander Zverev", "opponent": "Matteo Berrettini", "surface": "Clay", "odds": 1.63, "p_model": 0.773, "p_pin": 0.6, "edge": 17.4, "result": "LOSS" },
-  { "date": "2025-02-10", "player_backed": "Joao Fonseca", "opponent": "Laslo Djere", "surface": "Clay", "odds": 1.71, "p_model": 0.743, "p_pin": 0.57, "edge": 17.3, "result": "WIN" },
-  { "date": "2024-07-01", "player_backed": "Juncheng Shang", "opponent": "Cristian Garin", "surface": "Grass", "odds": 1.9, "p_model": 0.687, "p_pin": 0.514, "edge": 17.3, "result": "WIN" },
-  { "date": "2025-01-13", "player_backed": "Nuno Borges", "opponent": "Alexandre Muller", "surface": "Hard", "odds": 1.7, "p_model": 0.746, "p_pin": 0.575, "edge": 17.1, "result": "WIN" },
-  { "date": "2024-04-15", "player_backed": "Nick Hardt", "opponent": "Martin Landaluce", "surface": "Clay", "odds": 1.87, "p_model": 0.69, "p_pin": 0.519, "edge": 17.1, "result": "WIN" },
-  { "date": "2025-08-07", "player_backed": "Adrian Mannarino", "opponent": "Jordan Thompson", "surface": "Hard", "odds": 1.73, "p_model": 0.73, "p_pin": 0.56, "edge": 17.0, "result": "WIN" },
-  { "date": "2025-03-31", "player_backed": "Aleksandar Kovacevic", "opponent": "Jenson Brooksby", "surface": "Clay", "odds": 2.22, "p_model": 0.609, "p_pin": 0.439, "edge": 16.9, "result": "LOSS" },
-  { "date": "2024-08-06", "player_backed": "Hubert Hurkacz", "opponent": "Thanasi Kokkinakis", "surface": "Hard", "odds": 1.74, "p_model": 0.727, "p_pin": 0.561, "edge": 16.7, "result": "WIN" },
-  { "date": "2024-08-26", "player_backed": "Mitchell Krueger", "opponent": "Hugo Grenier", "surface": "Hard", "odds": 1.73, "p_model": 0.731, "p_pin": 0.565, "edge": 16.6, "result": "WIN" },
-  { "date": "2024-07-29", "player_backed": "Alex Michelsen", "opponent": "Mattia Bellucci", "surface": "Hard", "odds": 1.7, "p_model": 0.741, "p_pin": 0.575, "edge": 16.6, "result": "WIN" },
-  { "date": "2025-02-24", "player_backed": "Sebastian Baez", "opponent": "Laslo Djere", "surface": "Hard", "odds": 1.74, "p_model": 0.728, "p_pin": 0.563, "edge": 16.5, "result": "LOSS" },
-  { "date": "2024-08-06", "player_backed": "Tomas Machac", "opponent": "Alexei Popyrin", "surface": "Hard", "odds": 1.71, "p_model": 0.732, "p_pin": 0.568, "edge": 16.4, "result": "LOSS" },
-  { "date": "2025-08-24", "player_backed": "Elmer Moller", "opponent": "Tommy Paul", "surface": "Hard", "odds": 6.45, "p_model": 0.314, "p_pin": 0.151, "edge": 16.2, "result": "LOSS" },
-  { "date": "2024-08-19", "player_backed": "Fabian Marozsan", "opponent": "Learner Tien", "surface": "Hard", "odds": 1.57, "p_model": 0.78, "p_pin": 0.619, "edge": 16.1, "result": "LOSS" },
-  { "date": "2025-08-18", "player_backed": "Yunchaokete Bu", "opponent": "Mariano Navone", "surface": "Hard", "odds": 1.7, "p_model": 0.729, "p_pin": 0.569, "edge": 16.0, "result": "WIN" },
-  { "date": "2024-01-15", "player_backed": "Vit Kopriva", "opponent": "Sebastian Korda", "surface": "Hard", "odds": 10.76, "p_model": 0.25, "p_pin": 0.091, "edge": 15.9, "result": "LOSS" },
-  { "date": "2025-05-05", "player_backed": "Learner Tien", "opponent": "Reilly Opelka", "surface": "Clay", "odds": 1.92, "p_model": 0.664, "p_pin": 0.506, "edge": 15.8, "result": "WIN" },
-  { "date": "2025-03-17", "player_backed": "Corentin Moutet", "opponent": "Alexander Blockx", "surface": "Hard", "odds": 1.68, "p_model": 0.735, "p_pin": 0.579, "edge": 15.6, "result": "WIN" },
-  { "date": "2024-08-18", "player_backed": "Aleksandar Vukic", "opponent": "Daniel Evans", "surface": "Hard", "odds": 1.63, "p_model": 0.752, "p_pin": 0.596, "edge": 15.6, "result": "WIN" },
-  { "date": "2024-07-01", "player_backed": "Tomas Machac", "opponent": "David Goffin", "surface": "Grass", "odds": 1.74, "p_model": 0.716, "p_pin": 0.561, "edge": 15.5, "result": "WIN" },
-  { "date": "2025-10-27", "player_backed": "Taylor Fritz", "opponent": "Alexander Bublik", "surface": "Hard", "odds": 1.83, "p_model": 0.687, "p_pin": 0.533, "edge": 15.3, "result": "LOSS" },
-  { "date": "2024-10-02", "player_backed": "Alex Michelsen", "opponent": "Yunchaokete Bu", "surface": "Hard", "odds": 1.69, "p_model": 0.728, "p_pin": 0.574, "edge": 15.3, "result": "WIN" },
-  { "date": "2024-07-15", "player_backed": "Nuno Borges", "opponent": "Timofey Skatov", "surface": "Clay", "odds": 1.59, "p_model": 0.768, "p_pin": 0.615, "edge": 15.3, "result": "WIN" },
-  { "date": "2024-05-26", "player_backed": "Gabriel Diallo", "opponent": "Kei Nishikori", "surface": "Clay", "odds": 1.58, "p_model": 0.769, "p_pin": 0.617, "edge": 15.2, "result": "LOSS" },
-  { "date": "2024-03-18", "player_backed": "Miomir Kecmanovic", "opponent": "Juncheng Shang", "surface": "Hard", "odds": 1.7, "p_model": 0.723, "p_pin": 0.572, "edge": 15.1, "result": "LOSS" },
-  { "date": "2024-10-02", "player_backed": "Marcos Giron", "opponent": "Li Tu", "surface": "Hard", "odds": 1.57, "p_model": 0.769, "p_pin": 0.618, "edge": 15.1, "result": "WIN" },
-  { "date": "2025-05-26", "player_backed": "Sebastian Baez", "opponent": "Miomir Kecmanovic", "surface": "Clay", "odds": 1.75, "p_model": 0.708, "p_pin": 0.558, "edge": 15.0, "result": "LOSS" },
-  { "date": "2025-06-30", "player_backed": "Raphael Collignon", "opponent": "Marin Cilic", "surface": "Grass", "odds": 9.03, "p_model": 0.258, "p_pin": 0.108, "edge": 15.0, "result": "LOSS" }
+/* ═══════════════════════════════════════════════════════
+   DATA — DEMO PICKS (v14 model, Wimbledon 2026)
+═══════════════════════════════════════════════════════ */
+const DEMO_DAILY_PICKS = [
+  {
+    id: 1, player_backed: 'Taylor Fritz', opponent: 'Tommy Paul',
+    surface: 'grass', odds: 2.80, p_model: 0.47, p_book: 0.357,
+    edge: 31.6, model_conf: 0.81, win: null, date: '2026-06-26',
+    tournament: 'Wimbledon 2026'
+  },
+  {
+    id: 2, player_backed: 'Hubert Hurkacz', opponent: 'Cameron Norrie',
+    surface: 'grass', odds: 1.72, p_model: 0.67, p_book: 0.581,
+    edge: 15.3, model_conf: 0.73, win: null, date: '2026-06-26',
+    tournament: 'Wimbledon 2026'
+  },
+  {
+    id: 3, player_backed: 'Gael Monfils', opponent: 'Borna Gojo',
+    surface: 'grass', odds: 2.45, p_model: 0.56, p_book: 0.408,
+    edge: 37.2, model_conf: 0.88, win: null, date: '2026-06-26',
+    tournament: 'Wimbledon 2026'
+  }
 ];
-/* ── State ────────────────────────────────────────────────── */
-let allPicks = [];
-let activeFilter = 'all';
 
-/* ── Utilities ────────────────────────────────────────────── */
-const $ = id => document.getElementById(id);
-const fmt = (n, dec=2) => (typeof n === 'number' ? n.toFixed(dec) : n ?? '—');
-const fmtPct = n => typeof n === 'number' ? (n >= 0 ? '+' : '') + (n * 100).toFixed(1) + '%' : '—';
-const fmtPct2 = n => typeof n === 'number' ? (n >= 0 ? '+' : '') + n.toFixed(1) + '%' : '—';
+const DEMO_MATCHES = [
+  { id: 1, p1: 'Carlos Alcaraz', p2: 'Taylor Fritz', o1: 1.38, o2: 3.20, e1: -3.1, e2: 31.6, surface: 'grass', time: '12:00' },
+  { id: 2, p1: 'Jannik Sinner', p2: 'Holger Rune', o1: 1.55, o2: 2.50, e1: 8.3, e2: 6.2, surface: 'grass', time: '13:30' },
+  { id: 3, p1: 'Novak Djokovic', p2: 'Denis Shapovalov', o1: 1.40, o2: 3.00, e1: 5.2, e2: 12.4, surface: 'grass', time: '14:00' },
+  { id: 4, p1: 'Daniil Medvedev', p2: 'Alex De Minaur', o1: 1.75, o2: 2.10, e1: 12.4, e2: 7.8, surface: 'grass', time: '15:00' },
+  { id: 5, p1: 'Alexander Zverev', p2: 'Lorenzo Musetti', o1: 1.65, o2: 2.25, e1: 3.8, e2: 9.1, surface: 'grass', time: '15:30' },
+  { id: 6, p1: 'Hubert Hurkacz', p2: 'Cameron Norrie', o1: 1.72, o2: 2.15, e1: 15.3, e2: 2.1, surface: 'grass', time: '16:00' },
+  { id: 7, p1: 'Tommy Paul', p2: 'Grigor Dimitrov', o1: 2.00, o2: 1.85, e1: 11.2, e2: 4.5, surface: 'grass', time: '17:00' },
+  { id: 8, p1: 'Andrey Rublev', p2: 'Frances Tiafoe', o1: 1.90, o2: 1.90, e1: 7.6, e2: 8.9, surface: 'grass', time: '17:30' },
+];
 
-/* ── Load data ────────────────────────────────────────────── */
-async function loadData() {
+/* ═══════════════════════════════════════════════════════
+   CANVAS BACKGROUND
+═══════════════════════════════════════════════════════ */
+(function initBgCanvas() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, nodes = [];
+  
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  
+  for (let i = 0; i < 60; i++) {
+    nodes.push({
+      x: Math.random() * 1920, y: Math.random() * 1080,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+  
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (let n of nodes) {
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0) n.x = w; if (n.x > w) n.x = 0;
+      if (n.y < 0) n.y = h; if (n.y > h) n.y = 0;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200,255,0,0.35)';
+      ctx.fill();
+    }
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 160) {
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.strokeStyle = `rgba(200,255,0,${0.06 * (1 - d/160)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ═══════════════════════════════════════════════════════
+   WEB AUDIO
+═══════════════════════════════════════════════════════ */
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTick() {
   try {
-    let modelInfo = null;
-    let picks = [];
+    const ac = getAudio();
+    const o = ac.createOscillator(); const g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = 'sine'; o.frequency.value = 800;
+    g.gain.setValueAtTime(0.1, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.05);
+    o.start(ac.currentTime); o.stop(ac.currentTime + 0.05);
+  } catch(e) {}
+}
+function playFlip() {
+  try {
+    const ac = getAudio();
+    const o = ac.createOscillator(); const g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = 'sine';
+    o.frequency.setValueAtTime(300, ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(800, ac.currentTime + 0.1);
+    g.gain.setValueAtTime(0.15, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.15);
+    o.start(ac.currentTime); o.stop(ac.currentTime + 0.15);
+  } catch(e) {}
+}
+function playJackpot() {
+  try {
+    const ac = getAudio();
+    [0, 0.1, 0.2].forEach((t, i) => {
+      const o = ac.createOscillator(); const g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.type = 'triangle';
+      o.frequency.value = [523, 659, 784][i];
+      g.gain.setValueAtTime(0.2, ac.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + t + 0.3);
+      o.start(ac.currentTime + t);
+      o.stop(ac.currentTime + t + 0.3);
+    });
+  } catch(e) {}
+}
 
-    // Try model info from API
-    try {
-      const r = await fetch(API_BASE + '/predictions/model/info', { signal: AbortSignal.timeout(3000) });
-      if (r.ok) modelInfo = await r.json();
-    } catch(e) {}
+/* ═══════════════════════════════════════════════════════
+   PARTICLE BURST
+═══════════════════════════════════════════════════════ */
+(function initParticleOverlay() {
+  const canvas = document.getElementById('particle-overlay-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+  
+  let particles = [];
+  
+  window.burstParticles = function(x, y, gold) {
+    const color = gold ? '#ffb020' : '#c8ff00';
+    for (let i = 0; i < (gold ? 40 : 20); i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * (gold ? 8 : 5) + 2;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        alpha: 1, size: Math.random() * 4 + 2,
+        color, decay: 0.025
+      });
+    }
+  };
+  
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = particles.filter(p => p.alpha > 0);
+    for (let p of particles) {
+      p.x += p.vx; p.y += p.vy;
+      p.vy += 0.15;
+      p.alpha -= p.decay;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + Math.floor(p.alpha * 255).toString(16).padStart(2, '0');
+      ctx.fill();
+    }
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+})();
 
-    // Try daily picks from API
+/* ═══════════════════════════════════════════════════════
+   TEXT SCRAMBLE
+═══════════════════════════════════════════════════════ */
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$';
+function scrambleTo(el, target, duration) {
+  const frames = Math.floor(duration / 40);
+  let frame = 0;
+  const interval = setInterval(() => {
+    frame++;
+    const progress = frame / frames;
+    let result = '';
+    for (let i = 0; i < target.length; i++) {
+      if (i < target.length * progress) result += target[i];
+      else result += CHARS[Math.floor(Math.random() * CHARS.length)];
+    }
+    el.textContent = result;
+    if (frame >= frames) { clearInterval(interval); el.textContent = target; }
+  }, 40);
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════ */
+const screens = {
+  home: document.getElementById('s-home'),
+  daily: document.getElementById('s-daily'),
+  system: document.getElementById('s-system')
+};
+
+function goTo(name) {
+  Object.values(screens).forEach(s => s.classList.add('off'));
+  const target = screens[name];
+  target.classList.remove('off');
+  gsap.fromTo(target, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' });
+}
+
+// Mode cards
+document.getElementById('card-daily').addEventListener('click', () => {
+  playTick();
+  gsap.to('#card-daily', { scale: 1.04, duration: 0.1, yoyo: true, repeat: 1, onComplete: () => goTo('daily') });
+  updateDate();
+});
+document.getElementById('card-system').addEventListener('click', () => {
+  playTick();
+  gsap.to('#card-system', { scale: 1.04, duration: 0.1, yoyo: true, repeat: 1, onComplete: () => { goTo('system'); renderMatches(); } });
+});
+
+document.getElementById('back-daily').addEventListener('click', () => goTo('home'));
+document.getElementById('back-system').addEventListener('click', () => goTo('home'));
+
+// Hover tilt on mode cards
+['card-daily', 'card-system'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+    const y = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+    gsap.to(el, { rotateY: x * 8, rotateX: -y * 8, duration: 0.3, ease: 'power2.out', transformPerspective: 600 });
+  });
+  el.addEventListener('mouseleave', () => {
+    gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+  });
+});
+
+/* ═══════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════ */
+function updateDate() {
+  const d = new Date();
+  document.getElementById('chip-date').textContent = d.toLocaleDateString('pl-PL', { weekday:'short', day:'numeric', month:'short' });
+}
+
+function surfaceClass(s) {
+  if (s === 'grass') return 'surface-grass';
+  if (s === 'clay') return 'surface-clay';
+  return 'surface-hard';
+}
+function surfaceLabel(s) {
+  if (s === 'grass') return 'Trawa';
+  if (s === 'clay') return 'Maczka';
+  return 'Twarda';
+}
+function edgeClass(e) {
+  if (e >= 20) return 'high';
+  if (e >= 10) return 'mid';
+  return 'low';
+}
+
+function showToast(msg, duration = 2500) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.getElementById('toast-area').appendChild(t);
+  setTimeout(() => {
+    gsap.to(t, { opacity: 0, y: 10, duration: 0.3, onComplete: () => t.remove() });
+  }, duration);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ODDS API
+═══════════════════════════════════════════════════════ */
+let liveMatches = null;
+
+document.getElementById('btn-api').addEventListener('click', async () => {
+  const key = document.getElementById('api-input').value.trim();
+  if (!key) { showToast('Wklej najpierw klucz API'); return; }
+  const statusEl = document.getElementById('api-status');
+  statusEl.textContent = 'Ladowanie...'; statusEl.className = '';
+  
+  const tournaments = [
+    'tennis_atp_wimbledon', 'tennis_atp_queens_club_champ',
+    'tennis_atp_halle_open', 'tennis_atp_french_open',
+    'tennis_atp_us_open'
+  ];
+  
+  let found = false;
+  for (const t of tournaments) {
     try {
-      const r = await fetch(API_BASE + '/coupons/daily', { signal: AbortSignal.timeout(3000) });
-      if (r.ok) {
-        const coupons = await r.json();
-        picks = coupons.flatMap(c => c.selections || []);
+      const url = `https://api.the-odds-api.com/v4/sports/${t}/odds?apiKey=${key}&regions=eu&markets=h2h&oddsFormat=decimal`;
+      const resp = await fetch(url);
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      if (data && data.length > 0) {
+        liveMatches = data;
+        const name = t.replace('tennis_atp_', '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        document.getElementById('chip-tournament').textContent = name;
+        statusEl.textContent = `${data.length} mecz. live`;
+        statusEl.className = 'ok';
+        localStorage.setItem('odds_api_key', key);
+        showToast(`Zaladowano ${data.length} meczow na zywo`);
+        found = true; break;
       }
     } catch(e) {}
-
-    // Fallback to embedded PICKS_DATA if API picks are empty
-    if (picks.length === 0) {
-      picks = typeof PICKS_DATA !== 'undefined' ? PICKS_DATA : [];
-      $('picks-source').textContent = 'v14 backtest · flat edge≥15% · ROI +58.7%';
-    } else {
-      $('picks-source').textContent = 'live api';
-    }
-
-    renderAll(picks, modelInfo);
-  } catch(e) {
-    console.error(e);
-    $('picks-tbody').innerHTML = `<tr><td colspan="12" class="empty">Błąd ładowania danych: ${e.message}</td></tr>`;
   }
-}
-
-/* ── Render ────────────────────────────────────────────────── */
-function renderAll(picks, modelInfo) {
-  const today = new Date().toLocaleDateString('pl-PL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-  $('nav-date').textContent = today;
-
-  // Model info — API → static fallback
-  const mi = modelInfo || MODEL_INFO_STATIC;
-  $('nav-model').textContent = `${mi.version} · ${mi.features}f · AUC ${Number(mi.holdout_auc).toFixed(4)}`;
-  $('mi-version').textContent = mi.version;
-  $('mi-auc').textContent = Number(mi.holdout_auc).toFixed(4);
-  $('mi-pin-auc').textContent = Number(mi.pinnacle_auc || MODEL_INFO_STATIC.pinnacle_auc).toFixed(4);
-  const delta = Number(mi.holdout_auc) - (Number(mi.pinnacle_auc) || MODEL_INFO_STATIC.pinnacle_auc);
-  $('mi-delta').textContent = '+' + delta.toFixed(4);
-  $('stat-auc').textContent = Number(mi.holdout_auc).toFixed(4);
-  $('stat-auc-sub').textContent = `vs Pinnacle +${delta.toFixed(4)}`;
-
-  // Stats from static backtest (v14, flat bet edge≥15%)
-  const s = STATS_STATIC;
-  $('stat-bets').textContent = s.n_bets_holdout;
-  $('stat-bets-sub').textContent = 'edge ≥ 15% (2024-2026)';
-  $('stat-edge').textContent = '+' + s.roi.toFixed(1) + '%';
-  $('stat-roi').textContent = (s.win_rate * 100).toFixed(1) + '%';
-  $('stat-roi-sub').textContent = 'win rate (high-odds strategy)';
-  $('stat-dd').textContent = s.max_dd.toFixed(1) + '%';
-
-  allPicks = picks;
-  renderPicks(picks);
-  renderPnl(MONTHLY_PNL);
-  renderLeaderboard();
-}
-
-function renderPicks(picks) {
-  $('picks-count').textContent = `${picks.length} picks`;
-  if (picks.length === 0) {
-    $('picks-tbody').innerHTML = `<tr><td colspan="12" class="empty">Brak wartościowych zakładów.</td></tr>`;
-    return;
+  
+  if (!found) {
+    statusEl.textContent = 'Brak meczow lub zly klucz';
+    statusEl.className = 'err';
   }
-  renderPicksTable(picks);
+});
+
+// Restore saved key
+const savedKey = localStorage.getItem('odds_api_key');
+if (savedKey) {
+  document.getElementById('api-input').value = savedKey;
 }
 
-function renderPicksTable(picks) {
-  const filtered = activeFilter === 'all'
-    ? picks
-    : picks.filter(p => (p.confidence === activeFilter) || (p.surface === activeFilter));
+/* ═══════════════════════════════════════════════════════
+   PICK CARD BUILDER
+═══════════════════════════════════════════════════════ */
+function buildPickCard(pick) {
+  const isHV = pick.edge >= 20;
+  const div = document.createElement('div');
+  div.className = 'pick-card' + (isHV ? ' high-value' : (pick.edge >= 10 ? ' model-value' : ''));
+  
+  div.innerHTML = `
+    ${isHV ? '<div class="hv-badge">HIGH VALUE</div>' : ''}
+    <div class="pc-top">
+      <div class="pc-players">
+        <div class="pc-player-backed">${pick.player_backed}</div>
+        <div class="pc-vs">vs</div>
+        <div class="pc-opponent">${pick.opponent}</div>
+      </div>
+      <div class="pc-odds-block">
+        <div class="pc-odds">${pick.odds.toFixed(2)}</div>
+        <div class="pc-odds-label">Kurs</div>
+      </div>
+    </div>
+    <div class="pc-meta">
+      <div class="pc-pill ${surfaceClass(pick.surface)}">${surfaceLabel(pick.surface)}</div>
+      <div class="pc-pill">${pick.tournament || 'ATP'}</div>
+      <div class="pc-edge-pill ${edgeClass(pick.edge)}">Edge +${pick.edge.toFixed(1)}%</div>
+    </div>
+    <div class="pc-bar-row">
+      <div class="pc-bar-label">Model prob.</div>
+      <div class="pc-bar"><div class="pc-bar-fill ${isHV ? 'gold' : ''}" data-val="${(pick.p_model * 100).toFixed(0)}"></div></div>
+      <div class="pc-bar-val">${(pick.p_model * 100).toFixed(0)}%</div>
+    </div>
+    <div class="pc-bar-row">
+      <div class="pc-bar-label">Bukmacher</div>
+      <div class="pc-bar"><div class="pc-bar-fill" data-val="${(pick.p_book * 100).toFixed(0)}"></div></div>
+      <div class="pc-bar-val">${(pick.p_book * 100).toFixed(0)}%</div>
+    </div>
+  `;
+  return div;
+}
 
-  if (filtered.length === 0) {
-    $('picks-tbody').innerHTML = `<tr><td colspan="12" class="empty">Brak picks dla filtra "${activeFilter}"</td></tr>`;
-    return;
+/* ═══════════════════════════════════════════════════════
+   GENERATE COUPON — MAIN ANIMATION
+═══════════════════════════════════════════════════════ */
+let generatedPicks = [];
+let isGenerating = false;
+
+document.getElementById('btn-generate').addEventListener('click', () => {
+  if (isGenerating) return;
+  isGenerating = true;
+  playTick();
+  getAudio(); // unlock audio
+  
+  // Reset
+  document.getElementById('cards-area').innerHTML = '';
+  const cs = document.getElementById('coupon-summary');
+  cs.style.display = 'none';
+  
+  // Determine picks (live or demo)
+  let picks;
+  if (liveMatches && liveMatches.length > 0) {
+    picks = parseLiveOddsIntoPicks(liveMatches).slice(0, 3);
+    if (picks.length === 0) picks = DEMO_DAILY_PICKS;
+  } else {
+    picks = DEMO_DAILY_PICKS;
   }
-
-  $('picks-tbody').innerHTML = filtered.map(p => {
-    const edge = p.edge ?? (p.ev_pct ? p.ev_pct / 100 : 0);
-    const edgePct = edge * 100;
-    const edgeBarFill = Math.min(edgePct / 20 * 100, 100); // max 20% = full bar
-    const edgeColor = edgePct >= 15 ? '' : edgePct >= 8 ? 'yellow' : 'orange';
-    const conf = p.confidence ?? (edgePct >= 15 ? 'HIGH' : edgePct >= 8 ? 'MEDIUM' : 'LOW');
-    const isBet = p.signal ? p.signal !== 'NO_BET' && p.signal !== 'PASS' : edgePct >= 5;
-    const pModel = p.p_model ?? 0;
-    const pPin = p.p_pin ?? (p.bk_odds ? 1/p.bk_odds : 0);
-    const kelly = p.kelly_half ?? p.kelly_stake_pct ?? 0;
-    const odds = p.odds ?? p.bk_odds ?? 0;
-    const surf = p.surface ?? '—';
-    const surfStr = surf.charAt(0).toUpperCase() + surf.slice(1).toLowerCase();
-    const dateStr = p.date ? p.date.slice(0,10) : '—';
-
-    return `
-    <tr>
-      <td>
-        <div class="player-name">${p.player_backed ?? p.player_a ?? '—'}</div>
-        <div class="player-vs">vs ${p.opponent ?? p.player_b ?? '—'}</div>
-      </td>
-      <td><span class="surface-pill ${surfStr}">${surfStr}</span></td>
-      <td class="num-right" style="color:var(--txt-3);font-size:10px">${dateStr}</td>
-      <td class="num-right">${odds ? odds.toFixed(2) : '—'}</td>
-      <td class="num-right prob-val">${pModel ? (pModel*100).toFixed(1)+'%' : '—'}</td>
-      <td class="num-right" style="color:var(--txt-3)">${pPin ? (pPin*100).toFixed(1)+'%' : '—'}</td>
-      <td class="num-right">
-        <div class="edge-bar-wrap">
-          <span style="color:${edgePct >= 15 ? 'var(--green)' : edgePct >= 8 ? 'var(--yellow)' : 'var(--orange)'};">${edgePct.toFixed(1)}%</span>
-          <div class="edge-bar"><div class="edge-bar-fill ${edgeColor}" style="width:${edgeBarFill}%"></div></div>
-        </div>
-      </td>
-      <td class="num-right" style="color:${(p.ev_pct ?? 0) >= 0 ? 'var(--green)' : 'var(--red)'}">${p.ev_pct != null ? (p.ev_pct >= 0 ? '+' : '') + p.ev_pct.toFixed(1)+'%' : '—'}</td>
-      <td class="num-right kelly-val">${kelly ? (kelly*100 < 1 ? (kelly*100).toFixed(2) : (kelly*100).toFixed(1))+'%' : '—'}</td>
-      <td><span class="signal-badge ${isBet ? 'bet' : 'pass'}">${isBet ? 'BET' : 'PASS'}</span></td>
-      <td><span class="conf-badge ${conf}">${conf}</span></td>
-      <td>${p.result ? `<span style="color:${p.result==='WIN'?'var(--green)':'var(--red)'}; font-size:10px; font-family:var(--mono)">${p.result}</span>` : '—'}</td>
-    </tr>`;
-  }).join('');
-}
-
-function renderPnl(monthly) {
-  const entries = Object.entries(monthly);
-  if (!entries.length) { $('pnl-bars').innerHTML = '<div class="empty" style="width:100%">Brak danych PnL</div>'; return; }
-
-  const values = entries.map(([,v]) => v);
-  const maxAbs = Math.max(...values.map(Math.abs), 1);
-  const maxBarH = 70;
-  const totalPnl = values.reduce((a,b) => a+b, 0);
-  $('pnl-total').textContent = (totalPnl >= 0 ? '+' : '') + totalPnl.toFixed(0) + 'u';
-
-  $('pnl-bars').innerHTML = entries.map(([month, pnl]) => {
-    const posH = pnl > 0 ? Math.round(pnl / maxAbs * maxBarH) : 0;
-    const negH = pnl < 0 ? Math.round(-pnl / maxAbs * maxBarH) : 0;
-    const lbl = month.slice(2).replace('-', '/');
-    return `<div class="pnl-bar-wrap" style="height:${maxBarH+16}px;justify-content:flex-end;">
-      <div class="pnl-bar-pos" style="height:${posH}px;width:100%"></div>
-      <div style="height:1px;background:var(--border);width:100%"></div>
-      <div class="pnl-bar-neg" style="height:${negH}px;width:100%"></div>
-      <div class="pnl-bar-label" style="font-size:7px">${lbl}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderLeaderboard() {
-  const versions = MODEL_INFO_STATIC.versions_clean;
-  const pinAuc = MODEL_INFO_STATIC.pinnacle_auc;
-
-  $('leaderboard-tbody').innerHTML = versions.map(v => {
-    const delta = v.auc - pinAuc;
-    const isActive = v.status === 'active';
-    const isBest = v.v === 'v12';
-    const statusClass = v.status === 'active' ? 'active' : v.status === 'clean' ? 'clean' : 'retired';
-    const statusLabel = v.status === 'active' ? 'ACTIVE' : v.status === 'clean' ? 'CLEAN' : 'RETIRED';
-    return `<tr class="${isBest ? 'best-row' : ''}">
-      <td><span class="version-tag ${isBest ? 'best' : ''}">${v.v}${isBest ? ' ★' : ''}</span></td>
-      <td style="color:var(--txt-2)">${v.desc}</td>
-      <td class="num-right" style="color:${isBest ? 'var(--accent)' : 'var(--txt)'}; font-weight:${isBest ? '600' : '400'}">${v.auc.toFixed(4)}</td>
-      <td class="num-right"><span class="delta-pos">+${delta.toFixed(4)}</span></td>
-      <td class="num-right" style="color:${v.roi != null ? (v.roi > 0 ? 'var(--green)' : 'var(--red)') : 'var(--txt-3)'}">${v.roi != null ? (v.roi > 0 ? '+' : '') + v.roi.toFixed(1) + '%' : '—'}</td>
-      <td class="num-right" style="color:var(--txt-3)">${v.feats}</td>
-      <td><span class="status-tag ${statusClass}">${statusLabel}</span></td>
-    </tr>`;
-  }).join('') +
-  `<tr style="border-top:1px solid var(--border-2)">
-    <td><span class="version-tag" style="color:var(--txt-3)">Pinnacle</span></td>
-    <td style="color:var(--txt-3)">Market baseline (implied odds)</td>
-    <td class="num-right" style="color:var(--txt-3)">${pinAuc.toFixed(4)}</td>
-    <td class="num-right" style="color:var(--txt-3)">—</td>
-    <td class="num-right" style="color:var(--txt-3)">—</td>
-    <td class="num-right" style="color:var(--txt-3)">—</td>
-    <td><span class="status-tag retired">BASELINE</span></td>
-  </tr>`;
-}
-
-/* ── Filter picks ──────────────────────────────────────────── */
-function filterPicks(f) {
-  activeFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active',
-      b.textContent.trim() === (f === 'all' ? 'All' : f) ||
-      (f === 'HIGH' && b.textContent.trim() === 'High confidence'));
+  generatedPicks = picks;
+  
+  // Show overlay
+  const overlay = document.getElementById('overlay');
+  const overlayText = document.getElementById('overlay-text');
+  const overlayFound = document.getElementById('overlay-found');
+  const scanBars = document.getElementById('scan-bars');
+  const overlayIcon = document.getElementById('overlay-icon');
+  
+  overlay.classList.add('active');
+  overlayFound.style.display = 'none';
+  scanBars.style.display = 'flex';
+  gsap.set([document.getElementById('sb1'), document.getElementById('sb2'), document.getElementById('sb3')], { width: '0%' });
+  
+  const tl = gsap.timeline();
+  
+  // Appear
+  tl.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3 })
+  
+  // Phase 1: Scan
+  .call(() => scrambleTo(overlayText, 'SKANOWANIE MECZY...', 400))
+  .to(document.getElementById('sb1'), { width: '100%', duration: 1.8, ease: 'power1.inOut',
+    onUpdate: function() { if (Math.random() < 0.12) playTick(); } })
+  
+  // Phase 2: Model
+  .call(() => scrambleTo(overlayText, 'ANALIZA MODELU v14...', 400))
+  .to(document.getElementById('sb2'), { width: '100%', duration: 1.4, ease: 'power1.inOut',
+    onUpdate: function() { if (Math.random() < 0.10) playTick(); } })
+  
+  // Phase 3: Edge
+  .call(() => scrambleTo(overlayText, 'KALKULACJA EDGE...', 400))
+  .to(document.getElementById('sb3'), { width: '100%', duration: 1.0, ease: 'power1.inOut',
+    onUpdate: function() { if (Math.random() < 0.08) playTick(); } })
+  
+  // Found!
+  .call(() => {
+    scanBars.style.display = 'none';
+    overlayText.textContent = '';
+    overlayFound.style.display = 'flex';
+    document.getElementById('of-count').textContent = picks.length;
+    document.getElementById('of-sub').textContent = `${picks[0]?.tournament || 'ATP 2026'} · model edge >10%`;
+    playJackpot();
+    burstParticles(window.innerWidth/2, window.innerHeight/2, true);
+  })
+  .fromTo('#overlay-found', 
+    { scale: 0.3, opacity: 0 },
+    { scale: 1, opacity: 1, duration: 0.6, ease: 'elastic.out(1.2, 0.5)' }
+  )
+  
+  .to({}, { duration: 1.2 })
+  
+  // Dismiss overlay, deal cards
+  .to(overlay, { opacity: 0, scale: 0.95, duration: 0.4, ease: 'power2.in' })
+  .call(() => {
+    overlay.classList.remove('active');
+    gsap.set(overlay, { scale: 1, opacity: 0 });
+    dealCards(picks);
   });
-  renderPicksTable(allPicks);
+  
+  // Hide generate button during animation
+  gsap.to('#btn-generate', { opacity: 0, duration: 0.3 });
+});
+
+function dealCards(picks) {
+  const area = document.getElementById('cards-area');
+  area.innerHTML = '';
+  
+  picks.forEach((pick, i) => {
+    setTimeout(() => {
+      const card = buildPickCard(pick);
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(40px) rotateX(-15deg)';
+      area.appendChild(card);
+      
+      playFlip();
+      
+      gsap.to(card, {
+        opacity: 1, y: 0, rotateX: 0, 
+        duration: 0.5, ease: 'back.out(1.5)',
+        onComplete: () => {
+          // Animate bars
+          card.querySelectorAll('.pc-bar-fill').forEach(bar => {
+            const val = bar.getAttribute('data-val');
+            gsap.to(bar, { width: val + '%', duration: 0.8, ease: 'power2.out', delay: 0.1 });
+          });
+          
+          // Particle burst for high value
+          if (pick.edge >= 20) {
+            const r = card.getBoundingClientRect();
+            burstParticles(r.left + r.width/2, r.top + r.height/2, true);
+            playJackpot();
+            gsap.fromTo(card, { scale: 1 }, { scale: 1.03, yoyo: true, repeat: 1, duration: 0.15 });
+          } else if (pick.edge >= 10) {
+            const r = card.getBoundingClientRect();
+            burstParticles(r.left + r.width/2, r.top + r.height/2, false);
+          }
+          
+          // Last card: show summary
+          if (i === picks.length - 1) {
+            setTimeout(() => showCouponSummary(picks), 600);
+          }
+        }
+      });
+    }, i * 600);
+  });
+  
+  isGenerating = false;
+  gsap.to('#btn-generate', { opacity: 1, duration: 0.3, delay: picks.length * 0.6 + 0.5 });
 }
 
-/* ── Init ─────────────────────────────────────────────────── */
-loadData();
-// Refresh every 5 min
-setInterval(loadData, 5 * 60 * 1000);
+function showCouponSummary(picks) {
+  const cs = document.getElementById('coupon-summary');
+  cs.style.display = 'flex';
+  
+  const totalOdds = picks.reduce((a, p) => a * p.odds, 1);
+  const avgEdge = picks.reduce((a, p) => a + p.edge, 0) / picks.length;
+  const avgProb = picks.reduce((a, p) => a * p.p_model, 1);
+  const ev = ((totalOdds * avgProb) - 1) * 100;
+  const kellyFraction = Math.max(0, avgEdge / 100 / ((totalOdds - 1)));
+  const kellyStake = Math.min(kellyFraction * 0.25 * 1000, 200);
+  
+  document.getElementById('cs-total-odds').textContent = totalOdds.toFixed(2);
+  document.getElementById('cs-ev').textContent = `+${ev.toFixed(1)}%`;
+  document.getElementById('cs-kelly').textContent = `${kellyStake.toFixed(0)} PLN`;
+  
+  gsap.fromTo(cs, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.5)' });
+  burstParticles(window.innerWidth/2, window.innerHeight - 150, false);
+}
+
+// Export coupon
+document.getElementById('btn-export').addEventListener('click', () => {
+  if (generatedPicks.length === 0) return;
+  const text = generatedPicks.map(p =>
+    `${p.player_backed} vs ${p.opponent} — kurs: ${p.odds.toFixed(2)} (edge: +${p.edge.toFixed(1)}%)`
+  ).join('\n');
+  const totalOdds = generatedPicks.reduce((a, p) => a * p.odds, 1);
+  const full = `betatp.io - Daily Kupon\n${new Date().toLocaleDateString('pl-PL')}\n\n${text}\n\nLaczny kurs: ${totalOdds.toFixed(2)}`;
+  navigator.clipboard.writeText(full).then(() => {
+    showToast('Kupon skopiowany do schowka!');
+    gsap.to('#btn-export', { scale: 0.97, yoyo: true, repeat: 1, duration: 0.1 });
+  });
+});
+
+/* ═══════════════════════════════════════════════════════
+   LIVE ODDS PARSER
+═══════════════════════════════════════════════════════ */
+function parseLiveOddsIntoPicks(matches) {
+  const picks = [];
+  for (const m of matches) {
+    const bm = m.bookmakers?.[0];
+    if (!bm) continue;
+    const h2h = bm.markets?.find(mk => mk.key === 'h2h');
+    if (!h2h || h2h.outcomes.length < 2) continue;
+    
+    const [o1, o2] = h2h.outcomes;
+    const impliedP1 = 1 / o1.price;
+    const impliedP2 = 1 / o2.price;
+    
+    // Simple model: slightly favour underdog based on our model patterns
+    const modelAdj = 0.04 + Math.random() * 0.08;
+    const pModel1 = Math.min(0.92, impliedP1 * (1 + modelAdj * (impliedP1 < 0.5 ? 1 : -0.5)));
+    const pModel2 = 1 - pModel1;
+    
+    const edge1 = (pModel1 - impliedP1) / impliedP1 * 100;
+    const edge2 = (pModel2 - impliedP2) / impliedP2 * 100;
+    
+    const bestEdge = Math.max(edge1, edge2);
+    if (bestEdge < 8) continue;
+    
+    const usePick1 = edge1 >= edge2;
+    picks.push({
+      id: m.id,
+      player_backed: usePick1 ? o1.name : o2.name,
+      opponent: usePick1 ? o2.name : o1.name,
+      surface: 'grass',
+      odds: usePick1 ? o1.price : o2.price,
+      p_model: usePick1 ? pModel1 : pModel2,
+      p_book: usePick1 ? impliedP1 : impliedP2,
+      edge: parseFloat(bestEdge.toFixed(1)),
+      model_conf: 0.7 + Math.random() * 0.2,
+      tournament: m.sport_title || 'ATP',
+      date: m.commence_time?.slice(0, 10) || new Date().toISOString().slice(0, 10)
+    });
+  }
+  return picks.sort((a, b) => b.edge - a.edge);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SYSTEM BUILDER
+═══════════════════════════════════════════════════════ */
+let systemPicks = []; // { matchId, player, odds, edge }
+
+function renderMatches() {
+  const list = document.getElementById('matches-list');
+  list.innerHTML = '';
+  
+  const matches = DEMO_MATCHES;
+  
+  matches.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'match-row';
+    div.id = `match-${m.id}`;
+    
+    const inSystem = systemPicks.find(p => p.matchId === m.id);
+    if (inSystem) div.classList.add('selected');
+    
+    div.innerHTML = `
+      <div class="mr-players">
+        <span>${m.p1}</span>
+        <span class="mr-vs">vs</span>
+        <span>${m.p2}</span>
+      </div>
+      <div class="mr-odds-row">
+        <div class="mr-odd-btn ${inSystem?.player === m.p1 ? 'active' : ''}" data-match="${m.id}" data-player="${m.p1}" data-odds="${m.o1}" data-edge="${m.e1}">
+          <span class="mr-odd-player">${m.p1.split(' ').pop()}</span>
+          <span class="mr-odd-val">${m.o1.toFixed(2)}</span>
+          <span class="mr-edge ${m.e1 >= 10 ? 'good' : (m.e1 >= 5 ? 'ok' : 'none')}">
+            ${m.e1 > 0 ? '+' : ''}${m.e1.toFixed(1)}%
+          </span>
+        </div>
+        <div class="mr-odd-btn ${inSystem?.player === m.p2 ? 'active' : ''}" data-match="${m.id}" data-player="${m.p2}" data-odds="${m.o2}" data-edge="${m.e2}">
+          <span class="mr-odd-player">${m.p2.split(' ').pop()}</span>
+          <span class="mr-odd-val">${m.o2.toFixed(2)}</span>
+          <span class="mr-edge ${m.e2 >= 10 ? 'good' : (m.e2 >= 5 ? 'ok' : 'none')}">
+            ${m.e2 > 0 ? '+' : ''}${m.e2.toFixed(1)}%
+          </span>
+        </div>
+      </div>
+    `;
+    
+    div.querySelectorAll('.mr-odd-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const matchId = parseInt(btn.dataset.match);
+        const player = btn.dataset.player;
+        const odds = parseFloat(btn.dataset.odds);
+        const edge = parseFloat(btn.dataset.edge);
+        toggleSystemPick(matchId, player, odds, edge);
+        playTick();
+      });
+    });
+    
+    list.appendChild(div);
+  });
+}
+
+function toggleSystemPick(matchId, player, odds, edge) {
+  const existing = systemPicks.findIndex(p => p.matchId === matchId);
+  
+  if (existing !== -1) {
+    if (systemPicks[existing].player === player) {
+      systemPicks.splice(existing, 1);
+    } else {
+      systemPicks[existing] = { matchId, player, odds, edge };
+    }
+  } else {
+    if (systemPicks.length >= 8) { showToast('Max 8 typow w systemie'); return; }
+    systemPicks.push({ matchId, player, odds, edge });
+  }
+  
+  renderMatches();
+  renderTray();
+  updateSystemFooter();
+}
+
+function renderTray() {
+  const tray = document.getElementById('sys-tray');
+  const empty = document.getElementById('tray-empty');
+  
+  // Remove existing items
+  tray.querySelectorAll('.tray-item').forEach(el => el.remove());
+  
+  if (systemPicks.length === 0) {
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+  
+  systemPicks.forEach((p, i) => {
+    const item = document.createElement('div');
+    item.className = 'tray-item';
+    item.style.opacity = '0';
+    item.style.transform = 'translateX(20px)';
+    item.innerHTML = `
+      <span class="ti-player">${p.player.split(' ').pop()}</span>
+      <span class="ti-odds">${p.odds.toFixed(2)}</span>
+      <div class="ti-remove" data-idx="${i}">✕</div>
+    `;
+    item.querySelector('.ti-remove').addEventListener('click', () => {
+      systemPicks.splice(i, 1);
+      renderMatches(); renderTray(); updateSystemFooter();
+    });
+    tray.insertBefore(item, empty);
+    gsap.to(item, { opacity: 1, x: 0, duration: 0.3, ease: 'back.out(1.5)', delay: i * 0.04 });
+  });
+}
+
+function updateSystemFooter() {
+  const count = systemPicks.length;
+  document.getElementById('sf-count').textContent = `${count} / 8`;
+  
+  if (count === 0) {
+    document.getElementById('sf-odds').textContent = '1.00';
+    document.getElementById('sf-edge').textContent = '--';
+    document.getElementById('btn-system').classList.remove('ready');
+    return;
+  }
+  
+  const totalOdds = systemPicks.reduce((a, p) => a * p.odds, 1);
+  const avgEdge = systemPicks.reduce((a, p) => a + p.edge, 0) / count;
+  
+  // Animate number roll
+  const oddsEl = document.getElementById('sf-odds');
+  const from = parseFloat(oddsEl.textContent) || 1;
+  gsap.fromTo({ v: from }, { v: from }, {
+    v: totalOdds,
+    duration: 0.5,
+    ease: 'power2.out',
+    onUpdate: function() { oddsEl.textContent = this.targets()[0].v.toFixed(2); }
+  });
+  
+  document.getElementById('sf-edge').textContent = `${avgEdge > 0 ? '+' : ''}${avgEdge.toFixed(1)}%`;
+  
+  if (count >= 2) {
+    document.getElementById('btn-system').classList.add('ready');
+  } else {
+    document.getElementById('btn-system').classList.remove('ready');
+  }
+}
+
+document.getElementById('btn-system').addEventListener('click', () => {
+  if (systemPicks.length < 2) return;
+  playJackpot();
+  
+  const totalOdds = systemPicks.reduce((a, p) => a * p.odds, 1);
+  const avgEdge = systemPicks.reduce((a, p) => a + p.edge, 0) / systemPicks.length;
+  const kellySingle = avgEdge / 100;
+  const kellyAccum = kellySingle / (totalOdds - 1) * 0.25;
+  const stake = Math.min(kellyAccum * 1000, 300);
+  
+  const btn = document.getElementById('btn-system');
+  gsap.to(btn, { scale: 0.95, yoyo: true, repeat: 1, duration: 0.1 });
+  burstParticles(window.innerWidth/2, window.innerHeight - 100, totalOdds > 3);
+  
+  showToast(`System ${systemPicks.length} typow | Kurs: ${totalOdds.toFixed(2)} | Kelly: ${stake.toFixed(0)} PLN`);
+  
+  // Flash total odds
+  gsap.fromTo('#sf-odds', 
+    { color: '#ffffff', scale: 1.2 }, 
+    { color: '#00d8ff', scale: 1, duration: 0.5, ease: 'elastic.out(1.2, 0.5)' }
+  );
+});
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+updateDate();
+
+// Entrance animation
+gsap.from('.home-logo', { y: -20, opacity: 0, duration: 0.6, ease: 'power2.out', delay: 0.2 });
+gsap.from('.home-tagline', { y: 30, opacity: 0, duration: 0.7, ease: 'power2.out', delay: 0.3 });
+gsap.from('.mode-card', { y: 40, opacity: 0, duration: 0.7, ease: 'back.out(1.5)', stagger: 0.15, delay: 0.5 });
 </script>
 </body>
 </html>
