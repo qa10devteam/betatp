@@ -6,29 +6,13 @@
 <title>betatp.io — AI Value Betting ATP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════════════════════
-   DESIGN SYSTEM v7.0 — CINEMATIC AI EXPERIENCE
-   "Doswiadczenie AI ktore zmieni bieg historii projektow AI"
-   
-   Filozofia: aplikacja dla mas. Kazdy element opowiada
-   o potedze algorytmu — 78 022 przeanalizowane mecze,
-   ML widzi to, czego nie widzi rynek.
-   
-   Architektura doznania:
-   [INTRO] Neural network awakening → 
-   [HERO]  Algorytm opowiada o sobie →
-   [SLOTS] Ceremonia odkrycia picks →
-   [REVEAL] Cards + sound pozycjonalny + particles →
-   [SYSTEM] Builder z Kelly live
-   
-   Sound: chord-based ambient (Dm maj7) + positional audio
-   Visual: Three.js neural + WebGL aurora + particles
-   Motion: GSAP choreography + Spring physics
-   
-   Nauka: Schultz 2016, Clark 2009, Cherkasova 2018, Dixon 2019
-   Edge: v14 edge>=15% → 57 betow, WR=59.6%, ROI=+58.7%
+   DESIGN SYSTEM v6.0 — RESEARCH-BACKED DOPAMINE UX
+   Sources: Schultz 2016 (RPE), Berridge 2016 (wanting vs liking),
+            Clark 2009 (near-miss Neuron), Cherkasova 2018 (JNeurosci),
+            Dixon 2019 (PRP), Barton 2017 (51-study review),
+            DraftKings #61B510, FanDuel navy, CS2 rarity colors
 ═══════════════════════════════════════════════════════════════════ */
 :root{
   /* SURFACES — DraftKings dark depth system */
@@ -485,145 +469,25 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;back
 .tm.lime{border-color:rgba(194,255,61,.28);color:var(--lime)}
 .tm.gold{border-color:rgba(255,215,0,.28);color:var(--gold)}
 .tm.pink{border-color:rgba(211,44,230,.28);color:var(--pink)}
-
-/* ═══════════════════════════════════════════
-   v7.0 UPGRADES — CINEMATIC AI EXPERIENCE
-═══════════════════════════════════════════ */
-
-/* Neural canvas za hero */
-#neural-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.18}
-
-/* INTRO overlay — neural awakening */
-#intro{position:fixed;inset:0;z-index:500;background:#020208;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-#intro.out{animation:introOut .85s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes introOut{to{opacity:0;pointer-events:none}}
-.intro-logo{font-family:var(--f);font-size:48px;font-weight:900;letter-spacing:-.065em;
-  background:linear-gradient(128deg,#fff 0%,var(--lime) 42%,var(--cyan) 80%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  opacity:0;transform:scale(.82)}
-.intro-sub{font-family:var(--m);font-size:9px;color:var(--t3);letter-spacing:.22em;text-transform:uppercase;opacity:0}
-.intro-bars{display:flex;gap:4px;height:28px;align-items:flex-end;opacity:0}
-.ibar{width:3px;border-radius:2px;background:var(--lime);animation:ibarPulse 1.2s ease infinite}
-@keyframes ibarPulse{0%,100%{transform:scaleY(.2);opacity:.3}50%{transform:scaleY(1);opacity:1}}
-.intro-msg{font-family:var(--m);font-size:10px;color:var(--lime);letter-spacing:.1em;opacity:0;text-align:center}
-
-/* Hero storytelling lines */
-.hero-algo-tag{font-family:var(--m);font-size:8px;font-weight:700;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--lime);opacity:0;margin-bottom:4px;
-  display:flex;align-items:center;gap:6px}
-.hero-algo-tag::before{content:'';width:18px;height:1px;background:var(--lime)}
-.hero-algo-tag::after{content:'';width:18px;height:1px;background:var(--lime)}
-.hero-story{display:flex;flex-direction:column;gap:3px;margin:8px 0;max-width:360px;text-align:center}
-.hs-line{font-size:11px;color:var(--t2);line-height:1.55;opacity:0;transform:translateY(8px);
-  font-family:var(--m);font-weight:400}
-.hs-line strong{color:var(--lime)}
-
-/* Stat bar strip — realne metryki */
-.stat-strip{display:flex;gap:1px;margin:10px 0 0;position:relative;z-index:2;width:100%;max-width:380px;justify-content:center}
-.stat-pill{flex:1;max-width:118px;padding:8px 10px;border-radius:10px;
-  background:rgba(255,255,255,.032);border:1px solid var(--bd1);
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  backdrop-filter:blur(12px);opacity:0;transform:translateY(12px)}
-.sp-num{font-family:var(--m);font-size:19px;font-weight:900;letter-spacing:-.03em;line-height:1}
-.sp-num.lime{color:var(--lime);text-shadow:0 0 18px rgba(194,255,61,.32)}
-.sp-num.gold{color:var(--gold);text-shadow:0 0 18px rgba(255,215,0,.28)}
-.sp-num.cyan{color:var(--cyan);text-shadow:0 0 18px rgba(0,242,232,.24)}
-.sp-lbl{font-size:7px;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;font-family:var(--m)}
-
-/* Ticker v7 */
-#sp-inner{display:flex;gap:0;animation:ticker 28s linear infinite;white-space:nowrap;width:max-content}
-
-/* Three.js court container */
-#court-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0}
-
-/* Card hero upgrade — teaser bar */
-.hcard-algo{position:absolute;bottom:0;left:0;right:0;padding:5px 10px;
-  background:linear-gradient(to top,rgba(2,2,8,.97),transparent);
-  display:flex;justify-content:space-between;align-items:flex-end}
-.hca-stat{display:flex;flex-direction:column;align-items:center}
-.hca-n{font-family:var(--m);font-size:13px;font-weight:900;color:var(--lime);line-height:1}
-.hca-l{font-size:7px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em}
-
-/* Glassmorphism pick card upgrade */
-.pcard{border-radius:var(--r);border:1px solid var(--bd1);
-  background:linear-gradient(135deg,rgba(13,13,36,.92),rgba(5,5,15,.97));
-  overflow:hidden;position:relative;transition:border-color var(--t-mid);
-  backdrop-filter:blur(20px)}
-
-/* Pick card neural bar */
-.pc-neural{height:2px;background:rgba(255,255,255,.04);border-radius:1px;overflow:hidden;margin:2px 0}
-.pc-neural-fill{height:100%;border-radius:1px;background:linear-gradient(90deg,transparent,var(--lime),transparent);
-  animation:neuralFlow 2.4s ease infinite}
-@keyframes neuralFlow{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-
-/* Sound wave indicator */
-.sound-wave{display:flex;align-items:center;gap:2px;height:12px}
-.sw-bar{width:2px;border-radius:1px;background:var(--lime);animation:swPulse 1.1s ease infinite}
-.sw-bar:nth-child(2){animation-delay:.15s;height:60%}
-.sw-bar:nth-child(3){animation-delay:.3s;height:100%}
-.sw-bar:nth-child(4){animation-delay:.15s;height:60%}
-.sw-bar:nth-child(5){animation-delay:0s;height:30%}
-@keyframes swPulse{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
-
-/* ALGORYTM MOWI badge */
-.algo-badge{display:inline-flex;align-items:center;gap:5px;
-  padding:3px 9px;border-radius:var(--r-full);
-  background:linear-gradient(90deg,rgba(194,255,61,.08),rgba(0,242,232,.06));
-  border:1px solid rgba(194,255,61,.18);
-  font-size:8px;font-weight:800;color:var(--lime);letter-spacing:.1em;text-transform:uppercase}
-.algo-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--lime);animation:ldot 1.8s ease infinite}
-
-/* Overlay v7 upgrade */
-.ov-neural-line{position:absolute;height:1px;width:100%;background:linear-gradient(90deg,transparent,rgba(194,255,61,.15),transparent);
-  pointer-events:none;animation:nlScan 3.2s ease infinite}
-@keyframes nlScan{0%{top:0;opacity:0}30%{opacity:1}100%{top:100%;opacity:0}}
 </style>
 </head>
 <body>
 <canvas id="bg"></canvas>
 <canvas id="pc"></canvas>
-<canvas id="court-canvas"></canvas>
-
-<!-- CINEMATIC INTRO — neural awakening -->
-<div id="intro">
-  <div class="intro-logo" id="ilogo">betatp</div>
-  <div class="intro-sub" id="isub">Neural Engine v14 — Initializing</div>
-  <div class="intro-bars" id="ibars">
-    <div class="ibar" style="height:35%;animation-delay:0s"></div>
-    <div class="ibar" style="height:60%;animation-delay:.12s"></div>
-    <div class="ibar" style="height:100%;animation-delay:.24s"></div>
-    <div class="ibar" style="height:80%;animation-delay:.36s"></div>
-    <div class="ibar" style="height:45%;animation-delay:.48s"></div>
-    <div class="ibar" style="height:70%;animation-delay:.6s"></div>
-    <div class="ibar" style="height:55%;animation-delay:.72s"></div>
-  </div>
-  <div class="intro-msg" id="imsg">78 022 meczow · LightGBM · Kelly Criterion</div>
-</div>
 
 <!-- HOME -->
 <div class="screen" id="s-home">
   <div class="hero-bg"></div>
   <div class="logo-pill"><div class="ldot"></div>betatp.io<div class="lpill-badge">v14</div></div>
   <div class="hero-center">
-    <div class="hero-algo-tag" id="htag">Neural Engine Aktywny</div>
     <h1 class="hero-t" id="ht">betatp</h1>
-    <p class="hero-sub" id="hs">LightGBM v14 &nbsp;&middot;&nbsp; 78 022 meczy &nbsp;&middot;&nbsp; ROI&nbsp;+58.7%</p>
-    <div class="hero-story">
-      <div class="hs-line" id="hsl1">Ten algorytm przeczytał <strong>78 022</strong> meczów ATP.</div>
-      <div class="hs-line" id="hsl2">Widzi wzorce, których rynek nie dostrzega.</div>
-      <div class="hs-line" id="hsl3">Edge ≥15% = <strong>59.6%</strong> trafność. Bukmacher się myli.</div>
-    </div>
-    <div class="stat-strip">
-      <div class="stat-pill" id="sp1"><div class="sp-num lime">+58.7%</div><div class="sp-lbl">ROI backtest</div></div>
-      <div class="stat-pill" id="sp2"><div class="sp-num gold">59.6%</div><div class="sp-lbl">Win rate</div></div>
-      <div class="stat-pill" id="sp3"><div class="sp-num cyan">≥15%</div><div class="sp-lbl">Min. edge</div></div>
-    </div>
+    <p class="hero-sub" id="hs">LightGBM v14 &nbsp;&middot;&nbsp; AUC&nbsp;0.9031 &nbsp;&middot;&nbsp; ROI&nbsp;+42.1%</p>
     <div class="market-row">
-      <div class="mc l">Winner</div>
-      <div class="mc c">First Set</div>
-      <div class="mc g">Handicap</div>
-      <div class="mc v">Total Sets</div>
-      <div class="mc b">Score</div>
+      <div class="mc l">🏆 Winner</div>
+      <div class="mc c">1️⃣ First Set</div>
+      <div class="mc g">± Handicap</div>
+      <div class="mc v">∑ Total Sets</div>
+      <div class="mc b">⚡ Score</div>
     </div>
   </div>
   <div class="deck">
@@ -649,30 +513,30 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;back
   <!-- Social proof ticker — Cialdini 1984 + availability heuristic (Clark 2012) -->
   <div class="sp-ticker">
     <div class="sp-inner" id="sp-inner">
-      <div class="sp-item">Backtest edge&#8805;15% <span class="sp-v">+58.7% ROI</span></div>
+      <div class="sp-item">Backtest 57 betow <span class="sp-v">+42.1% ROI</span></div>
       <div class="sp-sep">·</div>
-      <div class="sp-item">Fritz vs Bublik <span class="sp-g">Edge +25.7%</span></div>
+      <div class="sp-item">Fritz @ 2.80 <span class="sp-g">Edge +31.6%</span></div>
       <div class="sp-sep">·</div>
-      <div class="sp-item">57 betow, WR <span class="sp-g">59.6%</span></div>
+      <div class="sp-item">Norrie +1.5 @ 1.78 <span class="sp-g">Edge +21.1%</span></div>
       <div class="sp-sep">·</div>
-      <div class="sp-item">78 022 meczow przeanalizowanych <span class="sp-v">LightGBM v14</span></div>
+      <div class="sp-item">AUC model v14 <span class="sp-v">0.9031</span></div>
       <div class="sp-sep">·</div>
       <div class="sp-item">Wimbledon 2026 <span class="sp-v">3 value picks dzis</span></div>
       <div class="sp-sep">·</div>
-      <div class="sp-item">Kelly avg stake <span class="sp-g">9.8% bankrolla</span></div>
+      <div class="sp-item">Kelly sizing <span class="sp-g">+38% avg edge</span></div>
       <div class="sp-sep">·</div>
       <!-- duplicate for seamless loop -->
-      <div class="sp-item">Backtest edge&#8805;15% <span class="sp-v">+58.7% ROI</span></div>
+      <div class="sp-item">Backtest 57 betow <span class="sp-v">+42.1% ROI</span></div>
       <div class="sp-sep">·</div>
-      <div class="sp-item">Fritz vs Bublik <span class="sp-g">Edge +25.7%</span></div>
+      <div class="sp-item">Fritz @ 2.80 <span class="sp-g">Edge +31.6%</span></div>
       <div class="sp-sep">·</div>
-      <div class="sp-item">57 betow, WR <span class="sp-g">59.6%</span></div>
+      <div class="sp-item">Norrie +1.5 @ 1.78 <span class="sp-g">Edge +21.1%</span></div>
       <div class="sp-sep">·</div>
-      <div class="sp-item">78 022 meczow przeanalizowanych <span class="sp-v">LightGBM v14</span></div>
+      <div class="sp-item">AUC model v14 <span class="sp-v">0.9031</span></div>
       <div class="sp-sep">·</div>
       <div class="sp-item">Wimbledon 2026 <span class="sp-v">3 value picks dzis</span></div>
       <div class="sp-sep">·</div>
-      <div class="sp-item">Kelly avg stake <span class="sp-g">9.8% bankrolla</span></div>
+      <div class="sp-item">Kelly sizing <span class="sp-g">+38% avg edge</span></div>
       <div class="sp-sep">·</div>
     </div>
   </div>
@@ -682,7 +546,6 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;back
 <div id="ov">
   <div class="ov-bg"></div>
   <div class="ov-scanlines"></div>
-  <div class="ov-neural-line"></div>
   <div class="ovp" id="ovp1">
     <div class="ovtag">model v14 · 5 rynkow · wimbledon 2026</div>
     <div id="ovtxt">Inicjalizacja...</div>
@@ -1558,284 +1421,6 @@ enter
 enter.call(()=>{
   gsap.to('.logo-pill',{boxShadow:'0 0 0 3px rgba(194,255,61,.11)',yoyo:true,repeat:-1,duration:2.8,ease:'sine.inOut'});
 });
-</script>
-
-<!-- ═══════════════════════════════════════════════════════════
-     v7.0 UPGRADE SCRIPT — CINEMATIC AI EXPERIENCE
-     "Doswiadczenie ktore zmieni bieg historii projektow AI"
-═══════════════════════════════════════════════════════════ -->
-<script>
-(function(){
-'use strict';
-
-/* ══════════════════════════════════════════
-   1. THREE.JS NEURAL NETWORK BACKGROUND
-   Nodes = neurony, edges = połączenia
-   Kolory: lime (aktywny), cyan (normalny), violet (nieaktywny)
-══════════════════════════════════════════ */
-(function initNeural(){
-  if(typeof THREE==='undefined')return;
-  const canvas=document.getElementById('court-canvas');
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  renderer.setClearColor(0x000000,0);
-  const scene=new THREE.Scene();
-  const cam=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,1000);
-  cam.position.z=28;
-
-  const N=55,RANGE=22;
-  const nodes=[],edges=[];
-
-  /* Tworzymy neurony */
-  const nGeo=new THREE.SphereGeometry(.28,8,8);
-  for(let i=0;i<N;i++){
-    const active=Math.random()<.18;
-    const mat=new THREE.MeshBasicMaterial({
-      color:active?0xc2ff3d:Math.random()<.5?0x00f2e8:0x9b5de5,
-      transparent:true,opacity:active?.9:.32
-    });
-    const mesh=new THREE.Mesh(nGeo,mat);
-    mesh.position.set((Math.random()-.5)*RANGE*2,(Math.random()-.5)*RANGE,(Math.random()-.5)*12);
-    mesh.userData={
-      vx:(Math.random()-.5)*.015,
-      vy:(Math.random()-.5)*.01,
-      pulse:Math.random()*Math.PI*2,
-      pulseSpeed:.4+Math.random()*.8,
-      active
-    };
-    scene.add(mesh);nodes.push(mesh);
-  }
-
-  /* Połączenia między neuronami */
-  const lineMat=new THREE.LineBasicMaterial({color:0x4b69ff,transparent:true,opacity:.11});
-  for(let i=0;i<N;i++){
-    for(let j=i+1;j<N;j++){
-      const d=nodes[i].position.distanceTo(nodes[j].position);
-      if(d<9&&Math.random()<.35){
-        const geo=new THREE.BufferGeometry().setFromPoints([nodes[i].position,nodes[j].position]);
-        const line=new THREE.Line(geo,lineMat.clone());
-        line.userData={a:i,b:j};scene.add(line);edges.push(line);
-      }
-    }
-  }
-
-  /* "Signal pulse" — aktywacja propaguje się przez sieć */
-  function fireSignal(){
-    const src=nodes[Math.floor(Math.random()*N)];
-    src.material.color.setHex(0xc2ff3d);src.material.opacity=1;
-    src.userData.active=true;
-    /* Znajdz połączone */
-    setTimeout(()=>{src.material.color.setHex(0x00f2e8);src.material.opacity=.42;src.userData.active=false;},600);
-  }
-  setInterval(fireSignal,420);
-
-  const resize=()=>{
-    renderer.setSize(window.innerWidth,window.innerHeight);
-    cam.aspect=window.innerWidth/window.innerHeight;cam.updateProjectionMatrix();
-  };
-  resize();window.addEventListener('resize',resize);
-
-  let frame=0;
-  (function anim(){
-    requestAnimationFrame(anim);frame++;
-    nodes.forEach(n=>{
-      n.position.x+=n.userData.vx;n.position.y+=n.userData.vy;
-      if(Math.abs(n.position.x)>RANGE){n.userData.vx*=-1;}
-      if(Math.abs(n.position.y)>RANGE*.6){n.userData.vy*=-1;}
-      /* Pulse scale */
-      n.userData.pulse+=n.userData.pulseSpeed*.016;
-      const s=.85+.3*Math.sin(n.userData.pulse);
-      n.scale.setScalar(s);
-    });
-    /* Aktualizuj geometrie krawedzi */
-    edges.forEach(e=>{
-      const pts=[nodes[e.userData.a].position,nodes[e.userData.b].position];
-      e.geometry.setFromPoints(pts);
-    });
-    /* Obrót kamery */
-    cam.position.x=Math.sin(frame*.0003)*4;
-    cam.position.y=Math.cos(frame*.0002)*2;
-    cam.lookAt(0,0,0);
-    renderer.render(scene,cam);
-  })();
-})();
-
-/* ══════════════════════════════════════════
-   2. CINEMATIC INTRO SEQUENCE
-   Neural awakening — 3.2s ceremony
-══════════════════════════════════════════ */
-(function initIntro(){
-  /* Pokaż neural canvas za intro */
-  gsap.to('#court-canvas',{opacity:.22,duration:1.8,delay:.3});
-
-  const tl=gsap.timeline({
-    onComplete(){
-      /* Ukryj intro */
-      document.getElementById('intro').classList.add('out');
-      setTimeout(()=>{
-        document.getElementById('intro').style.display='none';
-        /* Teraz hero enter z neural story */
-        heroEnter();
-      },850);
-    }
-  });
-
-  tl
-    .to('#ilogo',{opacity:1,scale:1,duration:.72,ease:'back.out(1.5)',delay:.22})
-    .to('#isub',{opacity:1,duration:.48,ease:'power2.out'},'-=.22')
-    .to('#ibars',{opacity:1,duration:.36,ease:'power2.out'},'-=.1')
-    .to('#imsg',{opacity:1,duration:.48,ease:'power2.out'},'-=.08')
-    .to({},{duration:1.2})
-    .to('#ilogo',{opacity:0,y:-12,duration:.38})
-    .to('#isub',{opacity:0,duration:.28},'-=.28')
-    .to('#ibars',{opacity:0,duration:.28},'-=.22')
-    .to('#imsg',{opacity:0,duration:.28},'-=.22');
-})();
-
-/* ══════════════════════════════════════════
-   3. HERO ENTER ANIMATION
-   Staggered reveal z storytelling lines
-══════════════════════════════════════════ */
-function heroEnter(){
-  /* Neural canvas zostaje za hero */
-  const tl=gsap.timeline({defaults:{ease:'power3.out'}});
-  tl
-    .to('#htag',{opacity:1,duration:.5,delay:.1})
-    .from('#ht',{y:32,opacity:0,duration:.82,ease:'back.out(1.8)'},'-=.28')
-    .from('#hs',{y:14,opacity:0,duration:.52},'-=.38')
-    /* Storytelling lines — staggered */
-    .to('#hsl1',{opacity:1,y:0,duration:.48},'-=.1')
-    .to('#hsl2',{opacity:1,y:0,duration:.44},'-=.18')
-    .to('#hsl3',{opacity:1,y:0,duration:.44},'-=.18')
-    /* Stat pills entrance */
-    .to(['#sp1','#sp2','#sp3'],{opacity:1,y:0,stagger:.08,duration:.52,ease:'back.out(1.5)'},'-=.18')
-    /* Market chips */
-    .from('.mc',{opacity:0,y:6,stagger:.04,duration:.38},'-=.28')
-    /* Holographic cards */
-    .from('#c-daily',{opacity:0,x:-22,rotateY:-12,duration:.62,ease:'back.out(1.4)'},'-=.14')
-    .from('#c-system',{opacity:0,x:22,rotateY:12,duration:.62,ease:'back.out(1.4)'},'-=.5');
-
-  /* Chord ambient START po hero enter */
-  setTimeout(()=>startChordAmbient(),800);
-}
-
-/* ══════════════════════════════════════════
-   4. CHORD AMBIENT — Dm maj7 progression
-   Muzyka podbija poczucie "wielkiej historii"
-   Cherkasova 2018: audio + visual sync = max dopamine
-══════════════════════════════════════════ */
-let _chordCtx=null,chordNodes=[];
-function startChordAmbient(){
-  try{
-    if(!_ac)return;/* Poczekaj na AudioContext z main skryptu */
-    _chordCtx=_ac;
-    /* Dm maj7 chord: D(146.8) F(174.6) A(220) C(261.6) */
-    const chordFreqs=[[146.8,'sine',.018],[174.6,'sine',.014],[220,'sine',.011],[261.6,'triangle',.008],[73.4,'sine',.025]];
-    const masterGain=_chordCtx.createGain();masterGain.gain.value=0;masterGain.connect(_chordCtx.destination);
-    chordFreqs.forEach(([f,type,v])=>{
-      const o=_chordCtx.createOscillator(),g=_chordCtx.createGain();
-      o.type=type;o.frequency.value=f;
-      /* Vibrato */
-      const lfo=_chordCtx.createOscillator(),lfoG=_chordCtx.createGain();
-      lfo.frequency.value=.18+Math.random()*.12;lfoG.gain.value=f*.004;
-      lfo.connect(lfoG);lfoG.connect(o.frequency);lfo.start();
-      g.gain.value=v;o.connect(g);g.connect(masterGain);o.start();
-      chordNodes.push(o,lfo);
-    });
-    /* Fade in ambient */
-    gsap.to(masterGain.gain,{value:.14,duration:5,ease:'power1.in'});
-  }catch(e){}
-}
-
-/* ══════════════════════════════════════════
-   5. POZYCJONALNY AUDIO przy reveal pick cardow
-   Lewa karta = lewy speaker, prawa = prawy
-   (Cherkasova 2018: spatial audio + reward = +34% activation)
-══════════════════════════════════════════ */
-function spatialReveal(pickIndex,totalPicks){
-  try{
-    if(!_ac)return;
-    const pan=(pickIndex/(totalPicks-1))*2-1;/* -1=lewo, 0=srodek, +1=prawo */
-    const panner=_ac.createStereoPanner();panner.pan.value=pan;
-    const o=_ac.createOscillator(),g=_ac.createGain();
-    o.type='square';
-    o.frequency.setValueAtTime(196,_ac.currentTime);
-    o.frequency.exponentialRampToValueAtTime(784,_ac.currentTime+.18);
-    g.gain.setValueAtTime(.11,_ac.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,_ac.currentTime+.28);
-    o.connect(g);g.connect(panner);panner.connect(_ac.destination);
-    o.start();o.stop(_ac.currentTime+.28);
-  }catch(e){}
-}
-
-/* Eksponuj spatialReveal globalnie */
-window.spatialReveal=spatialReveal;
-
-/* ══════════════════════════════════════════
-   6. NEURAL SCAN na pick cards
-   Animacja "model analizuje" po reveal
-══════════════════════════════════════════ */
-window.addNeuralBars=function(cardEl){
-  const bar=document.createElement('div');bar.className='pc-neural';
-  const fill=document.createElement('div');fill.className='pc-neural-fill';
-  bar.appendChild(fill);
-  /* Wstaw po pc-matchrow */
-  const matchrow=cardEl.querySelector('.pc-matchrow');
-  if(matchrow)matchrow.insertAdjacentElement('afterend',bar);
-};
-
-/* ══════════════════════════════════════════
-   7. ALGO BADGE na kartach — "Algorytm mowi"
-══════════════════════════════════════════ */
-window.addAlgoBadge=function(cardEl){
-  const badge=document.createElement('div');badge.className='algo-badge';
-  const dot=document.createElement('div');dot.className='algo-badge-dot';
-  badge.appendChild(dot);badge.appendChild(document.createTextNode('Algorytm analizuje'));
-  const body=cardEl.querySelector('.pc-body');
-  if(body)body.insertBefore(badge,body.firstChild);
-};
-
-/* ══════════════════════════════════════════
-   8. UPGRADE dealFlipCards z spatial audio
-   Hook na istniejaca funkcje
-══════════════════════════════════════════ */
-const _origDealFlipCards=window.dealFlipCards;
-window.dealFlipCards=function(picks){
-  if(_origDealFlipCards)_origDealFlipCards(picks);
-  /* Po reveal — dodaj neural bars i spatial audio z opoznieniem */
-  picks.forEach((pick,i)=>{
-    setTimeout(()=>{
-      spatialReveal(i,picks.length);
-      /* Znajdz karte i dodaj elementy */
-      const cards=document.querySelectorAll('.pcard');
-      if(cards[i]){
-        addNeuralBars(cards[i]);
-        addAlgoBadge(cards[i]);
-      }
-    },i*820+2800);/* po zakonczeniu flip ceremoni */
-  });
-};
-
-/* ══════════════════════════════════════════
-   9. NEURAL CANVAS FADE przy przejsciach
-══════════════════════════════════════════ */
-const _origGoTo=window.goTo;
-window.goTo=function(id){
-  if(_origGoTo)_origGoTo(id);
-  if(id==='daily'||id==='system'){
-    gsap.to('#court-canvas',{opacity:.06,duration:.8});
-  } else {
-    gsap.to('#court-canvas',{opacity:.22,duration:.8});
-  }
-};
-
-/* ══════════════════════════════════════════
-   10. DAILY CHIP — v14 badge upgrade
-══════════════════════════════════════════ */
-const chipV=document.querySelector('.chip:last-child');
-if(chipV)chipV.textContent='v14 · ROI +58.7%';
-
-})();
 </script>
 </body>
 </html>
