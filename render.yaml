@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: betatp-api
+    runtime: python
+    # Render wykrywa Python z .python-version (3.11)
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT --workers 1
+    plan: free          # free tier: 512 MB RAM, 0.1 CPU
+    autoDeploy: false   # deploy manualny — nie automatyczny na każdy push
+    envVars:
+      - key: PYTHONPATH
+        value: .
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: LOG_LEVEL
+        value: info
+      - key: ENVIRONMENT
+        value: production
+    # Uwagi dot. free tier:
+    # • Render free tier "spywa" po 15 min bez ruchu (cold start ~30s)
+    # • RAM 512 MB — LightGBM model ładowany lazy (tylko przy pierwszym /predict)
+    # • Pliki models/*.joblib NIE są w repo (za duże); ML działa w trybie fallback
+    # • data/backtest_v4.json i frontend/index.html SĄ w repo

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>betatp.io — ATP Value Picks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & Tokens ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0a0a0b;
+      --bg-1:       #111113;
+      --bg-2:       #18181b;
+      --bg-3:       #1e1e23;
+      --border:     #27272a;
+      --border-2:   #3f3f46;
+      --txt:        #fafafa;
+      --txt-2:      #a1a1aa;
+      --txt-3:      #71717a;
+      --accent:     #22d3ee;   /* cyan */
+      --accent-2:   #0ea5e9;
+      --green:      #4ade80;
+      --red:        #f87171;
+      --yellow:     #fbbf24;
+      --orange:     #fb923c;
+      --radius:     6px;
+      --radius-lg:  10px;
+      --mono:       'Geist Mono', 'JetBrains Mono', monospace;
+      --sans:       'Geist', system-ui, sans-serif;
+    }
+
+    html { font-family: var(--sans); background: var(--bg); color: var(--txt); font-size: 14px; }
+    body { min-height: 100dvh; }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .app { display: grid; grid-template-rows: 48px 1fr; min-height: 100dvh; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; border-bottom: 1px solid var(--border);
+      background: var(--bg-1); position: sticky; top: 0; z-index: 10;
+    }
+    .nav-logo { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--txt); letter-spacing: 0.05em; }
+    .nav-logo span { color: var(--accent); }
+    .nav-meta { font-family: var(--mono); font-size: 11px; color: var(--txt-3); }
+    .nav-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--txt-3); font-family: var(--mono); }
+    .dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; max-width: 1400px; width: 100%; margin: 0 auto; }
+
+    /* ── Stat cards row ─────────────────────────────────────────── */
+    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    @media (max-width: 900px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 540px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .stat-card {
+      background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-label { font-family: var(--mono); font-size: 10px; color: var(--txt-3); letter-spacing: 0.06em; text-transform: uppercase; }
+    .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--txt); line-height: 1; }
+    .stat-value.green { color: var(--green); }
+    .stat-value.red { color: var(--red); }
+    .stat-value.cyan { color: var(--accent); }
+    .stat-sub { font-family: var(--mono); font-size: 10px; color: var(--txt-3); }
+
+    /* ── Section header ─────────────────────────────────────────── */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .section-title { font-family: var(--mono); font-size: 11px; color: var(--txt-3); text-transform: uppercase; letter-spacing: 0.08em; }
+    .section-badge {
+      font-family: var(--mono); font-size: 10px; padding: 2px 7px;
+      border-radius: 99px; border: 1px solid var(--border-2); color: var(--txt-2);
+    }
+    .section-badge.green { border-color: color-mix(in srgb, var(--green) 40%, transparent); color: var(--green); }
+
+    /* ── Picks table ─────────────────────────────────────────────── */
+    .picks-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .picks-filters { display: flex; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .filter-btn {
+      font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 99px;
+      border: 1px solid var(--border-2); background: transparent; color: var(--txt-2); cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+
+    .picks-table { width: 100%; border-collapse: collapse; }
+    .picks-table th {
+      font-family: var(--mono); font-size: 10px; color: var(--txt-3);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .picks-table th.right { text-align: right; }
+    .picks-table td { padding: 10px 12px; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); font-family: var(--mono); font-size: 12px; }
+    .picks-table tr:last-child td { border-bottom: none; }
+    .picks-table tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+
+    .player-name { font-weight: 500; color: var(--txt); }
+    .player-vs   { color: var(--txt-3); font-size: 10px; }
+    .surface-pill {
+      display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 3px;
+      font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .surface-pill.Hard  { background: color-mix(in srgb, var(--accent-2) 15%, transparent); color: var(--accent-2); border: 1px solid color-mix(in srgb, var(--accent-2) 30%, transparent); }
+    .surface-pill.Clay  { background: color-mix(in srgb, var(--orange) 15%, transparent); color: var(--orange); border: 1px solid color-mix(in srgb, var(--orange) 30%, transparent); }
+    .surface-pill.Grass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+
+    .num-right { text-align: right; }
+    .edge-bar-wrap { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+    .edge-bar { height: 3px; border-radius: 2px; background: var(--border-2); width: 48px; overflow: hidden; }
+    .edge-bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width .3s; }
+    .edge-bar-fill.yellow { background: var(--yellow); }
+    .edge-bar-fill.orange { background: var(--orange); }
+
+    .conf-badge {
+      font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .conf-badge.HIGH   { background: color-mix(in srgb, var(--green)  15%, transparent); color: var(--green);  border: 1px solid color-mix(in srgb, var(--green)  30%, transparent); }
+    .conf-badge.MEDIUM { background: color-mix(in srgb, var(--yellow) 15%, transparent); color: var(--yellow); border: 1px solid color-mix(in srgb, var(--yellow) 30%, transparent); }
+    .conf-badge.LOW    { background: color-mix(in srgb, var(--txt-3)  15%, transparent); color: var(--txt-3);  border: 1px solid color-mix(in srgb, var(--txt-3)  30%, transparent); }
+
+    .signal-badge {
+      font-family: var(--mono); font-size: 9px; padding: 2px 7px; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .signal-badge.bet  { background: color-mix(in srgb, var(--green)  15%, transparent); color: var(--green);  border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+    .signal-badge.pass { background: transparent; color: var(--txt-3); border: 1px solid var(--border); }
+
+    .kelly-val { color: var(--accent); font-weight: 500; }
+    .prob-val  { color: var(--txt-2); }
+
+    /* ── Bottom grid ────────────────────────────────────────────── */
+    .bottom-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+    @media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+    /* ── Monthly PnL chart ──────────────────────────────────────── */
+    .pnl-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; }
+    .pnl-bars { display: flex; align-items: flex-end; gap: 4px; height: 80px; padding-top: 4px; }
+    .pnl-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .pnl-bar-pos { background: color-mix(in srgb, var(--green) 60%, transparent); border-radius: 2px 2px 0 0; transition: height .4s; min-height: 1px; }
+    .pnl-bar-neg { background: color-mix(in srgb, var(--red)   60%, transparent); border-radius: 0 0 2px 2px; transition: height .4s; min-height: 1px; }
+    .pnl-bar-label { font-family: var(--mono); font-size: 8px; color: var(--txt-3); white-space: nowrap; }
+
+    /* ── Model info panel ───────────────────────────────────────── */
+    .model-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .model-kv { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+    .model-kv:last-child { border-bottom: none; }
+    .model-kv-key { font-family: var(--mono); font-size: 10px; color: var(--txt-3); }
+    .model-kv-val { font-family: var(--mono); font-size: 12px; color: var(--txt); font-weight: 500; }
+    .model-kv-val.green { color: var(--green); }
+    .model-kv-val.cyan  { color: var(--accent); }
+
+    /* ── Loading / error ─────────────────────────────────────────── */
+    .loading { display: flex; align-items: center; justify-content: center; height: 200px; font-family: var(--mono); font-size: 12px; color: var(--txt-3); gap: 8px; }
+    .spinner { width: 14px; height: 14px; border: 2px solid var(--border-2); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty { text-align: center; padding: 40px; font-family: var(--mono); color: var(--txt-3); font-size: 12px; }
+
+    /* ── Scrollbar ──────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-logo">betatp<span>.</span>io</div>
+    <div class="nav-status">
+      <span class="dot-live"></span>
+      <span id="nav-date">—</span>
+    </div>
+    <div class="nav-meta" id="nav-model">model loading...</div>
+  </nav>
+
+  <!-- Main -->
+  <main>
+
+    <!-- Stats row -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Model AUC</div>
+        <div class="stat-value cyan" id="stat-auc">—</div>
+        <div class="stat-sub" id="stat-auc-sub">vs Pinnacle —</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Bets Today</div>
+        <div class="stat-value" id="stat-bets">—</div>
+        <div class="stat-sub" id="stat-bets-sub">edge > 5%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Edge</div>
+        <div class="stat-value green" id="stat-edge">—</div>
+        <div class="stat-sub">vs market</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Half-Kelly ROI</div>
+        <div class="stat-value" id="stat-roi">—</div>
+        <div class="stat-sub" id="stat-roi-sub">holdout 2024-2026</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Max Drawdown</div>
+        <div class="stat-value red" id="stat-dd">—</div>
+        <div class="stat-sub">half-Kelly, edge>8%</div>
+      </div>
+    </div>
+
+    <!-- Picks -->
+    <div class="picks-panel">
+      <div style="padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+        <div class="section-title">value picks</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div class="section-badge green" id="picks-count">0 picks</div>
+          <div class="section-badge" id="picks-source">backtest</div>
+        </div>
+      </div>
+      <div class="picks-filters">
+        <button class="filter-btn active" onclick="filterPicks('all')">All</button>
+        <button class="filter-btn" onclick="filterPicks('HIGH')">High confidence</button>
+        <button class="filter-btn" onclick="filterPicks('MEDIUM')">Medium</button>
+        <button class="filter-btn" onclick="filterPicks('Hard')">Hard</button>
+        <button class="filter-btn" onclick="filterPicks('Clay')">Clay</button>
+        <button class="filter-btn" onclick="filterPicks('Grass')">Grass</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="picks-table">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Surface</th>
+              <th class="right">Odds</th>
+              <th class="right">P(model)</th>
+              <th class="right">P(Pinnacle)</th>
+              <th class="right">Edge</th>
+              <th class="right">EV%</th>
+              <th class="right">Kelly/2</th>
+              <th>Signal</th>
+              <th>Conf.</th>
+            </tr>
+          </thead>
+          <tbody id="picks-tbody">
+            <tr><td colspan="10" class="loading"><span class="spinner"></span>Loading picks...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="bottom-grid">
+      <!-- PnL chart -->
+      <div class="pnl-panel">
+        <div class="section-header">
+          <div class="section-title">Monthly PnL — half-Kelly, edge > 8%</div>
+          <div class="section-badge" id="pnl-total">—</div>
+        </div>
+        <div class="pnl-bars" id="pnl-bars">
+          <div class="loading"><span class="spinner"></span></div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:4px;" id="pnl-labels"></div>
+      </div>
+
+      <!-- Model panel -->
+      <div class="model-panel">
+        <div class="section-title">Model Info</div>
+        <div class="model-kv">
+          <div class="model-kv-key">Version</div>
+          <div class="model-kv-val cyan" id="mi-version">—</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Holdout AUC</div>
+          <div class="model-kv-val green" id="mi-auc">—</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Pinnacle AUC</div>
+          <div class="model-kv-val" id="mi-pin-auc">0.7457</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">AUC delta</div>
+          <div class="model-kv-val green" id="mi-delta">—</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Train period</div>
+          <div class="model-kv-val">2004-2023</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Holdout</div>
+          <div class="model-kv-val">2024-2026</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Matches (train)</div>
+          <div class="model-kv-val">71,872</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Matches (holdout)</div>
+          <div class="model-kv-val">6,150</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Strategy</div>
+          <div class="model-kv-val">Half-Kelly</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Backtest file</div>
+          <div class="model-kv-val" id="mi-file" style="font-size:10px;max-width:180px;overflow:hidden;text-overflow:ellipsis">—</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ── Config ───────────────────────────────────────────────── */
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : ''; // same origin in production
+
+/* ── Embedded model info (updated after clean training) ─── */
+const MODEL_INFO_STATIC = {
+  version: "v12",
+  holdout_auc: 0.8713,
+  pinnacle_auc: 0.7457,
+  features: 46,
+  hypothesis: "COMBO H2H + fatigue + weather (clean, post bug#4 fix)",
+  train_period: "2004-2023",
+  holdout_period: "2024-2026",
+  n_train: 71872,
+  n_holdout: 6150,
+  versions_clean: [
+    { v: "v12", auc: 0.8713, desc: "COMBO H2H+fatigue+weather ← BEST" },
+    { v: "v9",  auc: 0.8070, desc: "+H2H features (clean)" },
+    { v: "v10", auc: 0.8060, desc: "+Ranking trajectory" },
+    { v: "v11", auc: 0.8046, desc: "+Serve/return stats" },
+  ]
+};
+
+/* ── State ────────────────────────────────────────────────── */
+let allPicks = [];
+let activeFilter = 'all';
+
+/* ── Utilities ────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const fmt = (n, dec=2) => (typeof n === 'number' ? n.toFixed(dec) : n ?? '—');
+const fmtPct = n => typeof n === 'number' ? (n >= 0 ? '+' : '') + (n * 100).toFixed(1) + '%' : '—';
+const fmtPct2 = n => typeof n === 'number' ? (n >= 0 ? '+' : '') + n.toFixed(1) + '%' : '—';
+
+/* ── Load data ────────────────────────────────────────────── */
+async function loadData() {
+  try {
+    // Try API first, fall back to static backtest JSON
+    let backtestData = null;
+    let modelInfo = null;
+    let picks = [];
+
+    // Try model info
+    try {
+      const r = await fetch(API_BASE + '/predictions/model/info', { signal: AbortSignal.timeout(3000) });
+      if (r.ok) modelInfo = await r.json();
+    } catch(e) {}
+
+    // Try daily picks
+    try {
+      const r = await fetch(API_BASE + '/coupons/daily', { signal: AbortSignal.timeout(3000) });
+      if (r.ok) {
+        const coupons = await r.json();
+        picks = coupons.flatMap(c => c.selections || []);
+      }
+    } catch(e) {}
+
+    // Try backtest JSON as fallback/supplement
+    try {
+      // Try newest version first
+      for (const v of ['v22','v21','v20','v19','v18','v17','v16','v15','v14','v13','v12','v9']) {
+        const r = await fetch(`/data/backtest_${v}.json`, { signal: AbortSignal.timeout(2000) });
+        if (r.ok) { backtestData = await r.json(); break; }
+      }
+    } catch(e) {}
+
+    renderAll(picks, modelInfo, backtestData);
+  } catch(e) {
+    console.error(e);
+    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Błąd ładowania danych: ${e.message}</td></tr>`;
+  }
+}
+
+/* ── Render ────────────────────────────────────────────────── */
+function renderAll(picks, modelInfo, backtest) {
+  const today = new Date().toLocaleDateString('pl-PL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  $('nav-date').textContent = today;
+
+  // Model info — API → static fallback
+  if (modelInfo) {
+    $('nav-model').textContent = `${modelInfo.version} · ${modelInfo.features}f · AUC ${modelInfo.holdout_auc?.toFixed(4) ?? '—'}`;
+    $('mi-version').textContent = modelInfo.version;
+    $('mi-auc').textContent = modelInfo.holdout_auc?.toFixed(4) ?? '—';
+    $('mi-delta').textContent = modelInfo.holdout_auc ? '+' + (modelInfo.holdout_auc - 0.7457).toFixed(4) : '—';
+    $('stat-auc').textContent = modelInfo.holdout_auc?.toFixed(4) ?? '—';
+    $('stat-auc-sub').textContent = `vs Pinnacle +${modelInfo.holdout_auc ? (modelInfo.holdout_auc - 0.7457).toFixed(4) : '—'}`;
+  } else {
+    // Static fallback — dane z treningu
+    const mi = MODEL_INFO_STATIC;
+    $('nav-model').textContent = `${mi.version} · ${mi.features}f · AUC ${mi.holdout_auc.toFixed(4)}`;
+    $('mi-version').textContent = mi.version;
+    $('mi-auc').textContent = mi.holdout_auc.toFixed(4);
+    $('mi-pin-auc').textContent = mi.pinnacle_auc.toFixed(4);
+    $('mi-delta').textContent = '+' + (mi.holdout_auc - mi.pinnacle_auc).toFixed(4);
+    $('stat-auc').textContent = mi.holdout_auc.toFixed(4);
+    $('stat-auc-sub').textContent = `vs Pinnacle +${(mi.holdout_auc - mi.pinnacle_auc).toFixed(4)}`;
+    if (backtest) {
+      $('mi-file').textContent = backtest.model ?? '—';
+    }
+  }
+
+  // ROI / DD from backtest
+  if (backtest) {
+    const best = backtest.best_strategy;
+    if (best) {
+      const roi = best.roi_pct;
+      $('stat-roi').textContent = fmtPct2(roi);
+      $('stat-roi').className = 'stat-value ' + (roi >= 0 ? 'green' : 'red');
+      $('stat-dd').textContent = best.max_drawdown_pct?.toFixed(1) + '%';
+    }
+    renderPnl(backtest);
+  }
+
+  // Picks from backtest if API picks empty
+  if (picks.length === 0 && backtest) {
+    picks = buildPicksFromBacktest(backtest);
+    $('picks-source').textContent = 'backtest csv';
+  } else if (picks.length > 0) {
+    $('picks-source').textContent = 'live api';
+  }
+
+  allPicks = picks;
+  renderPicks(picks);
+}
+
+function buildPicksFromBacktest(bt) {
+  // From best_strategy history + edge threshold analysis, build demo picks
+  const bets = bt.best_strategy?.history ?? [];
+  const nBets = bt.best_strategy?.n_bets ?? 0;
+  const avgEdge = 0.10;
+  const nPicks = bt.strategy_comparison?.find(s => s.strategy === 'half_kelly')?.n_bets ?? 0;
+
+  $('stat-bets').textContent = nPicks;
+  $('stat-bets-sub').textContent = `edge > 8% (holdout)`;
+  $('stat-edge').textContent = fmtPct(avgEdge);
+
+  // Build synthetic picks from edge_threshold_analysis
+  const edges = bt.edge_threshold_analysis ?? [];
+  const e8 = edges.find(e => Math.abs(e.edge_thresh - 0.08) < 0.01);
+
+  return buildDemoPicks(bt.n_matches ?? 0, bt.model ?? '');
+}
+
+function buildDemoPicks(n, model) {
+  // Return empty if no real data available
+  return [];
+}
+
+function renderPicks(picks) {
+  $('picks-count').textContent = `${picks.length} picks`;
+  if (picks.length === 0) {
+    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Brak wartościowych zakładów. Uruchom backtest najpierw: <code>PYTHONPATH=. python scripts/backtest_vX.py --best</code></td></tr>`;
+    $('stat-bets').textContent = '0';
+    $('stat-edge').textContent = '—';
+    return;
+  }
+
+  const edges = picks.map(p => p.edge ?? 0).filter(Boolean);
+  const avgEdge = edges.length ? edges.reduce((a,b)=>a+b,0)/edges.length : 0;
+  $('stat-bets').textContent = picks.length;
+  $('stat-edge').textContent = fmtPct(avgEdge);
+
+  renderPicksTable(picks);
+}
+
+function renderPicksTable(picks) {
+  const filtered = activeFilter === 'all'
+    ? picks
+    : picks.filter(p => (p.confidence === activeFilter) || (p.surface === activeFilter));
+
+  if (filtered.length === 0) {
+    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Brak picks dla filtra "${activeFilter}"</td></tr>`;
+    return;
+  }
+
+  $('picks-tbody').innerHTML = filtered.map(p => {
+    const edge = p.edge ?? (p.ev_pct ? p.ev_pct / 100 : 0);
+    const edgePct = edge * 100;
+    const edgeBarFill = Math.min(edgePct / 20 * 100, 100); // max 20% = full bar
+    const edgeColor = edgePct >= 15 ? '' : edgePct >= 8 ? 'yellow' : 'orange';
+    const conf = p.confidence ?? (edgePct >= 15 ? 'HIGH' : edgePct >= 8 ? 'MEDIUM' : 'LOW');
+    const isBet = p.signal ? p.signal !== 'NO_BET' : edgePct >= 5;
+    const pModel = p.p_model ?? 0;
+    const pPin = p.p_pin ?? (p.bk_odds ? 1/p.bk_odds : 0);
+    const kelly = p.kelly_half ?? p.kelly_stake_pct ?? 0;
+    const odds = p.odds ?? p.bk_odds ?? 0;
+    const surf = p.surface ?? '—';
+    const surfStr = surf.charAt(0).toUpperCase() + surf.slice(1).toLowerCase();
+
+    return `
+    <tr>
+      <td>
+        <div class="player-name">${p.player_backed ?? p.player_a ?? '—'}</div>
+        <div class="player-vs">vs ${p.opponent ?? p.player_b ?? '—'}</div>
+      </td>
+      <td><span class="surface-pill ${surfStr}">${surfStr}</span></td>
+      <td class="num-right">${odds ? odds.toFixed(2) : '—'}</td>
+      <td class="num-right prob-val">${pModel ? (pModel*100).toFixed(1)+'%' : '—'}</td>
+      <td class="num-right" style="color:var(--txt-3)">${pPin ? (pPin*100).toFixed(1)+'%' : '—'}</td>
+      <td class="num-right">
+        <div class="edge-bar-wrap">
+          <span style="color:${edgePct >= 15 ? 'var(--green)' : edgePct >= 8 ? 'var(--yellow)' : 'var(--orange)'}">${edgePct.toFixed(1)}%</span>
+          <div class="edge-bar"><div class="edge-bar-fill ${edgeColor}" style="width:${edgeBarFill}%"></div></div>
+        </div>
+      </td>
+      <td class="num-right" style="color:${p.ev_pct >= 0 ? 'var(--green)' : 'var(--red)'}">${p.ev_pct != null ? (p.ev_pct >= 0 ? '+' : '') + p.ev_pct.toFixed(1)+'%' : '—'}</td>
+      <td class="num-right kelly-val">${kelly ? (kelly*100 < 1 ? (kelly*100).toFixed(2) : (kelly*100).toFixed(1))+'%' : '—'}</td>
+      <td><span class="signal-badge ${isBet ? 'bet' : 'pass'}">${isBet ? 'BET' : 'PASS'}</span></td>
+      <td><span class="conf-badge ${conf}">${conf}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPnl(bt) {
+  const monthly = bt.best_strategy?.monthly_pnl ?? {};
+  const entries = Object.entries(monthly);
+  if (!entries.length) { $('pnl-bars').innerHTML = '<div class="empty" style="width:100%">Brak danych PnL</div>'; return; }
+
+  const values = entries.map(([,v]) => v);
+  const maxAbs = Math.max(...values.map(Math.abs), 1);
+  const maxBarH = 70;
+  const totalPnl = values.reduce((a,b)=>a+b,0);
+  $('pnl-total').textContent = (totalPnl >= 0 ? '+' : '') + totalPnl.toFixed(0) + 'u';
+
+  $('pnl-bars').innerHTML = entries.map(([month, pnl]) => {
+    const posH = pnl > 0 ? Math.round(pnl / maxAbs * maxBarH) : 0;
+    const negH = pnl < 0 ? Math.round(-pnl / maxAbs * maxBarH) : 0;
+    const lbl = month.slice(2).replace('-', '/');
+    return `<div class="pnl-bar-wrap" style="height:${maxBarH+16}px;justify-content:flex-end;">
+      <div class="pnl-bar-pos" style="height:${posH}px;width:100%"></div>
+      <div style="height:1px;background:var(--border);width:100%"></div>
+      <div class="pnl-bar-neg" style="height:${negH}px;width:100%"></div>
+      <div class="pnl-bar-label" style="font-size:7px">${lbl}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Filter picks ──────────────────────────────────────────── */
+function filterPicks(f) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === (f === 'all' ? 'All' : f) || (f === 'HIGH' && b.textContent.trim() === 'High confidence'));
+  });
+  renderPicksTable(allPicks);
+}
+
+/* ── Init ─────────────────────────────────────────────────── */
+loadData();
+// Refresh every 5 min
+setInterval(loadData, 5 * 60 * 1000);
+</script>
+</body>
+</html>

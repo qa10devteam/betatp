@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+
+# Data (duże pliki — domyślnie nie do repo)
+data/*.parquet
+data/*.pkl
+data/*.joblib
+# Backtest results do repo (potrzebne przez frontend dashboard)
+data/*.csv
+data/*.json
+# Jawne wyjątki — te pliki MUSZĄ być w repo (serwowane przez API i frontend)
+!data/backtest_v4.json
+!data/backtest_v4_bets.csv
+!data/backtest_v12.json
+!data/backtest_v12_bets.csv
+
+# Models (duże binaria)
+models/*.joblib
+models/*.pkl
+models/*.h5
+models/*.bin
+
+# Logi — zostawiamy wybrane
+models/*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Secrets
+.env
+*.env
+config/secrets.py
+
+# Tymczasowe
+tmp/
+temp/
