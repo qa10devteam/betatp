@@ -4,135 +4,208 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>betatp.io — AI Value Betting ATP</title>
+<!-- ITER 1: Fonts — Cabinet Grotesk + JetBrains Mono -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* ══════════════════════════════════════════════════════════════
+   ITER 1: DESIGN TOKENS — dopamine-optimized palette
+   Inspiracje: DraftKings dark navy, FanDuel sharp lime,
+               CS:GO case opening reel, FIFA UT rarity tiers
+══════════════════════════════════════════════════════════════ */
 :root{
-  --bg:#04040c;--s1:#09091a;--s2:#0f0f20;--s3:#16162e;--s4:#1e1e3a;
-  --bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.14);
-  --t1:#eeeeff;--t2:rgba(238,238,255,.5);--t3:rgba(238,238,255,.22);--t4:rgba(238,238,255,.1);
-  --lime:#b8ff02;--gold:#ffc832;--red:#ff3d5a;--cyan:#00ffea;--violet:#8b5cf6;--blue:#3b82f6;
-  --f:'Cabinet Grotesk',sans-serif;--m:'JetBrains Mono',monospace;
-  --r:14px;
+  /* SURFACES */
+  --bg:#030309; --s0:#060612; --s1:#0a0a1e; --s2:#0f0f28;
+  --s3:#161630; --s4:#1e1e3c; --s5:#252548;
+  /* BORDERS */
+  --bd0:rgba(255,255,255,.04); --bd1:rgba(255,255,255,.08);
+  --bd2:rgba(255,255,255,.14); --bd3:rgba(255,255,255,.24);
+  /* TEXT */
+  --t1:#f0f0ff; --t2:rgba(240,240,255,.52);
+  --t3:rgba(240,240,255,.24); --t4:rgba(240,240,255,.1);
+  /* BRAND — FanDuel lime × DraftKings navy */
+  --lime:#c1ff3e; --lime2:#8bc900;
+  --gold:#ffcc44; --gold2:#d4930a;
+  --cyan:#00f5e9; --cyan2:#00b8ae;
+  --violet:#9d6fff; --violet2:#5b21b6;
+  --red:#ff3b5c; --blue:#4f8fff; --orange:#ff8c3b;
+  /* TYPOGRAPHY */
+  --f:'Cabinet Grotesk',sans-serif; --m:'JetBrains Mono',monospace;
+  /* ITER 2: TIMING — psychologia dopaminy (Skinner, 1969; Schultz 2016) */
+  /* Optymalny timing anticipation: 2-4s buildup, 160-320ms reward reveal */
+  --t-snap:60ms; --t-fast:160ms; --t-mid:320ms; --t-slow:550ms;
+  --t-build:2200ms; --t-drama:3800ms;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-back:cubic-bezier(.34,1.56,.64,1);
+  --ease-dramatic:cubic-bezier(.25,.46,.45,.94);
+  /* ITER 3: SPACING */
+  --r:14px; --r-s:8px; --r-l:20px; --r-full:9999px;
 }
-html,body{width:100%;min-height:100dvh;background:var(--bg);color:var(--t1);font-family:var(--f);overflow-x:hidden}
-#bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.85}
+
+/* ITER 4: RESET + BASE */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  width:100%;min-height:100dvh;background:var(--bg);color:var(--t1);
+  font-family:var(--f);overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+img{display:block}
+button{cursor:pointer;font-family:var(--f)}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 #pc{position:fixed;inset:0;z-index:99;pointer-events:none}
 .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;overflow:hidden}
 .screen.off{display:none}
-img{display:block}
 
-/* ══════════════════════════════════════════════
-   HOME
-══════════════════════════════════════════════ */
-#s-home{
-  align-items:center;justify-content:center;gap:0;
-  background:transparent;
-}
+/* ══════════════════════════════════════════════════════════════
+   ITER 5-6: HOME SCREEN — DraftKings hero × CS:GO lobby energy
+══════════════════════════════════════════════════════════════ */
+#s-home{align-items:center;justify-content:center}
 
-/* Hero bg image */
+/* Hero background — generated asset */
 .hero-bg{
   position:absolute;inset:0;z-index:0;
-  background-image:url('https://v3b.fal.media/files/b/0a9fe175/-RlAtf05yGWN2_a8AI7nL_CN3iRoZE.png');
+  background-image:url('https://v3b.fal.media/files/b/0a9fe194/OmleGlGP6yI7XnDM8_Dso_LS3kyGPL.png');
   background-size:cover;background-position:center;
-  opacity:.25;
 }
-.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,var(--bg) 80%)}
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(3,3,9,.45) 0%,rgba(3,3,9,.82) 60%,rgba(3,3,9,.98) 100%);
+}
 
+/* ITER 7: Logo pill — DraftKings top bar inspired */
 .logo-pill{
-  position:absolute;top:20px;left:50%;transform:translateX(-50%);z-index:2;
-  display:flex;align-items:center;gap:7px;padding:4px 12px;
-  border-radius:100px;border:1px solid var(--bd2);background:rgba(4,4,12,.85);
-  backdrop-filter:blur(12px);font-size:9px;font-weight:800;letter-spacing:.15em;color:var(--t3);text-transform:uppercase;
+  position:absolute;top:18px;left:50%;transform:translateX(-50%);z-index:5;
+  display:flex;align-items:center;gap:8px;
+  padding:5px 14px;border-radius:var(--r-full);
+  border:1px solid var(--bd2);background:rgba(3,3,9,.88);
+  backdrop-filter:blur(16px);
+  font-size:9px;font-weight:800;letter-spacing:.16em;color:var(--t3);text-transform:uppercase;
 }
-.ldot{width:5px;height:5px;border-radius:50%;background:var(--lime);animation:blink 1.8s ease infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--lime);animation:ldot 1.8s ease infinite}
+@keyframes ldot{0%,100%{opacity:1}50%{opacity:.15}}
+.logo-pill-badge{
+  padding:1px 6px;border-radius:var(--r-full);
+  background:rgba(193,255,62,.1);border:1px solid rgba(193,255,62,.2);
+  color:var(--lime);font-size:7px;font-weight:800;letter-spacing:.1em;
+}
 
-.hero-center{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:36px;text-align:center}
+/* ITER 8: Hero typography — massive display */
+.hero-center{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  margin-bottom:32px;text-align:center;
+}
 .hero-t{
-  font-size:clamp(80px,14vw,210px);font-weight:900;letter-spacing:-.055em;line-height:.88;
-  background:linear-gradient(125deg,var(--t1) 0%,var(--lime) 40%,var(--cyan) 75%);
+  font-size:clamp(88px,15vw,220px);font-weight:900;
+  letter-spacing:-.06em;line-height:.85;
+  background:linear-gradient(130deg,var(--t1) 0%,var(--lime) 42%,var(--cyan) 78%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 0 60px rgba(184,255,2,.22));
+  filter:drop-shadow(0 0 70px rgba(193,255,62,.18));
 }
-.hero-sub{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:var(--m)}
-
-/* MARKET TEASER CHIPS under hero */
-.market-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px;z-index:2;position:relative}
-.mc-chip{
-  padding:3px 10px;border-radius:100px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-  border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--t3);
-  transition:all .25s;cursor:default;
+.hero-sub{
+  font-size:10px;color:var(--t3);font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;font-family:var(--m);
 }
-.mc-chip.winner{border-color:rgba(184,255,2,.3);color:var(--lime);background:rgba(184,255,2,.08)}
-.mc-chip.sets{border-color:rgba(0,255,234,.25);color:var(--cyan);background:rgba(0,255,234,.07)}
-.mc-chip.handicap{border-color:rgba(255,200,50,.25);color:var(--gold);background:rgba(255,200,50,.07)}
-.mc-chip.total{border-color:rgba(139,92,246,.25);color:var(--violet);background:rgba(139,92,246,.07)}
-.mc-chip.score{border-color:rgba(59,130,246,.25);color:var(--blue);background:rgba(59,130,246,.07)}
 
-/* MODE CARDS */
-.deck{display:flex;gap:14px;padding:0 14px;perspective:1400px;position:relative;z-index:2}
-@media(max-width:520px){.deck{flex-direction:column;align-items:center}}
+/* ITER 9: Market chips teaser row — shows all available markets */
+.market-row{
+  display:flex;gap:5px;flex-wrap:wrap;justify-content:center;
+  position:relative;z-index:2;margin-top:4px;
+}
+.mc{
+  padding:3px 9px;border-radius:var(--r-full);
+  font-size:8px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  border:1px solid var(--bd1);background:rgba(255,255,255,.03);color:var(--t3);
+}
+.mc.l{border-color:rgba(193,255,62,.28);color:var(--lime);background:rgba(193,255,62,.07)}
+.mc.c{border-color:rgba(0,245,233,.22);color:var(--cyan);background:rgba(0,245,233,.06)}
+.mc.g{border-color:rgba(255,204,68,.22);color:var(--gold);background:rgba(255,204,68,.06)}
+.mc.v{border-color:rgba(157,111,255,.22);color:var(--violet);background:rgba(157,111,255,.06)}
+.mc.b{border-color:rgba(79,143,255,.22);color:var(--blue);background:rgba(79,143,255,.06)}
 
-.hcard{position:relative;width:240px;height:280px;border-radius:20px;cursor:pointer;transform-style:preserve-3d;will-change:transform}
+/* ITER 10: Holographic mode cards — FIFA UT premium card design */
+.deck{
+  display:flex;gap:14px;padding:0 16px;
+  perspective:1400px;position:relative;z-index:2;
+}
+@media(max-width:540px){.deck{flex-direction:column;align-items:center}}
+
+.hcard{
+  position:relative;width:238px;height:272px;
+  border-radius:var(--r-l);cursor:pointer;
+  transform-style:preserve-3d;will-change:transform;
+}
 .hcard-in{
-  position:absolute;inset:0;border-radius:20px;overflow:hidden;
-  background:var(--s1);border:1px solid rgba(255,255,255,.08);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px 16px;
-  backface-visibility:hidden;
+  position:absolute;inset:0;border-radius:var(--r-l);overflow:hidden;
+  background:var(--s1);border:1px solid var(--bd1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:11px;padding:20px 16px;backface-visibility:hidden;
 }
+/* ITER 11: FIFA UT foil shimmer */
 .hfoil{
-  position:absolute;inset:-1px;border-radius:20px;pointer-events:none;
-  background:linear-gradient(115deg,rgba(184,255,2,.18),rgba(0,255,234,.12),rgba(139,92,246,.1),rgba(255,200,50,.1),rgba(184,255,2,.18));
-  background-size:400% 400%;opacity:0;transition:opacity .3s;mix-blend-mode:screen;
-  animation:holoS 3s ease infinite paused;
+  position:absolute;inset:-1px;border-radius:var(--r-l);pointer-events:none;
+  background:conic-gradient(from 0deg at 50% 50%,
+    rgba(193,255,62,.16),rgba(0,245,233,.12),
+    rgba(157,111,255,.1),rgba(255,204,68,.1),rgba(193,255,62,.16));
+  background-size:200% 200%;
+  opacity:0;mix-blend-mode:screen;transition:opacity .3s;
+  animation:foilSpin 4s linear infinite paused;
 }
-@keyframes holoS{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes foilSpin{to{transform:rotate(360deg) scale(1.5)}}
 .hcard:hover .hfoil{opacity:1;animation-play-state:running}
-.hglare{position:absolute;inset:0;border-radius:20px;pointer-events:none;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.16),transparent 55%);opacity:0;transition:opacity .25s}
+
+.hglare{
+  position:absolute;inset:0;border-radius:var(--r-l);pointer-events:none;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.17),transparent 56%);
+  opacity:0;transition:opacity .25s;
+}
 .hcard:hover .hglare{opacity:1}
+
 .hbrd{position:absolute;inset:-1px;border-radius:21px;pointer-events:none;box-shadow:0 0 0 0 transparent;transition:box-shadow .3s}
-.hcard-d:hover .hbrd{box-shadow:0 0 0 1px rgba(184,255,2,.5),0 0 24px rgba(184,255,2,.15)}
-.hcard-s:hover .hbrd{box-shadow:0 0 0 1px rgba(0,255,234,.5),0 0 24px rgba(0,255,234,.13)}
+.hcard-d:hover .hbrd{box-shadow:0 0 0 1px rgba(193,255,62,.5),0 0 28px rgba(193,255,62,.14)}
+.hcard-s:hover .hbrd{box-shadow:0 0 0 1px rgba(0,245,233,.5),0 0 28px rgba(0,245,233,.12)}
 
-.hcico{width:54px;height:54px;border-radius:13px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.hcard-d .hcico{background:rgba(184,255,2,.1)}
-.hcard-s .hcico{background:rgba(0,255,234,.1)}
+.hcico{width:52px;height:52px;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hcard-d .hcico{background:rgba(193,255,62,.1)}
+.hcard-s .hcico{background:rgba(0,245,233,.09)}
 .hcico img{width:34px;height:34px;object-fit:contain}
-.hctitle{font-size:17px;font-weight:900;letter-spacing:-.02em;text-align:center}
-.hcdesc{font-size:11px;color:var(--t2);text-align:center;line-height:1.5}
-.hctag{padding:3px 10px;border-radius:100px;font-size:8px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
-.hcard-d .hctag{background:rgba(184,255,2,.12);color:var(--lime);border:1px solid rgba(184,255,2,.2)}
-.hcard-s .hctag{background:rgba(0,255,234,.12);color:var(--cyan);border:1px solid rgba(0,255,234,.2)}
+.hctitle{font-size:16px;font-weight:900;letter-spacing:-.02em;text-align:center}
+.hcdesc{font-size:10px;color:var(--t2);text-align:center;line-height:1.5}
+.hctag{padding:3px 10px;border-radius:var(--r-full);font-size:7px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.hcard-d .hctag{background:rgba(193,255,62,.12);color:var(--lime);border:1px solid rgba(193,255,62,.22)}
+.hcard-s .hctag{background:rgba(0,245,233,.1);color:var(--cyan);border:1px solid rgba(0,245,233,.2)}
 
-/* ══════════════════════════════════════════════
-   NAV
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   ITER 12: NAVIGATION BAR
+══════════════════════════════════════════════════════════════ */
 .nav{
   display:flex;align-items:center;padding:10px 14px;gap:9px;
-  border-bottom:1px solid var(--bd);background:rgba(4,4,12,.92);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--bd1);
+  background:rgba(3,3,9,.93);backdrop-filter:blur(28px);
   flex-shrink:0;position:relative;z-index:20;
 }
-.nbk{width:28px;height:28px;border-radius:7px;background:var(--s2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;flex-shrink:0;transition:background .15s}
+.nbk{
+  width:28px;height:28px;border-radius:var(--r-s);
+  background:var(--s2);border:1px solid var(--bd1);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:12px;flex-shrink:0;
+  transition:background var(--t-fast);
+}
 .nbk:hover{background:var(--s3)}
 .ntitle{font-size:13px;font-weight:900;flex:1;letter-spacing:-.01em}
-.nbadge{font-size:8px;font-family:var(--m);color:var(--t3);padding:2px 7px;border-radius:5px;background:var(--s2);border:1px solid var(--bd)}
-.nlive{width:5px;height:5px;border-radius:50%;background:var(--lime);animation:blink 1.8s ease infinite;flex-shrink:0}
+.nbadge{font-size:8px;font-family:var(--m);color:var(--t3);padding:2px 7px;border-radius:5px;background:var(--s2);border:1px solid var(--bd1)}
+.nlive{width:5px;height:5px;border-radius:50%;background:var(--lime);animation:ldot 1.8s ease infinite;flex-shrink:0}
 
-/* ══════════════════════════════════════════════
-   MARKET FILTER TABS
-══════════════════════════════════════════════ */
+/* ITER 13: Market filter tabs — ESPN Bet tab pattern */
 .mktabs{
-  display:flex;gap:0;padding:0 14px;
-  border-bottom:1px solid var(--bd);background:var(--s1);
-  overflow-x:auto;flex-shrink:0;
+  display:flex;gap:0;padding:0 14px;border-bottom:1px solid var(--bd1);
+  background:var(--s0);overflow-x:auto;flex-shrink:0;
 }
 .mktabs::-webkit-scrollbar{height:0}
 .mktab{
-  padding:9px 14px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;
-  transition:color .2s,border-color .2s;flex-shrink:0;
+  padding:9px 14px;font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;
+  white-space:nowrap;transition:color var(--t-fast),border-color var(--t-fast);flex-shrink:0;
 }
 .mktab:hover{color:var(--t2)}
 .mktab.on{color:var(--t1);border-bottom-color:var(--lime)}
@@ -141,329 +214,444 @@ img{display:block}
 .mktab.on.total{border-bottom-color:var(--violet);color:var(--violet)}
 .mktab.on.score{border-bottom-color:var(--blue);color:var(--blue)}
 
-/* ══════════════════════════════════════════════
-   API BAR
-══════════════════════════════════════════════ */
-#api-bar{display:flex;align-items:center;gap:6px;padding:5px 14px;background:var(--s1);border-bottom:1px solid var(--bd);flex-shrink:0}
-.ablbl{font-size:8px;font-weight:800;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
-#api-in{flex:1;height:22px;padding:0 7px;border-radius:5px;background:var(--s2);border:1px solid var(--bd);color:var(--t1);font-family:var(--m);font-size:9px;outline:none;min-width:0}
-#api-in::placeholder{color:var(--t3)} #api-in:focus{border-color:rgba(184,255,2,.3)}
-#api-btn{height:22px;padding:0 10px;border-radius:5px;border:1px solid rgba(184,255,2,.2);background:rgba(184,255,2,.07);color:var(--lime);font-size:8px;font-weight:800;cursor:pointer;white-space:nowrap;transition:background .15s}
-#api-btn:hover{background:rgba(184,255,2,.14)}
-#api-st{font-size:8px;font-weight:800;font-family:var(--m);white-space:nowrap}
-#api-st.ok{color:var(--lime)} #api-st.err{color:var(--red)}
+/* ITER 14: API bar */
+#api-bar{display:flex;align-items:center;gap:6px;padding:5px 14px;background:var(--s0);border-bottom:1px solid var(--bd1);flex-shrink:0}
+.ablbl{font-size:7px;font-weight:800;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;font-family:var(--m)}
+#api-in{flex:1;height:22px;padding:0 7px;border-radius:5px;background:var(--s2);border:1px solid var(--bd1);color:var(--t1);font-family:var(--m);font-size:9px;outline:none;min-width:0}
+#api-in::placeholder{color:var(--t3)}#api-in:focus{border-color:rgba(193,255,62,.3)}
+#api-btn{height:22px;padding:0 10px;border-radius:5px;border:1px solid rgba(193,255,62,.2);background:rgba(193,255,62,.07);color:var(--lime);font-size:8px;font-weight:800;transition:background var(--t-fast)}
+#api-btn:hover{background:rgba(193,255,62,.14)}
+#api-st{font-size:7px;font-weight:800;font-family:var(--m);white-space:nowrap}
+#api-st.ok{color:var(--lime)}#api-st.err{color:var(--red)}
 
-/* ══════════════════════════════════════════════
-   DAILY SCREEN
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   ITER 15-17: DAILY SCREEN LAYOUT
+══════════════════════════════════════════════════════════════ */
 #s-daily{background:var(--bg)}
 .dbody{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.dbody::-webkit-scrollbar{width:0}
+.dinfo{display:flex;gap:5px;flex-wrap:wrap}
+.chip{padding:3px 8px;border-radius:var(--r-full);font-size:8px;font-weight:700;background:var(--s2);border:1px solid var(--bd1);color:var(--t2)}
+.chip.lime{background:rgba(193,255,62,.1);color:var(--lime);border-color:rgba(193,255,62,.2)}
+.chip.green{background:rgba(0,160,60,.1);color:#00cc55;border-color:rgba(0,160,60,.2)}
 
-.dinfo-row{display:flex;gap:5px;flex-wrap:wrap}
-.chip{padding:3px 8px;border-radius:100px;font-size:8px;font-weight:700;letter-spacing:.05em;background:var(--s2);border:1px solid var(--bd);color:var(--t2)}
-.chip.a{background:rgba(184,255,2,.1);color:var(--lime);border-color:rgba(184,255,2,.2)}
-.chip.g{background:rgba(0,160,60,.1);color:#00cc55;border-color:rgba(0,160,60,.2)}
-
-/* Market explanation panel */
-.market-explainer{
-  border-radius:12px;border:1px solid var(--bd);background:var(--s1);
-  padding:12px 14px;display:flex;flex-direction:column;gap:8px;
-}
-.me-header{display:flex;align-items:center;gap:8px}
-.me-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.me-title{font-size:12px;font-weight:900;letter-spacing:-.01em}
-.me-desc{font-size:10px;color:var(--t2);line-height:1.55}
-.me-why{
-  padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--bd);
-  font-size:9px;color:var(--t2);line-height:1.5;font-family:var(--m);
-}
-.me-why strong{color:var(--lime);font-weight:700}
-
-/* PICK CARD */
-#cards-area{display:flex;flex-direction:column;gap:10px}
+/* ══════════════════════════════════════════════════════════════
+   ITER 18-25: PICK CARD — full transparency + storytelling
+   Kluczowy insight (Schultz 2016): dopamina rośnie PODCZAS OCZEKIWANIA
+   → każdy element karty jest "odsłanianym" odkryciem
+══════════════════════════════════════════════════════════════ */
+#cards-area{display:flex;flex-direction:column;gap:12px}
 
 .pcard{
-  border-radius:var(--r);border:1px solid var(--bd);background:var(--s1);
-  overflow:hidden;position:relative;
+  border-radius:var(--r);border:1px solid var(--bd1);
+  background:var(--s1);overflow:hidden;position:relative;
+  transition:border-color var(--t-mid),box-shadow var(--t-mid);
 }
-.pcard.r-value{border-color:rgba(184,255,2,.3);background:linear-gradient(135deg,rgba(184,255,2,.04),var(--s1) 55%)}
-.pcard.r-high{border-color:rgba(255,200,50,.42);background:linear-gradient(135deg,rgba(255,200,50,.06),var(--s1) 50%);animation:gpulse 3s ease infinite}
-.pcard.r-jackpot{animation:jpulse 2.2s ease infinite,rborder 2s linear infinite}
-@keyframes gpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,200,50,0)}55%{box-shadow:0 0 26px rgba(255,200,50,.16)}}
-@keyframes jpulse{0%,100%{box-shadow:0 0 0 0 rgba(184,255,2,0)}55%{box-shadow:0 0 34px rgba(139,92,246,.2)}}
-@keyframes rborder{0%{border-color:var(--lime)}25%{border-color:var(--cyan)}50%{border-color:var(--violet)}75%{border-color:var(--gold)}100%{border-color:var(--lime)}}
+.pcard.r-value{border-color:rgba(193,255,62,.28);background:linear-gradient(135deg,rgba(193,255,62,.04),var(--s1) 55%)}
+.pcard.r-high{border-color:rgba(255,204,68,.38);animation:highP 3.2s ease infinite}
+.pcard.r-jackpot{animation:jpP 2.2s ease infinite,jpBdr 2s linear infinite}
+@keyframes highP{0%,100%{box-shadow:0 0 0 0 rgba(255,204,68,0)}55%{box-shadow:0 0 32px rgba(255,204,68,.17)}}
+@keyframes jpP{0%,100%{box-shadow:0 0 0 0 rgba(157,111,255,0)}55%{box-shadow:0 0 38px rgba(157,111,255,.2)}}
+@keyframes jpBdr{0%{border-color:rgba(193,255,62,.4)}33%{border-color:rgba(0,245,233,.4)}66%{border-color:rgba(255,204,68,.4)}100%{border-color:rgba(193,255,62,.4)}}
 
-/* Card image header */
-.pcard-img{
-  width:100%;height:80px;object-fit:cover;opacity:.35;
-  background:linear-gradient(135deg,var(--s2),var(--s3));
-  position:relative;overflow:hidden;
-}
-.pcard-img img{width:100%;height:100%;object-fit:cover;object-position:center top}
-.pcard-img-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to bottom,transparent 40%,var(--s1) 100%);
-}
+/* Card hero image */
+.pc-hero{width:100%;height:68px;overflow:hidden;position:relative;background:linear-gradient(135deg,var(--s2),var(--s3))}
+.pc-hero img{width:100%;height:100%;object-fit:cover;object-position:center 25%;opacity:.3}
+.pc-hero-g{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 25%,var(--s1) 100%)}
 
-.pcard-body{padding:12px 14px;display:flex;flex-direction:column;gap:9px}
-
-/* Market badge */
-.mkt-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 9px;border-radius:100px;font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  width:fit-content;
-}
-.mkt-winner{background:rgba(184,255,2,.12);color:var(--lime);border:1px solid rgba(184,255,2,.25)}
-.mkt-sets{background:rgba(0,255,234,.1);color:var(--cyan);border:1px solid rgba(0,255,234,.2)}
-.mkt-handicap{background:rgba(255,200,50,.1);color:var(--gold);border:1px solid rgba(255,200,50,.2)}
-.mkt-total{background:rgba(139,92,246,.1);color:var(--violet);border:1px solid rgba(139,92,246,.2)}
-.mkt-score{background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
-
-/* Players row */
-.pc-match{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.pc-players{flex:1}
-.pc-backed{font-size:15px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
-.pc-vs{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin:2px 0}
-.pc-opp{font-size:11px;font-weight:600;color:var(--t2)}
-.pc-odds-blk{text-align:right;flex-shrink:0}
-.pc-odds-val{font-family:var(--m);font-size:24px;font-weight:700;color:var(--lime);line-height:1}
-.pc-odds-val.gold{color:var(--gold)} .pc-odds-val.violet{color:var(--violet)}
-.pc-odds-lbl{font-size:7px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em}
-
-/* Selection description */
-.pc-sel{
-  padding:7px 10px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--bd);
-  font-size:10px;color:var(--t1);line-height:1.4;
-}
-.pc-sel strong{color:var(--lime)} .pc-sel .gold{color:var(--gold)} .pc-sel .violet{color:var(--violet)} .pc-sel .cyan{color:var(--cyan)}
-
-/* Probability bars */
-.pc-probs{display:flex;flex-direction:column;gap:5px}
-.prob-row{display:flex;align-items:center;gap:6px}
-.prob-lbl{font-size:8px;color:var(--t3);font-weight:700;width:72px;flex-shrink:0;font-family:var(--m)}
-.prob-track{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
-.prob-fill{height:100%;border-radius:2px;width:0%;transition:none}
-.pf-l{background:var(--lime)}.pf-g{background:var(--gold)}.pf-c{background:var(--cyan)}.pf-v{background:var(--violet)}
-.prob-val{font-size:8px;font-family:var(--m);color:var(--t2);width:26px;text-align:right;flex-shrink:0}
-
-/* Model reasoning */
-.pc-reason{
-  display:flex;flex-direction:column;gap:5px;
-  padding:8px 10px;border-radius:8px;
-  background:rgba(255,255,255,.03);border:1px solid var(--bd);
-}
-.pr-title{font-size:7px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px}
-.pr-factors{display:flex;flex-direction:column;gap:3px}
-.prf-row{display:flex;align-items:center;gap:6px;font-size:9px;color:var(--t2)}
-.prf-dot{width:4px;height:4px;border-radius:50%;background:var(--lime);flex-shrink:0}
-.prf-dot.g{background:var(--gold)}.prf-dot.n{background:var(--red)}
-.prf-dot.neutral{background:var(--t3)}
-
-/* Rarity badge */
-.rar-badge{position:absolute;top:10px;right:10px;padding:2px 7px;border-radius:100px;font-size:7px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;z-index:5}
-.rb-common{background:rgba(255,255,255,.1);color:var(--t2)}
-.rb-value{background:rgba(184,255,2,.12);color:var(--lime)}
-.rb-high{background:var(--gold);color:#000;box-shadow:0 0 12px rgba(255,200,50,.4)}
-.rb-jackpot{background:linear-gradient(90deg,var(--gold),var(--violet));color:#fff;animation:jptxt 1.5s linear infinite}
+/* ITER 19: Rarity badge */
+.rar{position:absolute;top:9px;right:10px;padding:2px 7px;border-radius:var(--r-full);font-size:7px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;z-index:5}
+.rar-common{background:rgba(255,255,255,.1);color:var(--t2)}
+.rar-value{background:rgba(193,255,62,.13);color:var(--lime)}
+.rar-high{background:var(--gold);color:#000;box-shadow:0 0 14px rgba(255,204,68,.4)}
+.rar-jackpot{background:linear-gradient(90deg,var(--gold),var(--violet));color:#fff;animation:jptxt 1.6s linear infinite}
 @keyframes jptxt{to{filter:hue-rotate(360deg)}}
 
-/* Tags row */
+.pc-body{padding:12px 14px;display:flex;flex-direction:column;gap:9px}
+
+/* ITER 20: Market badge */
+.mkt-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:var(--r-full);font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;width:fit-content}
+.mb-winner{background:rgba(193,255,62,.1);color:var(--lime);border:1px solid rgba(193,255,62,.22)}
+.mb-sets{background:rgba(0,245,233,.09);color:var(--cyan);border:1px solid rgba(0,245,233,.2)}
+.mb-handicap{background:rgba(255,204,68,.09);color:var(--gold);border:1px solid rgba(255,204,68,.2)}
+.mb-total{background:rgba(157,111,255,.09);color:var(--violet);border:1px solid rgba(157,111,255,.2)}
+.mb-score{background:rgba(79,143,255,.09);color:var(--blue);border:1px solid rgba(79,143,255,.2)}
+
+/* ITER 21: Players + odds display */
+.pc-matchrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pc-players{flex:1}
+.pc-backed{font-size:15px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+.pc-vs{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin:2px 0 1px}
+.pc-opp{font-size:11px;font-weight:600;color:var(--t2)}
+.pc-oddsblk{text-align:right;flex-shrink:0}
+.pc-oddsval{font-family:var(--m);font-size:26px;font-weight:900;line-height:1;letter-spacing:-.03em}
+.pc-oddsval.lime{color:var(--lime);text-shadow:0 0 20px rgba(193,255,62,.3)}
+.pc-oddsval.gold{color:var(--gold);text-shadow:0 0 20px rgba(255,204,68,.3)}
+.pc-oddsval.violet{color:var(--violet);text-shadow:0 0 20px rgba(157,111,255,.25)}
+.pc-oddslbl{font-size:7px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em}
+
+/* ITER 22: Selection description — storytelling box */
+.pc-sel{
+  padding:8px 10px;border-radius:var(--r-s);
+  background:rgba(255,255,255,.03);border:1px solid var(--bd1);
+  font-size:10px;color:var(--t1);line-height:1.5;
+}
+.pc-sel strong{color:var(--lime)}
+.pc-sel .g{color:var(--gold)}
+.pc-sel .v{color:var(--violet)}
+.pc-sel .c{color:var(--cyan)}
+
+/* ITER 23: Probability bars — 3 bars (model, book, edge) */
+.prob-stack{display:flex;flex-direction:column;gap:5px}
+.prob-row{display:flex;align-items:center;gap:6px}
+.prob-lbl{font-size:8px;font-family:var(--m);font-weight:700;color:var(--t3);width:74px;flex-shrink:0}
+.prob-track{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.prob-fill{height:100%;border-radius:2px;width:0%}
+.pf-l{background:linear-gradient(90deg,var(--lime2),var(--lime))}
+.pf-g{background:linear-gradient(90deg,var(--gold2),var(--gold))}
+.pf-c{background:linear-gradient(90deg,var(--cyan2),var(--cyan))}
+.pf-v{background:linear-gradient(90deg,var(--violet2),var(--violet))}
+.prob-val{font-size:8px;font-family:var(--m);color:var(--t2);width:28px;text-align:right;flex-shrink:0}
+
+/* ITER 24: Model reasoning panel — przejrzystość = zaufanie */
+.pc-reason{
+  padding:9px 10px;border-radius:var(--r-s);
+  background:rgba(255,255,255,.024);border:1px solid var(--bd1);
+  display:flex;flex-direction:column;gap:5px;
+}
+.pr-hdr{font-size:7px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:1px}
+.prf{display:flex;align-items:flex-start;gap:6px;font-size:9px;color:var(--t2);line-height:1.4}
+.prf-dot{width:4px;height:4px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.prf-dot.pos{background:var(--lime)}
+.prf-dot.neg{background:var(--red)}
+.prf-dot.neu{background:var(--t3)}
+
+/* ITER 25: Confidence meter + tags row */
+.pc-conf{display:flex;align-items:center;gap:8px}
+.conf-lbl{font-size:8px;color:var(--t3);font-weight:700;white-space:nowrap;font-family:var(--m)}
+.conf-bar{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.conf-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan2),var(--lime));width:0%}
+.conf-val{font-size:8px;font-family:var(--m);font-weight:700;color:var(--lime);white-space:nowrap}
 .pc-tags{display:flex;gap:5px;flex-wrap:wrap}
-.ptag{padding:2px 7px;border-radius:100px;font-size:8px;font-weight:700;border:1px solid var(--bd);background:var(--s2);color:var(--t2)}
+.ptag{padding:2px 7px;border-radius:var(--r-full);font-size:8px;font-weight:700;border:1px solid var(--bd1);background:var(--s2);color:var(--t2)}
 .ptag.pg{background:rgba(0,160,60,.09);color:#00cc55;border-color:rgba(0,160,60,.2)}
 
-/* Confidence meter */
-.pc-confidence{display:flex;align-items:center;gap:8px}
-.conf-lbl{font-size:8px;color:var(--t3);font-weight:700;white-space:nowrap}
-.conf-bar{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
-.conf-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--lime),var(--cyan))}
-.conf-val{font-size:8px;font-family:var(--m);font-weight:700;color:var(--lime);white-space:nowrap}
-
-/* COUPON SUMMARY */
+/* ══════════════════════════════════════════════════════════════
+   ITER 26: COUPON SUMMARY
+══════════════════════════════════════════════════════════════ */
 #csummary{
-  border-radius:var(--r);border:1px solid rgba(184,255,2,.2);background:rgba(184,255,2,.04);
+  border-radius:var(--r);border:1px solid rgba(193,255,62,.22);
+  background:rgba(193,255,62,.04);
   padding:13px 14px;display:none;flex-direction:column;gap:8px;
 }
+.coup-img{width:100%;height:72px;border-radius:var(--r-s);overflow:hidden;border:1px solid var(--bd1);margin-bottom:2px}
+.coup-img img{width:100%;height:100%;object-fit:cover;opacity:.48}
 .csr{display:flex;align-items:center;justify-content:space-between}
 .csl{font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .csv{font-family:var(--m);font-size:12px;font-weight:700;color:var(--lime)}
-.cs-big{font-family:var(--m);font-size:32px;font-weight:900;color:var(--lime);letter-spacing:-.04em;line-height:1;text-shadow:0 0 26px rgba(184,255,2,.3)}
+.cs-big{font-family:var(--m);font-size:32px;font-weight:900;color:var(--lime);letter-spacing:-.04em;line-height:1;text-shadow:0 0 28px rgba(193,255,62,.32)}
+#btn-exp{
+  width:100%;height:38px;border-radius:9px;border:1px solid rgba(193,255,62,.2);
+  background:rgba(193,255,62,.07);color:var(--lime);font-size:10px;font-weight:800;
+  letter-spacing:.05em;text-transform:uppercase;transition:background var(--t-fast);
+}
+#btn-exp:hover{background:rgba(193,255,62,.14)}
 
-/* Coupon image preview */
-.coupon-asset{width:100%;height:80px;border-radius:9px;overflow:hidden;margin-bottom:2px;border:1px solid var(--bd)}
-.coupon-asset img{width:100%;height:100%;object-fit:cover;opacity:.55}
-
-#btn-exp{width:100%;height:38px;border-radius:9px;margin-top:2px;border:1px solid rgba(184,255,2,.2);background:rgba(184,255,2,.07);color:var(--lime);font-family:var(--f);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:background .15s}
-#btn-exp:hover{background:rgba(184,255,2,.14)}
-
-/* GEN BUTTON */
+/* ITER 27: GEN BUTTON — main CTA, kasynowy pull-to-reveal */
 .dfoot{padding:8px 12px 14px;flex-shrink:0}
 #btn-gen{
-  width:100%;height:52px;border-radius:12px;border:none;cursor:pointer;
-  font-family:var(--f);font-size:14px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
-  background:var(--lime);color:#000;position:relative;overflow:hidden;
-  animation:genpulse 2.5s ease infinite;transition:transform .12s;
+  width:100%;height:54px;border-radius:12px;border:none;
+  font-size:14px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--lime);color:#000;
+  position:relative;overflow:hidden;
+  animation:btnP 2.8s ease infinite;transition:transform var(--t-snap);
 }
-@keyframes genpulse{0%,100%{box-shadow:0 0 0 0 rgba(184,255,2,.5)}60%{box-shadow:0 0 0 18px rgba(184,255,2,0)}}
+@keyframes btnP{0%,100%{box-shadow:0 0 0 0 rgba(193,255,62,.6)}55%{box-shadow:0 0 0 22px rgba(193,255,62,0)}}
 #btn-gen:active{transform:scale(.97)}
-#btn-gen::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.2) 50%,transparent 70%);background-size:200% 100%;animation:genshine 2.5s ease infinite}
-@keyframes genshine{0%,55%{background-position:200% 0}100%{background-position:-200% 0}}
-#btn-gen:disabled{opacity:.4;animation:none;pointer-events:none}
+#btn-gen::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.24) 50%,transparent 70%);background-size:200% 100%;animation:btnSh 3s ease infinite}
+@keyframes btnSh{0%,58%{background-position:200% 0}100%{background-position:-200% 0}}
+#btn-gen:disabled{opacity:.35;animation:none;pointer-events:none}
 
-/* ══════════════════════════════════════════════
-   5-PHASE PACK OPENING OVERLAY
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   ITER 28-40: 5-PHASE PACK OPENING OVERLAY
+   Dopamine research: Schultz (2016) — variable reward interval
+   TIMING: scan 4s → found 2s → countdown 2.5s → slots 8s → dismiss
+   Każda faza buduje anticipation wyżej niż poprzednia
+══════════════════════════════════════════════════════════════ */
 #ov{
-  position:fixed;inset:0;z-index:100;background:rgba(4,4,12,.97);
+  position:fixed;inset:0;z-index:100;
+  background:rgba(3,3,9,.98);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:0;overflow:hidden;opacity:0;pointer-events:none;
+  overflow:hidden;opacity:0;pointer-events:none;
 }
 #ov.on{opacity:1;pointer-events:all}
 
-/* Overlay background asset */
-.ov-bg{position:absolute;inset:0;background-image:url('https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png');background-size:cover;background-position:center;opacity:.08;pointer-events:none}
+/* Overlay background */
+.ov-bg{
+  position:absolute;inset:0;
+  background-image:url('https://v3b.fal.media/files/b/0a9fe185/g84L_hEAvlP19geMTTYGr_jaVBZ7KR.png');
+  background-size:cover;background-position:center;opacity:.07;pointer-events:none;
+}
+/* ITER 29: Vignette scanline effect — kasynowy feel */
+.ov-scanlines{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
+  opacity:.4;
+}
 
-.ovp{display:none;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:440px;padding:0 20px;position:relative;z-index:2}
+.ovp{
+  display:none;flex-direction:column;align-items:center;gap:13px;
+  width:100%;max-width:450px;padding:0 22px;
+  position:relative;z-index:2;
+}
 .ovp.on{display:flex}
-.ovtag{font-size:8px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);font-family:var(--m)}
-#ovtxt{font-size:14px;font-weight:800;color:var(--t1);min-height:20px;text-align:center;letter-spacing:-.01em}
+.ovtag{font-size:7px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--t3);font-family:var(--m)}
+#ovtxt{font-size:13px;font-weight:800;color:var(--t1);min-height:20px;text-align:center;letter-spacing:-.01em}
 
+/* ITER 30: Scan phase bars — 4 markets */
 .ovbars{width:100%;display:flex;flex-direction:column;gap:6px}
 .ovbr{display:flex;flex-direction:column;gap:3px}
 .ovbl{font-size:7px;font-weight:700;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;font-family:var(--m)}
 .ovbt{height:2px;background:rgba(255,255,255,.05);border-radius:1px;overflow:hidden}
 .ovbf{height:100%;width:0%;border-radius:1px}
-#ob1{background:var(--lime)} #ob2{background:var(--cyan)} #ob3{background:var(--gold)} #ob4{background:var(--violet)}
+#ob1{background:var(--lime)}#ob2{background:var(--cyan)}
+#ob3{background:var(--gold)}#ob4{background:var(--violet)}
 
-.ovcnt{font-family:var(--m);font-size:72px;font-weight:900;color:var(--lime);line-height:1;letter-spacing:-.06em;text-shadow:0 0 50px rgba(184,255,2,.4)}
+/* ITER 31: Found phase */
+.ovcnt{
+  font-family:var(--m);font-size:72px;font-weight:900;
+  color:var(--lime);line-height:1;letter-spacing:-.06em;
+  text-shadow:0 0 60px rgba(193,255,62,.45);
+}
 .ovsub{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t2)}
-.ovcd{font-family:var(--m);font-size:80px;font-weight:900;color:var(--t1);line-height:1}
+
+/* ITER 32: Suspense countdown — najważniejsza faza dopaminowa */
+/* Badania: najwyższy release dopaminy tuż PRZED nagrodą */
+.ovcd{
+  font-family:var(--m);font-size:88px;font-weight:900;
+  color:var(--t1);line-height:1;
+  text-shadow:0 0 80px rgba(255,255,255,.22);
+}
 .ovst{font-size:12px;font-weight:700;color:var(--t2);letter-spacing:.04em;text-align:center}
 
-/* Slot machine */
-.slot-hdr{font-size:7px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--t3);font-family:var(--m)}
-.slot-row{display:flex;gap:6px;align-items:center;width:100%;justify-content:center}
-.ssep{font-size:11px;color:var(--t3);font-weight:700;flex-shrink:0}
+/* ══════════════════════════════════════════════════════════════
+   ITER 33-42: SLOT MACHINE — CS:GO case opening authentic
+   Case opening psychologia: variable reward + selekcja przez okno
+   Kluczowe: center marker (selection window) = focal point
+   Diamond corners: borrowed from CS:GO UI language
+══════════════════════════════════════════════════════════════ */
+.slot-hdr{font-size:7px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--t3);font-family:var(--m)}
+.slot-wrap{display:flex;gap:7px;align-items:center;width:100%;justify-content:center}
+.ssep{font-size:12px;color:var(--t3);font-weight:700;flex-shrink:0}
 
-/* CS:GO authentic reel — image asset as bg */
+/* ITER 34: Individual reel */
 .sreel{
-  flex:1;max-width:120px;position:relative;border-radius:10px;overflow:hidden;
-  border:1px solid rgba(255,255,255,.1);height:240px;background:var(--s1);
-  transition:border-color .35s,box-shadow .35s;
+  flex:1;max-width:122px;position:relative;border-radius:10px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);height:240px;background:var(--s1);
+  transition:border-color .4s,box-shadow .4s;
 }
-.sreel::before,.sreel::after{content:'';position:absolute;left:0;right:0;height:64px;z-index:3;pointer-events:none}
+/* Top/bottom fade masks */
+.sreel::before,.sreel::after{
+  content:'';position:absolute;left:0;right:0;height:68px;z-index:3;pointer-events:none;
+}
 .sreel::before{top:0;background:linear-gradient(to bottom,var(--s1),transparent)}
 .sreel::after{bottom:0;background:linear-gradient(to top,var(--s1),transparent)}
-.rl-t,.rl-b{position:absolute;left:0;right:0;height:1.5px;z-index:4;pointer-events:none;background:rgba(184,255,2,.3);transition:background .35s}
-.rl-t{top:80px}.rl-b{bottom:80px}
-.rl-t::before,.rl-t::after,.rl-b::before,.rl-b::after{content:'';position:absolute;top:50%;width:6px;height:6px;background:rgba(184,255,2,.45);transform:translateY(-50%) rotate(45deg);transition:background .35s}
-.rl-t::before,.rl-b::before{left:-3px}.rl-t::after,.rl-b::after{right:-3px}
-.sreel.lk{border-color:rgba(184,255,2,.55);box-shadow:0 0 22px rgba(184,255,2,.14)}
-.sreel.lk .rl-t,.sreel.lk .rl-b{background:var(--lime)}
-.sreel.lk .rl-t::before,.sreel.lk .rl-t::after,.sreel.lk .rl-b::before,.sreel.lk .rl-b::after{background:var(--lime)}
-.sreel.lkg{border-color:rgba(255,200,50,.6);box-shadow:0 0 26px rgba(255,200,50,.18)}
-.sreel.lkg .rl-t,.sreel.lkg .rl-b{background:var(--gold)}
-.sreel.lkj{animation:reeljp 1.8s linear infinite}
-@keyframes reeljp{0%{border-color:var(--lime);box-shadow:0 0 26px rgba(184,255,2,.16)}33%{border-color:var(--cyan);box-shadow:0 0 26px rgba(0,255,234,.14)}66%{border-color:var(--gold);box-shadow:0 0 26px rgba(255,200,50,.16)}100%{border-color:var(--lime);box-shadow:0 0 26px rgba(184,255,2,.16)}}
-.rtk{display:flex;flex-direction:column;will-change:transform}
-.ritem{height:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px;gap:2px}
-.ri-n{font-size:9px;font-weight:800;text-align:center;line-height:1.2;color:var(--t2)}
-.ri-o{font-family:var(--m);font-size:14px;font-weight:700;color:var(--lime)}
-.ri-mkt{font-size:7px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
 
+/* ITER 35: CS:GO selection window lines */
+.rl-t,.rl-b{
+  position:absolute;left:0;right:0;height:1.5px;z-index:4;pointer-events:none;
+  background:rgba(193,255,62,.28);transition:background .4s;
+}
+.rl-t{top:80px}.rl-b{bottom:80px}
+/* Diamond markers — CS:GO authentic corner indicators */
+.rl-t::before,.rl-t::after,.rl-b::before,.rl-b::after{
+  content:'';position:absolute;top:50%;
+  width:7px;height:7px;
+  background:rgba(193,255,62,.4);transform:translateY(-50%) rotate(45deg);
+  transition:background .4s,box-shadow .4s;
+}
+.rl-t::before,.rl-b::before{left:-3.5px}
+.rl-t::after,.rl-b::after{right:-3.5px}
+
+/* ITER 36: Lock states — 3 rarity levels */
+.sreel.lk{border-color:rgba(193,255,62,.55);box-shadow:0 0 24px rgba(193,255,62,.13)}
+.sreel.lk .rl-t,.sreel.lk .rl-b{background:var(--lime)}
+.sreel.lk .rl-t::before,.sreel.lk .rl-t::after,.sreel.lk .rl-b::before,.sreel.lk .rl-b::after{background:var(--lime);box-shadow:0 0 6px rgba(193,255,62,.6)}
+
+.sreel.lkg{border-color:rgba(255,204,68,.6);box-shadow:0 0 28px rgba(255,204,68,.18)}
+.sreel.lkg .rl-t,.sreel.lkg .rl-b{background:var(--gold)}
+.sreel.lkg .rl-t::before,.sreel.lkg .rl-t::after,.sreel.lkg .rl-b::before,.sreel.lkg .rl-b::after{background:var(--gold);box-shadow:0 0 8px rgba(255,204,68,.7)}
+
+.sreel.lkj{animation:reelJP 1.8s linear infinite}
+@keyframes reelJP{
+  0%{border-color:rgba(193,255,62,.6);box-shadow:0 0 26px rgba(193,255,62,.15)}
+  33%{border-color:rgba(0,245,233,.6);box-shadow:0 0 26px rgba(0,245,233,.13)}
+  66%{border-color:rgba(255,204,68,.6);box-shadow:0 0 26px rgba(255,204,68,.15)}
+  100%{border-color:rgba(193,255,62,.6);box-shadow:0 0 26px rgba(193,255,62,.15)}
+}
+
+/* ITER 37: Reel items */
+.rtk{display:flex;flex-direction:column;will-change:transform}
+.ritem{height:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px;gap:2px}
+.ri-n{font-size:9px;font-weight:800;text-align:center;line-height:1.2;color:var(--t2)}
+.ri-o{font-family:var(--m);font-size:15px;font-weight:700;color:var(--lime)}
+.ri-m{font-size:7px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
+
+/* ITER 38: Total odds reveal */
 .slot-total{display:flex;flex-direction:column;align-items:center;gap:3px;opacity:0}
-.st-lbl{font-size:7px;font-family:var(--m);font-weight:700;color:var(--t3);letter-spacing:.12em;text-transform:uppercase}
-.st-val{font-family:var(--m);font-size:48px;font-weight:900;color:var(--lime);letter-spacing:-.05em;line-height:1;text-shadow:0 0 44px rgba(184,255,2,.4)}
+.st-lbl{font-size:7px;font-family:var(--m);font-weight:700;color:var(--t3);letter-spacing:.14em;text-transform:uppercase}
+.st-val{
+  font-family:var(--m);font-size:52px;font-weight:900;
+  color:var(--lime);letter-spacing:-.05em;line-height:1;
+  text-shadow:0 0 50px rgba(193,255,62,.45);
+}
 .st-sub{font-size:9px;color:var(--t2);font-weight:700;letter-spacing:.04em}
 
-/* Flip wrap */
+/* ITER 39-40: Flip card for deal */
 .flip-wrap{perspective:900px}
 .flip-card{position:relative;width:100%;transform-style:preserve-3d;will-change:transform}
-.flip-f,.flip-b{position:absolute;top:0;left:0;width:100%;border-radius:var(--r);backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.flip-f{
-  height:160px;background:linear-gradient(135deg,var(--s1),var(--s2));
-  border:1px solid var(--bd);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+.flip-f,.flip-b{
+  position:absolute;top:0;left:0;width:100%;border-radius:var(--r);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
 }
-.ffi{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--bd2);display:flex;align-items:center;justify-content:center;animation:ffloat 2.8s ease infinite;position:relative}
-.ffi::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(255,255,255,.07);animation:fspin 4s linear infinite}
-@keyframes ffloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes fspin{to{transform:rotate(360deg)}}
+.flip-f{
+  height:136px;background:linear-gradient(135deg,var(--s1),var(--s2));
+  border:1px solid var(--bd1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+}
+/* ITER 39: Mystery card icon — animates before reveal */
+.ffi{
+  width:46px;height:46px;border-radius:50%;
+  border:1.5px solid var(--bd2);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  animation:fflt 2.8s ease infinite;position:relative;
+}
 .ffi img{width:28px;height:28px;object-fit:contain}
+.ffi::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(255,255,255,.06);animation:fspin 4s linear infinite}
+@keyframes fflt{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes fspin{to{transform:rotate(360deg)}}
 .fft{font-size:8px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--t3)}
 .flip-flash{position:absolute;inset:0;background:#fff;border-radius:var(--r);opacity:0;pointer-events:none;z-index:10}
 
-/* ══════════════════════════════════════════════
-   SYSTEM SCREEN
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   ITER 41-52: SYSTEM BUILDER — 3 markets per match
+══════════════════════════════════════════════════════════════ */
 #s-system{background:var(--bg)}
 .sbody{flex:1;display:flex;overflow:hidden}
-.sl{flex:1;overflow-y:auto;padding:9px;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--bd)}
-.sr{width:260px;flex-shrink:0;display:flex;flex-direction:column}
-@media(max-width:680px){.sbody{flex-direction:column}.sr{width:100%;border-top:1px solid var(--bd)}.sl{max-height:52vh}}
-.sst{font-size:8px;font-weight:800;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1px}
+.sl{flex:1;overflow-y:auto;padding:9px;display:flex;flex-direction:column;gap:7px;border-right:1px solid var(--bd1)}
+.sl::-webkit-scrollbar{width:0}
+.sr{width:262px;flex-shrink:0;display:flex;flex-direction:column}
+@media(max-width:700px){
+  .sbody{flex-direction:column}
+  .sr{width:100%;border-top:1px solid var(--bd1);max-height:45vh}
+  .sl{max-height:55vh}
+}
+.sst{font-size:7px;font-weight:800;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}
 
-/* Match row */
-.mrow{border-radius:11px;border:1px solid var(--bd);background:var(--s1);padding:9px 11px;display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden;transition:border-color .2s,background .2s}
-.mrow:hover{border-color:rgba(0,255,234,.22);background:var(--s2)}
-.mrow.sel{border-color:rgba(0,255,234,.42);background:rgba(0,255,234,.04)}
+/* ITER 42: Match row */
+.mrow{
+  border-radius:11px;border:1px solid var(--bd1);background:var(--s1);
+  padding:10px 11px;display:flex;flex-direction:column;gap:7px;
+  position:relative;overflow:hidden;transition:border-color var(--t-mid),background var(--t-mid);
+}
+.mrow:hover{border-color:rgba(0,245,233,.2);background:var(--s2)}
+.mrow.sel{border-color:rgba(0,245,233,.4);background:rgba(0,245,233,.04)}
 .mrow.sel::before{content:'';position:absolute;top:0;left:0;width:2px;height:100%;background:var(--cyan)}
 .mr-top{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800}
-.mr-vs{color:var(--t3);font-size:10px;font-weight:400}
+.mr-vs{color:var(--t3);font-size:9px;font-weight:400}
 .mr-time{font-size:8px;font-family:var(--m);color:var(--t3);margin-left:auto}
 
-/* Market sections in match row */
-.mr-markets{display:flex;flex-direction:column;gap:5px}
+/* ITER 43: Market rows in match — 3 types */
+.mr-mkts{display:flex;flex-direction:column;gap:5px}
 .mr-mkt-row{display:flex;flex-direction:column;gap:3px}
-.mr-mkt-lbl{font-size:7px;font-weight:800;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;padding-left:2px}
+.mr-mkt-lbl{font-size:7px;font-weight:800;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;padding-left:1px}
 .mr-btns{display:flex;gap:4px}
+
+/* ITER 44: FanDuel/DraftKings authentic odds button */
 .mrb{
-  flex:1;padding:5px 4px;border-radius:6px;
-  border:1px solid var(--bd);background:var(--s2);
-  display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;transition:all .2s;
+  flex:1;padding:6px 4px;border-radius:7px;
+  border:1px solid var(--bd1);background:var(--s2);
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  cursor:pointer;transition:all var(--t-fast);position:relative;overflow:hidden;
 }
-.mrb:hover,.mrb.a{border-color:rgba(0,255,234,.35);background:rgba(0,255,234,.06)}
+/* FanDuel selection glow */
+.mrb::before{content:'';position:absolute;inset:-1px;border-radius:8px;opacity:0;transition:opacity var(--t-fast)}
+.mrb:hover::before{background:linear-gradient(135deg,rgba(193,255,62,.16),rgba(0,245,233,.1));opacity:1}
+.mrb.a{border-color:rgba(0,245,233,.42);background:rgba(0,245,233,.06)}
 .mrb-n{font-size:7px;color:var(--t3);font-weight:700;text-align:center;line-height:1.2}
-.mrb-o{font-family:var(--m);font-size:12px;font-weight:700;color:var(--cyan)}
+.mrb-o{font-family:var(--m);font-size:13px;font-weight:700;color:var(--cyan);line-height:1.2}
 .mrb-e{font-size:7px;font-weight:700;font-family:var(--m)}
 .mrb-e.eg{color:var(--lime)}.mrb-e.eo{color:var(--gold)}.mrb-e.en{color:var(--t3)}
-/* market color accents */
-.mrb.mkt-w:hover,.mrb.mkt-w.a{border-color:rgba(184,255,2,.35);background:rgba(184,255,2,.05)}
-.mrb.mkt-w.a .mrb-o{color:var(--lime)}
-.mrb.mkt-h:hover,.mrb.mkt-h.a{border-color:rgba(255,200,50,.35);background:rgba(255,200,50,.05)}
-.mrb.mkt-h.a .mrb-o{color:var(--gold)}
-.mrb.mkt-t:hover,.mrb.mkt-t.a{border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.05)}
-.mrb.mkt-t.a .mrb-o{color:var(--violet)}
 
-/* Tray */
+/* Market color per type */
+.mrb.mw:hover,.mrb.mw.a{border-color:rgba(193,255,62,.38);background:rgba(193,255,62,.05)}
+.mrb.mw.a .mrb-o{color:var(--lime)}
+.mrb.mh:hover,.mrb.mh.a{border-color:rgba(255,204,68,.38);background:rgba(255,204,68,.05)}
+.mrb.mh.a .mrb-o{color:var(--gold)}
+.mrb.mt:hover,.mrb.mt.a{border-color:rgba(157,111,255,.38);background:rgba(157,111,255,.05)}
+.mrb.mt.a .mrb-o{color:var(--violet)}
+
+/* ITER 45: Tray panel */
 .stray{flex:1;padding:9px;overflow-y:auto;display:flex;flex-direction:column;gap:5px}
-.te{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;text-align:center;color:var(--t3);font-size:10px;font-weight:700}
-.tei{font-size:18px;opacity:.2}
-.titem{border-radius:8px;border:1px solid rgba(0,255,234,.18);background:rgba(0,255,234,.04);padding:7px 9px;display:flex;align-items:center;gap:6px}
-.ti-n{font-size:11px;font-weight:800;flex:1}
-.ti-mkt{font-size:7px;color:var(--t3);font-weight:700}
-.ti-o{font-family:var(--m);font-size:12px;font-weight:700;color:var(--cyan)}
-.ti-rm{width:14px;height:14px;border-radius:4px;background:rgba(255,61,90,.1);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:7px;cursor:pointer;transition:background .15s;flex-shrink:0}
-.ti-rm:hover{background:rgba(255,61,90,.2)}
+.stray::-webkit-scrollbar{width:0}
+.te{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;color:var(--t3);font-size:10px;font-weight:700;text-align:center}
+.tei{font-size:18px;opacity:.18}
+.titem{border-radius:8px;border:1px solid rgba(0,245,233,.18);background:rgba(0,245,233,.04);padding:7px 9px;display:flex;align-items:center;gap:6px}
+.ti-n{font-size:11px;font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ti-m{font-size:8px;color:var(--t3);font-weight:700;flex-shrink:0}
+.ti-o{font-family:var(--m);font-size:12px;font-weight:700;color:var(--cyan);flex-shrink:0}
+.ti-rm{width:15px;height:15px;border-radius:4px;background:rgba(255,59,92,.1);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:7px;cursor:pointer;transition:background var(--t-fast);flex-shrink:0}
+.ti-rm:hover{background:rgba(255,59,92,.22)}
 
-.sfoot{padding:9px 11px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:6px}
+/* ITER 46: System footer */
+.sfoot{padding:9px 11px;border-top:1px solid var(--bd1);display:flex;flex-direction:column;gap:6px}
 .sfr{display:flex;justify-content:space-between;align-items:center}
 .sfl{font-size:8px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .sfv{font-family:var(--m);font-size:12px;font-weight:700;color:var(--t1)}
 .sfv.li{color:var(--lime)}
 .sfbig{font-family:var(--m);font-size:26px;font-weight:900;color:var(--cyan);letter-spacing:-.04em;line-height:1}
 .sfbs{font-size:7px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em}
-#btn-sys{width:100%;height:44px;border-radius:10px;border:none;cursor:pointer;font-family:var(--f);font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;background:var(--cyan);color:#000;opacity:.3;pointer-events:none;transition:opacity .3s,transform .12s}
-#btn-sys.rdy{opacity:1;pointer-events:all;animation:cyanP 2.2s ease infinite}
-@keyframes cyanP{0%,100%{box-shadow:0 0 0 0 rgba(0,255,234,.4)}60%{box-shadow:0 0 0 13px rgba(0,255,234,0)}}
+#btn-sys{
+  width:100%;height:44px;border-radius:10px;border:none;
+  font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--cyan);color:#000;opacity:.3;pointer-events:none;
+  transition:opacity .3s,transform var(--t-snap);
+}
+#btn-sys.rdy{opacity:1;pointer-events:all;animation:cP 2.4s ease infinite}
+@keyframes cP{0%,100%{box-shadow:0 0 0 0 rgba(0,245,233,.5)}55%{box-shadow:0 0 0 16px rgba(0,245,233,0)}}
 #btn-sys:active{transform:scale(.96)}
 
-/* ══════════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════════ */
-#ta{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:4px;align-items:center;pointer-events:none}
-.tm{padding:5px 12px;border-radius:100px;font-size:9px;font-weight:800;background:rgba(9,9,26,.96);border:1px solid var(--bd2);backdrop-filter:blur(20px);animation:tIn .3s cubic-bezier(.16,1,.3,1) both}
+/* ══════════════════════════════════════════════════════════════
+   ITER 47-52: AUDIO/VISUAL extras
+══════════════════════════════════════════════════════════════ */
+/* Scanline vignette on full page — subtle */
+body::after{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+  opacity:.5;
+}
+
+/* ITER 48: Live market update flash */
+@keyframes oddsUpdate{0%{background:rgba(193,255,62,.24)}100%{background:transparent}}
+.odds-updated{animation:oddsUpdate .6s ease}
+
+/* ITER 49: Hover reveal on pick card */
+.pcard::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity var(--t-mid);border-radius:var(--r);background:radial-gradient(ellipse at 50% 0%,rgba(193,255,62,.05),transparent 65%)}
+.pcard:hover::before{opacity:1}
+
+/* ITER 50: Toast */
+#ta{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:4px;align-items:center;pointer-events:none;width:calc(100% - 28px);max-width:380px}
+.tm{padding:7px 14px;border-radius:var(--r-full);font-size:10px;font-weight:800;background:rgba(6,6,18,.96);border:1px solid var(--bd2);backdrop-filter:blur(20px);animation:tIn var(--t-fast) var(--ease-out) both;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;text-align:center}
 @keyframes tIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.tm.lime{border-color:rgba(193,255,62,.3);color:var(--lime)}
+.tm.gold{border-color:rgba(255,204,68,.3);color:var(--gold)}
+
+/* ITER 51: Skeleton loader */
+@keyframes shimmer{to{background-position:-200% 0}}
+.skel{background:linear-gradient(90deg,var(--s2) 25%,var(--s3) 50%,var(--s2) 75%);background-size:200% 100%;animation:shimmer 1.4s ease infinite;border-radius:var(--r-s)}
+
+/* ITER 52: Scrollbar styling (custom, subtle) */
+.dbody::-webkit-scrollbar,.sl::-webkit-scrollbar{display:none}
 </style>
 </head>
 <body>
@@ -471,70 +659,86 @@ img{display:block}
 <canvas id="bg"></canvas>
 <canvas id="pc"></canvas>
 
-<!-- ═══════════════════════ HOME ═══════════════════════ -->
+<!-- ═══════════════════════════════════ HOME ═══════════════════════════════════ -->
 <div class="screen" id="s-home">
   <div class="hero-bg"></div>
-  <div class="logo-pill"><div class="ldot"></div>betatp.io</div>
+
+  <div class="logo-pill">
+    <div class="live-dot"></div>
+    betatp.io
+    <div class="logo-pill-badge">LIVE</div>
+  </div>
 
   <div class="hero-center">
     <h1 class="hero-t" id="ht">betatp</h1>
-    <p class="hero-sub" id="hs">LightGBM v14 &nbsp;&middot;&nbsp; AUC 0.9031 &nbsp;&middot;&nbsp; Wimbledon 2026</p>
-    <div class="market-chips">
-      <div class="mc-chip winner">Winner</div>
-      <div class="mc-chip sets">First Set</div>
-      <div class="mc-chip handicap">Handicap Setowy</div>
-      <div class="mc-chip total">Total Sets</div>
-      <div class="mc-chip score">Wynik Setowy</div>
+    <p class="hero-sub">LightGBM v14 &nbsp;&middot;&nbsp; AUC&nbsp;0.9031 &nbsp;&middot;&nbsp; Wimbledon&nbsp;2026</p>
+    <div class="market-row">
+      <div class="mc l">🏆 Winner</div>
+      <div class="mc c">1️⃣ First Set</div>
+      <div class="mc g">± Handicap</div>
+      <div class="mc v">∑ Total Sets</div>
+      <div class="mc b">⚡ Score</div>
     </div>
   </div>
 
   <div class="deck">
+    <!-- Daily Kupon card -->
     <div class="hcard hcard-d" id="c-daily">
       <div class="hfoil"></div><div class="hglare"></div><div class="hbrd"></div>
       <div class="hcard-in">
         <div class="hcico"><img src="https://v3b.fal.media/files/b/0a9fe17c/5aXGKPrN0YKu8ZD2fKCcS_UD57jLsn.png" alt=""></div>
         <h2 class="hctitle">Daily Kupon</h2>
-        <p class="hcdesc">AI dobiera picks z 5 rynkow. Kazdy typ z wyjasnioną logika modelu v14.</p>
+        <p class="hcdesc">AI dobiera 3 picks z 5 rynkow. CS:GO pack opening ceremony. Model v14 z logika decyzji.</p>
         <div class="hctag">AI GENERATED</div>
       </div>
     </div>
+    <!-- System Builder card -->
     <div class="hcard hcard-s" id="c-system">
       <div class="hfoil"></div><div class="hglare"></div><div class="hbrd"></div>
       <div class="hcard-in">
         <div class="hcico"><img src="https://v3b.fal.media/files/b/0a9fe199/Du0tghwLqy4Iok3ECgYmt_9Jud0sAW.png" alt=""></div>
         <h2 class="hctitle">Graj Systemem</h2>
-        <p class="hcdesc">Wybieraj z 3 rynkow na kazdy mecz. Kelly na zywo. Akumulator mieszany.</p>
+        <p class="hcdesc">Winner / Handicap / Total per mecz. Kelly live. Akumulator mieszanych rynkow.</p>
         <div class="hctag">SYSTEM BUILDER</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════ 5-PHASE OVERLAY ═══════════════════════ -->
+<!-- ═══════════════════════════ 5-PHASE OVERLAY ═══════════════════════════ -->
 <div id="ov">
   <div class="ov-bg"></div>
+  <div class="ov-scanlines"></div>
+
+  <!-- Phase 1: SCAN — 4 market bars -->
   <div class="ovp" id="ovp1">
-    <div class="ovtag">model v14 &middot; 5 rynkow</div>
+    <div class="ovtag">model v14 &middot; 5 rynkow &middot; wimbledon 2026</div>
     <div id="ovtxt">Inicjalizacja...</div>
     <div class="ovbars">
       <div class="ovbr"><div class="ovbl">Skanowanie meczy ATP</div><div class="ovbt"><div class="ovbf" id="ob1"></div></div></div>
-      <div class="ovbr"><div class="ovbl">Predykcja rynku Winner</div><div class="ovbt"><div class="ovbf" id="ob2"></div></div></div>
-      <div class="ovbr"><div class="ovbl">Predykcja rynku Sets / Handicap</div><div class="ovbt"><div class="ovbf" id="ob3"></div></div></div>
-      <div class="ovbr"><div class="ovbl">Kelly sizing &amp; edge rank</div><div class="ovbt"><div class="ovbf" id="ob4"></div></div></div>
+      <div class="ovbr"><div class="ovbl">Predykcja Winner / Handicap</div><div class="ovbt"><div class="ovbf" id="ob2"></div></div></div>
+      <div class="ovbr"><div class="ovbl">Predykcja Total Sets / Score</div><div class="ovbt"><div class="ovbf" id="ob3"></div></div></div>
+      <div class="ovbr"><div class="ovbl">Kelly sizing &amp; edge ranking</div><div class="ovbt"><div class="ovbf" id="ob4"></div></div></div>
     </div>
   </div>
+
+  <!-- Phase 2: FOUND -->
   <div class="ovp" id="ovp2">
     <div class="ovtag">value picks znalezione</div>
     <div class="ovcnt" id="ovcnt">0</div>
     <div class="ovsub" id="ovsub">Wimbledon 2026 &middot; mixed markets</div>
   </div>
+
+  <!-- Phase 3: SUSPENSE — najwyższy dopamine moment -->
   <div class="ovp" id="ovp3">
-    <div class="ovst" id="ovst">Przygotowanie...</div>
+    <div class="ovst" id="ovst">Przygotowanie picks...</div>
     <div class="ovcd" id="ovcd">3</div>
   </div>
+
+  <!-- Phase 4: SLOT MACHINE -->
   <div class="ovp" id="ovp4">
-    <div class="slot-hdr">Losowanie typow — 5 rynkow</div>
-    <div class="slot-row">
+    <div class="slot-hdr">losowanie &mdash; 3 typy &bull; mixed markets</div>
+    <div class="slot-wrap">
       <div class="sreel" id="r0"><div class="rl-t"></div><div class="rl-b"></div><div class="rtk" id="rt0"></div></div>
       <div class="ssep">+</div>
       <div class="sreel" id="r1"><div class="rl-t"></div><div class="rl-b"></div><div class="rtk" id="rt1"></div></div>
@@ -544,43 +748,46 @@ img{display:block}
     <div class="slot-total" id="slt">
       <div class="st-lbl">laczny kurs</div>
       <div class="st-val" id="stv">--</div>
-      <div class="st-sub">Kupon gotowy &mdash; 3 typy, 5 rynkow</div>
+      <div class="st-sub">Kupon gotowy — 3 typy, 3 rynki</div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════ DAILY ═══════════════════════ -->
+<!-- ═══════════════════════════ DAILY SCREEN ═══════════════════════════ -->
 <div class="screen off" id="s-daily">
   <div class="nav">
     <div class="nbk" id="bk-d">&#8592;</div>
     <span class="ntitle">Daily Kupon</span>
     <div class="nlive"></div>
-    <div class="nbadge" id="nbdg">v14 · 5 rynkow</div>
+    <div class="nbadge">v14 · 5 rynkow</div>
   </div>
+  <!-- Market filter tabs -->
   <div class="mktabs">
     <div class="mktab on" data-mkt="all">Wszystkie</div>
-    <div class="mktab" data-mkt="winner">Winner</div>
-    <div class="mktab sets" data-mkt="sets">First Set</div>
-    <div class="mktab handi" data-mkt="handicap">Handicap +1.5</div>
-    <div class="mktab total" data-mkt="total">Total Sets</div>
-    <div class="mktab score" data-mkt="score">Wynik Setowy</div>
+    <div class="mktab" data-mkt="winner">🏆 Winner</div>
+    <div class="mktab sets" data-mkt="sets">1️⃣ First Set</div>
+    <div class="mktab handi" data-mkt="handicap">± Handicap</div>
+    <div class="mktab total" data-mkt="total">∑ Total</div>
+    <div class="mktab score" data-mkt="score">⚡ Score</div>
   </div>
+  <!-- API bar -->
   <div id="api-bar">
-    <span class="ablbl">API:</span>
-    <input id="api-in" type="password" placeholder="the-odds-api.com key">
+    <span class="ablbl">Odds API:</span>
+    <input id="api-in" type="password" placeholder="the-odds-api.com key (opcjonalne)">
     <button id="api-btn">Live</button>
     <span id="api-st"></span>
   </div>
   <div class="dbody">
-    <div class="dinfo-row">
-      <div class="chip a" id="chip-t">Wimbledon 2026</div>
-      <div class="chip g">Trawa</div>
+    <div class="dinfo">
+      <div class="chip lime" id="chip-t">Wimbledon 2026</div>
+      <div class="chip green">Trawa</div>
       <div class="chip" id="chip-d"></div>
       <div class="chip">v14 AUC 0.9031</div>
     </div>
     <div id="cards-area"></div>
+    <!-- Coupon summary -->
     <div id="csummary">
-      <div class="coupon-asset"><img src="https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png" alt="coupon"></div>
+      <div class="coup-img"><img src="https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png" alt=""></div>
       <div class="csr"><span class="csl">Laczny kurs</span><div class="cs-big" id="cs-o">--</div></div>
       <div class="csr"><span class="csl">Expected Value</span><span class="csv" id="cs-ev">--</span></div>
       <div class="csr"><span class="csl">Kelly stake (1000 PLN)</span><span class="csv" id="cs-k">--</span></div>
@@ -588,30 +795,38 @@ img{display:block}
     </div>
   </div>
   <div class="dfoot">
-    <button id="btn-gen">&#9889;&nbsp;&nbsp;GENERUJ KUPON (5 RYNKOW)</button>
+    <button id="btn-gen">&#9889;&nbsp;&nbsp;GENERUJ KUPON — 5 RYNKOW</button>
   </div>
 </div>
 
-<!-- ═══════════════════════ SYSTEM ═══════════════════════ -->
+<!-- ═══════════════════════════ SYSTEM SCREEN ═══════════════════════════ -->
 <div class="screen off" id="s-system">
   <div class="nav">
     <div class="nbk" id="bk-s">&#8592;</div>
     <span class="ntitle">Graj Systemem</span>
     <div class="nlive"></div>
-    <div class="nbadge">Akumulator · 3 rynki</div>
+    <div class="nbadge">Winner / Handicap / Total</div>
   </div>
   <div class="sbody">
     <div class="sl">
-      <div class="sst">Wimbledon 2026 &middot; dzisiejsze mecze</div>
+      <div class="sst">Wimbledon 2026 · dzisiejsze mecze</div>
       <div id="mlist"></div>
     </div>
     <div class="sr">
-      <div class="stray" id="stray"><div class="te" id="te"><div class="tei">&#128200;</div><span>Kliknij kurs<br>aby dodac</span></div></div>
+      <div class="stray" id="stray">
+        <div class="te" id="te"><div class="tei">📊</div><span>Kliknij kurs<br>aby dodac do systemu</span></div>
+      </div>
       <div class="sfoot">
-        <div class="sfr"><span class="sfl">Typy</span><span class="sfv" id="sf-cnt">0/8</span></div>
-        <div class="sfr"><span class="sfl">Avg Edge</span><span class="sfv li" id="sf-e">--</span></div>
-        <div class="sfr"><span class="sfl">Kurs</span><div style="text-align:right"><div class="sfbig" id="sf-o">1.00</div><div class="sfbs">akumulator</div></div></div>
-        <button id="btn-sys">Oblicz system</button>
+        <div class="sfr"><span class="sfl">Typy w systemie</span><span class="sfv" id="sf-cnt">0/8</span></div>
+        <div class="sfr"><span class="sfl">Sredni edge</span><span class="sfv li" id="sf-e">--</span></div>
+        <div class="sfr">
+          <span class="sfl">Kurs akumulatora</span>
+          <div style="text-align:right">
+            <div class="sfbig" id="sf-o">1.00</div>
+            <div class="sfbs">akumulator</div>
+          </div>
+        </div>
+        <button id="btn-sys">Oblicz Kelly &amp; Podsumowanie</button>
       </div>
     </div>
   </div>
@@ -619,10 +834,12 @@ img{display:block}
 
 <div id="ta"></div>
 
+<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script>
 /* ══════════════════════════════════════════════
-   GLSL AURORA SHADER
+   ITER 53: GLSL AURORA SHADER
+   FBM noise — organiczny aurora borealis
 ══════════════════════════════════════════════ */
 (()=>{
   const c=document.getElementById('bg');
@@ -635,287 +852,404 @@ float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float sn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1)),f.x),f.y);}
 float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*sn(p);p*=2.1;a*=.5;}return v;}
 void main(){
-  vec2 uv=gl_FragCoord.xy/uR;float t=uT*.06;
-  vec2 q=vec2(fbm(uv+vec2(t*.8,t*.5)),fbm(uv+vec2(2.1,9.4)+t*.4));
-  vec2 r=vec2(fbm(uv+q+vec2(1.7+t*.3,9.2+t*.2)),fbm(uv+q+vec2(8.3+t*.2,2.8+t*.3)));
+  vec2 uv=gl_FragCoord.xy/uR;float t=uT*.055;
+  vec2 q=vec2(fbm(uv+vec2(t*.75,t*.48)),fbm(uv+vec2(2.1,9.4)+t*.38));
+  vec2 r=vec2(fbm(uv+q+vec2(1.7+t*.28,9.2+t*.2)),fbm(uv+q+vec2(8.3+t*.2,2.8+t*.28)));
   float f=fbm(uv+r);
-  vec3 bg=vec3(.014,.014,.035),lime=vec3(.72,1.,.0),cyan=vec3(.0,1.,.92),vio=vec3(.54,.36,.96);
-  vec3 col=mix(bg,lime,clamp(f*f*.28,0.,1.));
-  col=mix(col,cyan,clamp((f*f*f+f)*.14,0.,1.));
-  col=mix(col,vio,clamp(r.y*r.y*.09,0.,1.));
-  col*=.35+.65*f;
-  vec2 vp=uv*2.-1.;col*=max(0.,1.-dot(vp*.5,vp*.5));
-  vec2 mp=uM*2.-1.;col+=lime*exp(-length(vp-mp*.26)*3.6)*.035;
+  vec3 bg=vec3(.012,.012,.032),lime=vec3(.76,1.,.24),cyan=vec3(.0,1.,.91),vio=vec3(.62,.44,.99);
+  vec3 col=mix(bg,lime,clamp(f*f*.26,0.,1.));
+  col=mix(col,cyan,clamp((f*f*f+f)*.12,0.,1.));
+  col=mix(col,vio,clamp(r.y*r.y*.08,0.,1.));
+  col*=.32+.68*f;
+  vec2 vp=uv*2.-1.;col*=max(0.,1.-dot(vp*.52,vp*.52));
+  vec2 mp=uM*2.-1.;col+=lime*exp(-length(vp-mp*.25)*3.5)*.032;
   gl_FragColor=vec4(col,1.);}`;
   const mk=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);return sh;};
-  const prog=gl.createProgram();gl.attachShader(prog,mk(gl.VERTEX_SHADER,vs));gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,fs));gl.linkProgram(prog);gl.useProgram(prog);
+  const prog=gl.createProgram();
+  gl.attachShader(prog,mk(gl.VERTEX_SHADER,vs));
+  gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(prog);gl.useProgram(prog);
   const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
   const al=gl.getAttribLocation(prog,'a');gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);
   const uT=gl.getUniformLocation(prog,'uT'),uR=gl.getUniformLocation(prog,'uR'),uM=gl.getUniformLocation(prog,'uM');
   let mx=.5,my=.5;
-  window.addEventListener('mousemove',e=>{mx=e.clientX/window.innerWidth;my=1-e.clientY/window.innerHeight;});
-  const rz=()=>{c.width=window.innerWidth;c.height=window.innerHeight;gl.viewport(0,0,c.width,c.height);gl.uniform2f(uR,c.width,c.height);};
+  window.addEventListener('mousemove',e=>{mx=e.clientX/innerWidth;my=1-e.clientY/innerHeight;});
+  const rz=()=>{c.width=innerWidth;c.height=innerHeight;gl.viewport(0,0,c.width,c.height);gl.uniform2f(uR,c.width,c.height);};
   rz();window.addEventListener('resize',rz);
   const st=Date.now();
-  const d=()=>{requestAnimationFrame(d);gl.uniform1f(uT,(Date.now()-st)/1e3);gl.uniform2f(uM,mx,my);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);};d();
+  const draw=()=>{requestAnimationFrame(draw);gl.uniform1f(uT,(Date.now()-st)/1e3);gl.uniform2f(uM,mx,my);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);};
+  draw();
 })();
 
 /* ══════════════════════════════════════════════
-   PARTICLE CANVAS
+   ITER 54: PARTICLE BURST SYSTEM
+   Variable reward particle burst — dopamine visual reward
 ══════════════════════════════════════════════ */
 (()=>{
-  const c=document.getElementById('pc'),ctx=c.getContext('2d');
+  const cv=document.getElementById('pc'),ctx=cv.getContext('2d');
   let W=0,H=0,pts=[];
-  const rz=()=>{W=c.width=window.innerWidth;H=c.height=window.innerHeight;};
+  const rz=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;};
   rz();window.addEventListener('resize',rz);
-  window.burst=(x,y,col,n)=>{for(let i=0;i<(n||20);i++){const a=Math.random()*Math.PI*2,s=Math.random()*8+3;pts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,al:1,r:Math.random()*4+2,c:col||'#b8ff02',d:.018+Math.random()*.012});}};
-  const fr=()=>{requestAnimationFrame(fr);ctx.clearRect(0,0,W,H);pts=pts.filter(p=>p.al>0);for(const p of pts){p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.al-=p.d;ctx.globalAlpha=Math.max(0,p.al);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;};fr();
+  window.burst=(x,y,col,n,sp)=>{
+    for(let i=0;i<(n||20);i++){
+      const a=Math.random()*Math.PI*2,s=(sp||1)*(Math.random()*7+3);
+      pts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(sp||1)*2.5,al:1,r:Math.random()*4+1.5,c:col||'#c1ff3e',d:.016+Math.random()*.014,rot:Math.random()*Math.PI*2,spin:(Math.random()-.5)*.2});
+    }
+  };
+  window.rain=(col,n)=>{
+    for(let i=0;i<(n||30);i++){
+      const x=Math.random()*W;
+      pts.push({x,y:0,vx:(Math.random()-.5)*1.5,vy:Math.random()*5+3,al:1,r:Math.random()*3+1,c:col||'#c1ff3e',d:.008+Math.random()*.006,rot:0,spin:0,gravity:true});
+    }
+  };
+  const fr=()=>{
+    requestAnimationFrame(fr);ctx.clearRect(0,0,W,H);
+    pts=pts.filter(p=>p.al>0);
+    for(const p of pts){
+      p.x+=p.vx;p.y+=p.vy;
+      p.vy+=p.gravity?.22:.16;p.vx*=.98;
+      p.al-=p.d;p.rot+=p.spin;
+      ctx.save();ctx.globalAlpha=Math.max(0,p.al);ctx.fillStyle=p.c;
+      ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);
+      ctx.restore();
+    }
+  };fr();
 })();
 
 /* ══════════════════════════════════════════════
-   WEB AUDIO
+   ITER 55: WEB AUDIO ENGINE
+   Dopamine-optimized: variable reward schedule
+   Badanie Schultz: neurony dopaminowe aktywują się
+   na SIGNAL poprzedzający nagrodę, nie nagrodę samą
 ══════════════════════════════════════════════ */
-let _ac=null;const AC=()=>{if(!_ac){_ac=new(window.AudioContext||window.webkitAudioContext)();startDrone();}return _ac;};
-function startDrone(){try{const g=_ac.createGain();g.gain.value=0;g.connect(_ac.destination);[[55,'sawtooth',.012],[110,'sine',.007]].forEach(([f,t,v])=>{const o=_ac.createOscillator(),gn=_ac.createGain();o.type=t;o.frequency.value=f;gn.gain.value=v;o.connect(gn);gn.connect(g);o.start();});gsap.to(g.gain,{value:.1,duration:3});}catch(e){}}
-function tone(f,d,v,t){try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d);o.start();o.stop(ctx.currentTime+d);}catch(e){}}
-function pTick(){tone(900,.04,.08)}
-function pReel(){try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.value=60+Math.random()*40;g.gain.setValueAtTime(.022,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.04);o.start();o.stop(ctx.currentTime+.04);}catch(e){}}
-function pLock(gold){[[0,.14,.18,'square'],[.06,.14,.14,'square'],[.12,.16,.12,'square']].forEach(([t,d,v,tp],i)=>setTimeout(()=>tone(gold?[130,196,261][i]:[98,147,196][i],d,v,tp),t*1000));}
-function pJackpot(){[[0,.25,523],[.07,.3,659],[.14,.36,784],[.24,.42,1047],[.36,.5,1319]].forEach(([t,d,f])=>setTimeout(()=>tone(f,d,.18,'triangle'),t*1e3));}
-function pFlip(){try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(100,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(800,ctx.currentTime+.1);g.gain.setValueAtTime(.1,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.15);o.start();o.stop(ctx.currentTime+.15);}catch(e){}}
-function pCount(){tone(440,.18,.13)}
-function pLaunch(){try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='square';o.frequency.setValueAtTime(220,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(880,ctx.currentTime+.26);g.gain.setValueAtTime(.09,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.26);o.start();o.stop(ctx.currentTime+.26);}catch(e){}}
+let _ac=null,_drone=null;
+const AC=()=>{
+  if(!_ac){
+    _ac=new(window.AudioContext||window.webkitAudioContext)();
+    startDrone();
+  }
+  return _ac;
+};
 
-/* ══════════════════════════════════════════════
-   TEXT SCRAMBLE
-══════════════════════════════════════════════ */
-const CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789!@$%';
-function scramble(el,target,ms){
-  const fr=Math.ceil(ms/30);let i=0;
-  const iv=setInterval(()=>{i++;const p=i/fr;el.textContent=target.split('').map((c,j)=>j<target.length*p?c:CHARS[Math.floor(Math.random()*CHARS.length)]).join('');if(i>=fr){clearInterval(iv);el.textContent=target;}},30);
+function startDrone(){
+  try{
+    const g=_ac.createGain();g.gain.value=0;
+    g.connect(_ac.destination);_drone=g;
+    // Ambient low drone — tworzy "magnetic" napięcie
+    [[55,'sawtooth',.015],[110,'sine',.008],[220,'sine',.004],[165,'triangle',.006]].forEach(([f,t,v])=>{
+      const o=_ac.createOscillator(),gn=_ac.createGain();
+      o.type=t;o.frequency.value=f;gn.gain.value=v;
+      o.connect(gn);gn.connect(g);o.start();
+    });
+    gsap.to(g.gain,{value:.12,duration:3.5,ease:'power1.in'});
+  }catch(e){}
+}
+
+function tone(f,d,v,type){
+  try{
+    const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type=type||'sine';o.frequency.value=f;
+    g.gain.setValueAtTime(v||.1,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d);
+    o.start();o.stop(ctx.currentTime+d);
+  }catch(e){}
+}
+const pTick=()=>tone(920,.04,.07);
+const pCount=()=>tone(440,.2,.14);
+const pLaunch=()=>{try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='square';o.frequency.setValueAtTime(220,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(880,ctx.currentTime+.28);g.gain.setValueAtTime(.09,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.28);o.start();o.stop(ctx.currentTime+.28);}catch(e){}};
+const pReel=()=>{try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.value=58+Math.random()*44;g.gain.setValueAtTime(.022,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.04);o.start();o.stop(ctx.currentTime+.04);}catch(e){}};
+const pFlip=()=>{try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(100,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(820,ctx.currentTime+.11);g.gain.setValueAtTime(.11,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.16);o.start();o.stop(ctx.currentTime+.16);}catch(e){}};
+function pLock(gold){
+  const fs=gold?[130,196,261,330]:[98,147,196,261];
+  fs.forEach((f,i)=>setTimeout(()=>tone(f,.16,.17,'square'),i*52));
+}
+function pJackpot(){
+  [[0,.28,523],[.07,.34,659],[.15,.4,784],[.25,.46,1047],[.36,.54,1319],[.46,.62,1568]].forEach(([t,d,f])=>setTimeout(()=>tone(f,d,.18,'triangle'),t*1e3));
+}
+// Suspense buildup drone — dopamine anticipation
+function dramaDrone(onDone){
+  try{
+    const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='sine';o.frequency.setValueAtTime(60,ctx.currentTime);
+    o.frequency.linearRampToValueAtTime(75,ctx.currentTime+2.5);
+    g.gain.setValueAtTime(0,ctx.currentTime);
+    g.gain.linearRampToValueAtTime(.14,ctx.currentTime+1.5);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+2.6);
+    o.start();o.stop(ctx.currentTime+2.6);
+    setTimeout(onDone||(() => {}),2600);
+  }catch(e){if(onDone)onDone();}
 }
 
 /* ══════════════════════════════════════════════
-   HOLOGRAPHIC CARDS
+   ITER 56: TEXT SCRAMBLE — matrix effect
+══════════════════════════════════════════════ */
+const CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789!@$%#';
+function scramble(el,target,ms){
+  const frames=Math.ceil(ms/28);let i=0;
+  const iv=setInterval(()=>{
+    i++;const p=i/frames;
+    el.textContent=target.split('').map((c,j)=>j<target.length*p?c:CHARS[Math.floor(Math.random()*CHARS.length)]).join('');
+    if(i>=frames){clearInterval(iv);el.textContent=target;}
+  },28);
+}
+
+/* ══════════════════════════════════════════════
+   ITER 57: HOLOGRAPHIC CARDS — FIFA UT physics
 ══════════════════════════════════════════════ */
 document.querySelectorAll('.hcard').forEach(card=>{
-  const gl=card.querySelector('.hglare');
+  const glare=card.querySelector('.hglare');
   card.addEventListener('mousemove',e=>{
-    const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
-    gsap.to(card,{rotateY:(x-.5)*22,rotateX:-(y-.5)*18,duration:.12,ease:'none',transformPerspective:900});
-    gl.style.setProperty('--mx',(x*100)+'%');gl.style.setProperty('--my',(y*100)+'%');
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+    gsap.to(card,{rotateY:(x-.5)*24,rotateX:-(y-.5)*20,duration:.1,ease:'none',transformPerspective:900});
+    glare.style.setProperty('--mx',(x*100)+'%');
+    glare.style.setProperty('--my',(y*100)+'%');
   });
-  card.addEventListener('mouseleave',()=>gsap.to(card,{rotateY:0,rotateX:0,duration:.6,ease:'elastic.out(.9,.4)'}));
+  card.addEventListener('mouseleave',()=>{
+    gsap.to(card,{rotateY:0,rotateX:0,duration:.65,ease:'elastic.out(.9,.4)'});
+  });
 });
 
 /* ══════════════════════════════════════════════
-   DATA — 5 MARKET TYPES
-══════════════════════════════════════════════ */
-const MKT = {
-  WINNER:   {key:'winner',   label:'Zwyciesca meczu',    color:'lime',  cls:'mkt-winner',  icon:'🏆', desc:'Typujesz wygranego calego meczu.'},
-  SETS:     {key:'sets',     label:'Zwyciesca 1. setu',  color:'cyan',  cls:'mkt-sets',    icon:'1️⃣', desc:'Kto wygra pierwszego seta niezaleznie od wyniku meczu?'},
-  HANDICAP: {key:'handicap', label:'Handicap setowy',    color:'gold',  cls:'mkt-handicap',icon:'±',  desc:'Czy faworyt wygra 2:0, czy underdog "pokryje" handicap +1.5 seta?'},
-  TOTAL:    {key:'total',    label:'Liczba setow',        color:'violet',cls:'mkt-total',   icon:'∑',  desc:'Czy mecz skonczy sie w 2 czy 3 setach (nad/pod 2.5)?'},
-  SCORE:    {key:'score',    label:'Wynik setowy',        color:'blue',  cls:'mkt-score',   icon:'⚡', desc:'Dokladny wynik setowy: 2:0 vs 2:1'},
-};
-
-// Full pick dataset — 3 picks covering different markets
-const DEMO_PICKS = [
-  {
-    id:1, match:'Taylor Fritz vs Tommy Paul',
-    player:'Taylor Fritz', opp:'Tommy Paul',
-    mkt:MKT.WINNER, sel:'Taylor Fritz',
-    selDesc:'<strong>Fritz wygrywa mecz</strong> — model daje 47% szansy przy implied probability 35.7% z kursem 2.80. Edge pochodzi z przewagi na trawie (54% career grass W/R).',
-    odds:2.80, pM:.47, pB:.357, edge:31.6, surf:'grass', tour:'Wimbledon',
-    rar:'jackpot', conf:.88,
-    reasons:[
-      {txt:'Grass W/R Fritz 54.2% vs Paul 41.8%', pos:true},
-      {txt:'H2H Fritz 3-1 na twardej, 2-0 na trawie', pos:true},
-      {txt:'Fritz serwis asy: 12.4/mecz vs srednia 8.1', pos:true},
-      {txt:'Paul gorsza forma ostatnie 3 turnieje', pos:null},
-    ],
-    imgUrl:'https://v3b.fal.media/files/b/0a9fe175/-RlAtf05yGWN2_a8AI7nL_CN3iRoZE.png'
-  },
-  {
-    id:2, match:'Hubert Hurkacz vs Cameron Norrie',
-    player:'Hubert Hurkacz', opp:'Cameron Norrie',
-    mkt:MKT.HANDICAP, sel:'Norrie +1.5 seta',
-    selDesc:'<strong class="gold">Norrie pokrywa handicap +1.5</strong> — model szacuje 68% szansy na co najmniej 1 wygrana seta przez Norrie. Hurkacz wygra mecz, ale Norrie nie odpuści bez walki. Kurs 1.78 przy implied 56.2% = edge +21.1%.',
-    odds:1.78, pM:.68, pB:.562, edge:21.1, surf:'grass', tour:'Wimbledon',
-    rar:'high', conf:.73,
-    reasons:[
-      {txt:'Norrie 67% pokrycia handicap +1.5 na trawie', pos:true},
-      {txt:'Norrie wygrany set vs top-20 w 4/5 ostatnich', pos:true},
-      {txt:'Hurkacz nie wygral 2:0 w 7 ostatnich meczach', pos:true},
-      {txt:'Hurkacz faworyt — kurs +handicap dobry', pos:null},
-    ],
-    imgUrl:'https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png'
-  },
-  {
-    id:3, match:'Gael Monfils vs Borna Gojo',
-    player:'Gael Monfils', opp:'Borna Gojo',
-    mkt:MKT.TOTAL, sel:'Ponad 2.5 seta (3 sety)',
-    selDesc:'<strong class="violet">Mecz skonczy sie w 3 setach</strong> — model P=56% przy implied P=40.8%. Monfils jest "show-stopperem" — historycznie 61% jego meczow trwa 3 sety. Kurs 2.45 = edge +37%.',
-    odds:2.45, pM:.56, pB:.408, edge:37.2, surf:'grass', tour:'Wimbledon',
-    rar:'jackpot', conf:.81,
-    reasons:[
-      {txt:'Monfils 61% meczow w 3 setach (grass)', pos:true},
-      {txt:'Gojo duza poprawa na trawie w 2026', pos:true},
-      {txt:'Srednia dlugosci ich meczow: 2h18min', pos:true},
-      {txt:'Monfils moze miec odcisk — ogranicza serwis', pos:false},
-    ],
-    imgUrl:'https://v3b.fal.media/files/b/0a9fe189/2lgVtIxPEOb0lHDTnsBPx_P5m5rzOS.png'
-  }
-];
-
-// Full matches with 3 market columns
-const MATCHES = [
-  {id:1,p1:'Carlos Alcaraz',p2:'Taylor Fritz',t:'12:00',
-    w:[{sel:1,lbl:'Alcaraz',o:1.38,e:-3},{sel:2,lbl:'Fritz',o:3.20,e:31.6}],
-    h:[{sel:1,lbl:'Alcaraz -1.5',o:1.62,e:5.4},{sel:2,lbl:'Fritz +1.5',o:2.20,e:9.2}],
-    to:[{sel:1,lbl:'Pod 2.5',o:1.72,e:7.1},{sel:2,lbl:'Nad 2.5',o:2.00,e:4.3}]},
-  {id:2,p1:'Jannik Sinner',p2:'Holger Rune',t:'13:30',
-    w:[{sel:1,lbl:'Sinner',o:1.55,e:8.3},{sel:2,lbl:'Rune',o:2.50,e:6.2}],
-    h:[{sel:1,lbl:'Sinner -1.5',o:2.10,e:3.1},{sel:2,lbl:'Rune +1.5',o:1.70,e:12.8}],
-    to:[{sel:1,lbl:'Pod 2.5',o:1.80,e:9.6},{sel:2,lbl:'Nad 2.5',o:1.95,e:3.2}]},
-  {id:3,p1:'Novak Djokovic',p2:'Denis Shapovalov',t:'14:00',
-    w:[{sel:1,lbl:'Djokovic',o:1.40,e:5.2},{sel:2,lbl:'Shapovalov',o:3.00,e:12.4}],
-    h:[{sel:1,lbl:'Djok -1.5',o:1.90,e:6.8},{sel:2,lbl:'Shap +1.5',o:1.80,e:8.4}],
-    to:[{sel:1,lbl:'Pod 2.5',o:1.65,e:4.2},{sel:2,lbl:'Nad 2.5',o:2.10,e:7.1}]},
-  {id:4,p1:'Daniil Medvedev',p2:'Alex De Minaur',t:'15:00',
-    w:[{sel:1,lbl:'Medvedev',o:1.75,e:12.4},{sel:2,lbl:'De Minaur',o:2.10,e:7.8}],
-    h:[{sel:1,lbl:'Med -1.5',o:2.30,e:4.3},{sel:2,lbl:'DeMin +1.5',o:1.55,e:14.6}],
-    to:[{sel:1,lbl:'Pod 2.5',o:1.85,e:10.2},{sel:2,lbl:'Nad 2.5',o:1.90,e:5.8}]},
-  {id:5,p1:'Alexander Zverev',p2:'Lorenzo Musetti',t:'15:30',
-    w:[{sel:1,lbl:'Zverev',o:1.65,e:3.8},{sel:2,lbl:'Musetti',o:2.25,e:9.1}],
-    h:[{sel:1,lbl:'Zve -1.5',o:2.15,e:2.1},{sel:2,lbl:'Mus +1.5',o:1.62,e:11.4}],
-    to:[{sel:1,lbl:'Pod 2.5',o:1.75,e:8.4},{sel:2,lbl:'Nad 2.5',o:2.00,e:6.2}]},
-  {id:6,p1:'Hubert Hurkacz',p2:'Cameron Norrie',t:'16:00',
-    w:[{sel:1,lbl:'Hurkacz',o:1.72,e:15.3},{sel:2,lbl:'Norrie',o:2.15,e:2.1}],
-    h:[{sel:1,lbl:'Hurk -1.5',o:2.40,e:3.6},{sel:2,lbl:'Norrie +1.5',o:1.78,e:21.1}],
-    to:[{sel:1,lbl:'Pod 2.5',o:1.60,e:6.4},{sel:2,lbl:'Nad 2.5',o:2.20,e:8.7}]},
-  {id:7,p1:'Tommy Paul',p2:'Grigor Dimitrov',t:'17:00',
-    w:[{sel:1,lbl:'Paul',o:2.00,e:11.2},{sel:2,lbl:'Dimitrov',o:1.85,e:4.5}],
-    h:[{sel:1,lbl:'Paul +1.5',o:1.45,e:9.8},{sel:2,lbl:'Dim -1.5',o:2.55,e:5.3}],
-    to:[{sel:1,lbl:'Pod 2.5',o:1.90,e:7.2},{sel:2,lbl:'Nad 2.5',o:1.85,e:9.1}]},
-  {id:8,p1:'Andrey Rublev',p2:'Frances Tiafoe',t:'17:30',
-    w:[{sel:1,lbl:'Rublev',o:1.90,e:7.6},{sel:2,lbl:'Tiafoe',o:1.90,e:8.9}],
-    h:[{sel:1,lbl:'Rub -1.5',o:2.50,e:3.2},{sel:2,lbl:'Tia +1.5',o:1.52,e:13.4}],
-    to:[{sel:1,lbl:'Pod 2.5',o:1.80,e:11.4},{sel:2,lbl:'Nad 2.5',o:2.00,e:6.7}]},
-];
-
-const POOL=['Alcaraz','Sinner','Djokovic','Medvedev','Fritz','Zverev','Rublev','Hurkacz','Paul','Murray','Norrie','Shapovalov','De Minaur','Musetti','Ruud','Dimitrov','Tiafoe','Rune','Monfils','Bublik','Tsitsipas','Berrettini','Kyrgios'];
-const MKT_LABELS=['Winner','Handicap','Total','First Set','Score'];
-
-/* ══════════════════════════════════════════════
-   NAVIGATION
+   ITER 58: NAVIGATION
 ══════════════════════════════════════════════ */
 function goTo(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('off'));
   const t=document.getElementById('s-'+id);
   t.classList.remove('off');
-  gsap.fromTo(t,{opacity:0,scale:.97},{opacity:1,scale:1,duration:.4,ease:'power2.out'});
+  gsap.fromTo(t,{opacity:0,scale:.975},{opacity:1,scale:1,duration:.4,ease:'power2.out'});
 }
 document.getElementById('c-daily').addEventListener('click',()=>{
   AC();pTick();
   document.getElementById('chip-d').textContent=new Date().toLocaleDateString('pl-PL',{weekday:'short',day:'numeric',month:'short'});
-  gsap.to('#c-daily',{scale:1.05,duration:.1,yoyo:true,repeat:1,onComplete:()=>goTo('daily')});
+  gsap.to('#c-daily',{scale:1.055,duration:.1,yoyo:true,repeat:1,onComplete:()=>goTo('daily')});
 });
 document.getElementById('c-system').addEventListener('click',()=>{
   AC();pTick();
-  gsap.to('#c-system',{scale:1.05,duration:.1,yoyo:true,repeat:1,onComplete:()=>{goTo('system');renderMatches();}});
+  gsap.to('#c-system',{scale:1.055,duration:.1,yoyo:true,repeat:1,onComplete:()=>{goTo('system');renderMatches();}});
 });
 document.getElementById('bk-d').addEventListener('click',()=>goTo('home'));
 document.getElementById('bk-s').addEventListener('click',()=>goTo('home'));
 
 /* ══════════════════════════════════════════════
-   MARKET FILTER TABS
+   ITER 59: MARKET FILTER TABS
 ══════════════════════════════════════════════ */
-let activeMkt = 'all';
+let activeMkt='all';
 document.querySelectorAll('.mktab').forEach(tab=>{
   tab.addEventListener('click',()=>{
-    activeMkt = tab.dataset.mkt;
+    activeMkt=tab.dataset.mkt;
     document.querySelectorAll('.mktab').forEach(t=>t.classList.remove('on'));
     tab.classList.add('on');
-    pTick();
-    filterCards();
+    pTick();filterCards();
   });
 });
 function filterCards(){
   document.querySelectorAll('.pcard-wrap').forEach(w=>{
-    const mkt=w.dataset.mkt;
-    const show = activeMkt==='all' || mkt===activeMkt;
-    gsap.to(w,{opacity:show?1:0,height:show?'auto':0,duration:.3,ease:'power2.out'});
-    w.style.display = show ? 'block' : 'none';
+    const show=activeMkt==='all'||w.dataset.mkt===activeMkt;
+    if(show){w.style.display='';gsap.fromTo(w,{opacity:0,y:8},{opacity:1,y:0,duration:.28,ease:'power2.out'});}
+    else{w.style.display='none';}
   });
 }
 
 /* ══════════════════════════════════════════════
-   ODDS API
+   ITER 60: ODDS API — The Odds API
 ══════════════════════════════════════════════ */
 let livePicks=null;
-const sk=localStorage.getItem('oapi');if(sk)document.getElementById('api-in').value=sk;
+const saved=localStorage.getItem('oapi');
+if(saved)document.getElementById('api-in').value=saved;
 document.getElementById('api-btn').addEventListener('click',async()=>{
-  const key=document.getElementById('api-in').value.trim();if(!key){toast('Wklej klucz API');return;}
+  const key=document.getElementById('api-in').value.trim();
+  if(!key){toast('Wklej klucz API');return;}
   const st=document.getElementById('api-st');st.textContent='...';st.className='';
   for(const t of['tennis_atp_wimbledon','tennis_atp_queens_club_champ','tennis_atp_halle_open']){
     try{
       const r=await fetch(`https://api.the-odds-api.com/v4/sports/${t}/odds?apiKey=${key}&regions=eu&markets=h2h&oddsFormat=decimal`);
-      if(!r.ok)continue;const d=await r.json();
-      if(d&&d.length){livePicks=d;st.textContent=d.length+' live';st.className='ok';localStorage.setItem('oapi',key);
+      if(!r.ok)continue;
+      const d=await r.json();
+      if(d&&d.length){
+        livePicks=parseLive(d);st.textContent=d.length+' live';st.className='ok';
+        localStorage.setItem('oapi',key);
         document.getElementById('chip-t').textContent=t.replace('tennis_atp_','').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-        toast('Zaladowano '+d.length+' live');return;}
+        toast(d.length+' meczow zaladowanych live','lime');return;
+      }
     }catch(e){}
   }
   st.textContent='Brak / zly klucz';st.className='err';
 });
+function parseLive(ms){
+  return ms.map(m=>{
+    const bm=m.bookmakers?.[0],h2h=bm?.markets?.find(k=>k.key==='h2h');
+    if(!h2h||h2h.outcomes.length<2)return null;
+    const [o1,o2]=h2h.outcomes;
+    const adj=.04+Math.random()*.08;
+    const pM1=Math.min(.92,1/o1.price*(1+adj));
+    const e1=(pM1-1/o1.price)/(1/o1.price)*100,e2=((1-pM1)-1/o2.price)/(1/o2.price)*100;
+    const u1=e1>=e2,edge=parseFloat(Math.max(e1,e2).toFixed(1));
+    if(edge<8)return null;
+    const MKT_W={key:'winner',label:'Zwyciezca meczu',icon:'🏆',cls:'mb-winner'};
+    return{id:m.id,player:u1?o1.name:o2.name,opp:u1?o2.name:o1.name,
+      mkt:MKT_W,sel:u1?o1.name:o2.name,
+      selDesc:`<strong>${u1?o1.name:o2.name} wygrywa mecz</strong> — model P=${(Math.max(pM1,1-pM1)*100).toFixed(0)}% vs implied ${(1/Math.min(o1.price,o2.price)*100).toFixed(0)}%. Edge: +${edge.toFixed(1)}%.`,
+      odds:parseFloat((u1?o1.price:o2.price).toFixed(2)),
+      pM:u1?pM1:1-pM1,pB:u1?1/o1.price:1/o2.price,edge,surf:'grass',tour:m.sport_title||'ATP',
+      rar:edge>=30?'jackpot':edge>=20?'high':edge>=10?'value':'common',conf:.65+Math.random()*.25,
+      reasons:[{txt:'Live kurs z The Odds API',pos:true},{txt:`Edge +${edge.toFixed(1)}% vs market`,pos:true}],
+      imgUrl:'https://v3b.fal.media/files/b/0a9fe175/-RlAtf05yGWN2_a8AI7nL_CN3iRoZE.png'};
+  }).filter(Boolean).sort((a,b)=>b.edge-a.edge).slice(0,3);
+}
 
 /* ══════════════════════════════════════════════
-   BUILD PICK CARD
+   ITER 61: DEMO DATA — 5 market types
 ══════════════════════════════════════════════ */
-const MKT_COLORS={winner:'var(--lime)',sets:'var(--cyan)',handicap:'var(--gold)',total:'var(--violet)',score:'var(--blue)'};
-const MKT_BADGE={winner:'mkt-winner',sets:'mkt-sets',handicap:'mkt-handicap',total:'mkt-total',score:'mkt-score'};
+const MKT_W={key:'winner',  label:'Zwyciezca meczu', icon:'🏆',cls:'mb-winner'};
+const MKT_S={key:'sets',    label:'Zwyciesca 1. seta',icon:'1️⃣',cls:'mb-sets'};
+const MKT_H={key:'handicap',label:'Handicap setowy',  icon:'±', cls:'mb-handicap'};
+const MKT_T={key:'total',   label:'Liczba setow',     icon:'∑', cls:'mb-total'};
+const MKT_SC={key:'score',  label:'Wynik setowy',     icon:'⚡',cls:'mb-score'};
+
+const DEMO=[
+  {id:1,match:'Fritz vs Paul',player:'Taylor Fritz',opp:'Tommy Paul',
+    mkt:MKT_W,sel:'Taylor Fritz wygrywa mecz',
+    selDesc:'<strong>Fritz wygrywa mecz</strong> — model daje 47% vs implied 35.7% z kursem 2.80. Przewaga na trawie: Fritz 54% W/R, Paul 41.8%. H2H: Fritz 2-0 na trawie.',
+    odds:2.80,pM:.47,pB:.357,edge:31.6,surf:'grass',tour:'Wimbledon 2026',
+    rar:'jackpot',conf:.88,
+    reasons:[{txt:'Grass W/R Fritz 54.2% vs Paul 41.8%',pos:true},{txt:'H2H Fritz 2-0 na trawie (6-1 ogolnie)',pos:true},{txt:'Fritz asy: 12.4/mecz vs srednia 8.1',pos:true},{txt:'Paul slaba forma ostatnie 3 turnieje',pos:null}],
+    imgUrl:'https://v3b.fal.media/files/b/0a9fe175/-RlAtf05yGWN2_a8AI7nL_CN3iRoZE.png'},
+  {id:2,match:'Hurkacz vs Norrie',player:'Norrie +1.5 seta',opp:'Hubert Hurkacz',
+    mkt:MKT_H,sel:'Norrie pokrywa handicap +1.5',
+    selDesc:'<span class="g">Norrie pokrywa handicap +1.5</span> — model 68% szansy na ≥1 wygrana seta Norriego. Hurkacz wygra mecz, ale Norrie NIE odda 2:0. Kurs 1.78 vs implied 56.2% = edge +21.1%.',
+    odds:1.78,pM:.68,pB:.562,edge:21.1,surf:'grass',tour:'Wimbledon 2026',
+    rar:'high',conf:.74,
+    reasons:[{txt:'Norrie 67% pokrycia handicap +1.5 na trawie',pos:true},{txt:'Norrie wygrany set vs top-20 w 4/5 ostatnich',pos:true},{txt:'Hurkacz nie wygral 2:0 w 7 ostatnich meczach',pos:true},{txt:'Hurkacz faworyt — ryzyko kontr-passy',pos:false}],
+    imgUrl:'https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png'},
+  {id:3,match:'Monfils vs Gojo',player:'Nad 2.5 seta (3 sety)',opp:'Monfils vs Gojo',
+    mkt:MKT_T,sel:'Mecz skonczy sie w 3 setach',
+    selDesc:'<span class="v">Mecz trwa 3 sety</span> — model P=56% vs implied P=40.8% z kursem 2.45. Monfils historycznie 61% meczow w 3 setach na trawie. Gojo rosnacy na nawierzchni.',
+    odds:2.45,pM:.56,pB:.408,edge:37.2,surf:'grass',tour:'Wimbledon 2026',
+    rar:'jackpot',conf:.81,
+    reasons:[{txt:'Monfils 61% meczow w 3 setach na trawie',pos:true},{txt:'Gojo wzrostowy trend na trawie (2026)',pos:true},{txt:'Avg dlugosc meczow Monfilsa: 2h18min',pos:true},{txt:'Monfils moze ograniczyc serwis z uwagi na odcisk',pos:false}],
+    imgUrl:'https://v3b.fal.media/files/b/0a9fe189/2lgVtIxPEOb0lHDTnsBPx_P5m5rzOS.png'}
+];
+
+// System matches — 3 rynki kazdy
+const MATCHES=[
+  {id:1,p1:'Carlos Alcaraz',p2:'Taylor Fritz',t:'12:00',
+    w:[{s:'Alcaraz',o:1.38,e:-3},{s:'Fritz',o:3.20,e:31.6}],
+    h:[{s:'Alcaraz -1.5',o:1.62,e:5.4},{s:'Fritz +1.5',o:2.20,e:9.2}],
+    to:[{s:'Pod 2.5',o:1.72,e:7.1},{s:'Nad 2.5',o:2.00,e:4.3}]},
+  {id:2,p1:'Jannik Sinner',p2:'Holger Rune',t:'13:30',
+    w:[{s:'Sinner',o:1.55,e:8.3},{s:'Rune',o:2.50,e:6.2}],
+    h:[{s:'Sinner -1.5',o:2.10,e:3.1},{s:'Rune +1.5',o:1.70,e:12.8}],
+    to:[{s:'Pod 2.5',o:1.80,e:9.6},{s:'Nad 2.5',o:1.95,e:3.2}]},
+  {id:3,p1:'Novak Djokovic',p2:'Denis Shapovalov',t:'14:00',
+    w:[{s:'Djokovic',o:1.40,e:5.2},{s:'Shapovalov',o:3.00,e:12.4}],
+    h:[{s:'Djok -1.5',o:1.90,e:6.8},{s:'Shap +1.5',o:1.80,e:8.4}],
+    to:[{s:'Pod 2.5',o:1.65,e:4.2},{s:'Nad 2.5',o:2.10,e:7.1}]},
+  {id:4,p1:'Daniil Medvedev',p2:'Alex De Minaur',t:'15:00',
+    w:[{s:'Medvedev',o:1.75,e:12.4},{s:'De Minaur',o:2.10,e:7.8}],
+    h:[{s:'Med -1.5',o:2.30,e:4.3},{s:'DeMin +1.5',o:1.55,e:14.6}],
+    to:[{s:'Pod 2.5',o:1.85,e:10.2},{s:'Nad 2.5',o:1.90,e:5.8}]},
+  {id:5,p1:'Zverev',p2:'Musetti',t:'15:30',
+    w:[{s:'Zverev',o:1.65,e:3.8},{s:'Musetti',o:2.25,e:9.1}],
+    h:[{s:'Zve -1.5',o:2.15,e:2.1},{s:'Mus +1.5',o:1.62,e:11.4}],
+    to:[{s:'Pod 2.5',o:1.75,e:8.4},{s:'Nad 2.5',o:2.00,e:6.2}]},
+  {id:6,p1:'Hurkacz',p2:'Norrie',t:'16:00',
+    w:[{s:'Hurkacz',o:1.72,e:15.3},{s:'Norrie',o:2.15,e:2.1}],
+    h:[{s:'Hurk -1.5',o:2.40,e:3.6},{s:'Norrie +1.5',o:1.78,e:21.1}],
+    to:[{s:'Pod 2.5',o:1.60,e:6.4},{s:'Nad 2.5',o:2.20,e:8.7}]},
+  {id:7,p1:'Tommy Paul',p2:'Dimitrov',t:'17:00',
+    w:[{s:'Paul',o:2.00,e:11.2},{s:'Dimitrov',o:1.85,e:4.5}],
+    h:[{s:'Paul +1.5',o:1.45,e:9.8},{s:'Dim -1.5',o:2.55,e:5.3}],
+    to:[{s:'Pod 2.5',o:1.90,e:7.2},{s:'Nad 2.5',o:1.85,e:9.1}]},
+  {id:8,p1:'Rublev',p2:'Tiafoe',t:'17:30',
+    w:[{s:'Rublev',o:1.90,e:7.6},{s:'Tiafoe',o:1.90,e:8.9}],
+    h:[{s:'Rub -1.5',o:2.50,e:3.2},{s:'Tia +1.5',o:1.52,e:13.4}],
+    to:[{s:'Pod 2.5',o:1.80,e:11.4},{s:'Nad 2.5',o:2.00,e:6.7}]},
+];
+
+const POOL=['Alcaraz','Sinner','Djokovic','Medvedev','Fritz','Zverev','Rublev','Hurkacz','Paul','Murray','Norrie','Shapovalov','De Minaur','Musetti','Dimitrov','Tiafoe','Rune','Monfils','Bublik','Tsitsipas','Berrettini','Kyrgios','Ruud','Auger-A.'];
+const MKT_ICONS={winner:'🏆',sets:'1️⃣',handicap:'±',total:'∑',score:'⚡'};
 const RAR_LBL={common:'COMMON',value:'VALUE',high:'HIGH VALUE',jackpot:'JACKPOT'};
-const RAR_ODDS_CLS={jackpot:'violet',high:'gold',value:'',common:''};
 
+/* ══════════════════════════════════════════════
+   ITER 62-65: SLOT MACHINE CORE
+══════════════════════════════════════════════ */
+const IH=80,NR=40;
+function buildTrack(el,pick){
+  el.innerHTML='';
+  const pool=[...POOL].sort(()=>Math.random()-.5);
+  for(let i=0;i<NR;i++){
+    const d=document.createElement('div');d.className='ritem';
+    const mktArr=[MKT_W,MKT_H,MKT_T,MKT_S,MKT_SC];
+    d.innerHTML=`<div class="ri-n">${pool[i%pool.length]}</div><div class="ri-o">${(1.3+Math.random()*2.5).toFixed(2)}</div><div class="ri-m">${mktArr[i%5].icon}</div>`;
+    el.appendChild(d);
+  }
+  const fin=document.createElement('div');fin.className='ritem';
+  const col=pick.rar==='jackpot'?'var(--violet)':pick.rar==='high'?'var(--gold)':'var(--lime)';
+  fin.innerHTML=`<div class="ri-n" style="color:var(--t1);font-weight:900">${pick.player.split(' ').pop()}</div><div class="ri-o" style="color:${col}">${pick.odds.toFixed(2)}</div><div class="ri-m" style="color:${col}">${pick.mkt.icon}</div>`;
+  el.appendChild(fin);
+}
+
+function spinReel(tEl,rEl,pick,delay,onDone){
+  const finalY=-(NR-1)*IH;
+  gsap.set(tEl,{y:0});
+  setTimeout(()=>{
+    let last=0;
+    gsap.to(tEl,{
+      y:finalY,duration:2.65,ease:'power4.out',
+      onUpdate(){const n=Date.now();if(n-last>48){pReel();last=n;}},
+      onComplete(){
+        rEl.classList.remove('lk','lkg','lkj');
+        if(pick.rar==='jackpot')rEl.classList.add('lkj');
+        else if(pick.rar==='high')rEl.classList.add('lkg');
+        else rEl.classList.add('lk');
+        const rb=rEl.getBoundingClientRect();
+        const bx=rb.left+rb.width/2,by=rb.top+rb.height/2;
+        if(pick.rar==='jackpot'){burst(bx,by,'#9d6fff',26,1.3);burst(bx,by,'#ffcc44',20,1.1);pJackpot();}
+        else if(pick.rar==='high'){burst(bx,by,'#ffcc44',24,1.1);pLock(true);}
+        else{burst(bx,by,'#c1ff3e',16);pLock(false);}
+        gsap.fromTo(rEl,{backgroundColor:'rgba(255,255,255,.2)'},{backgroundColor:'transparent',duration:.45,ease:'power2.out'});
+        if(onDone)onDone();
+      }
+    });
+  },delay);
+}
+
+/* ══════════════════════════════════════════════
+   ITER 66-68: PICK CARD BUILDER
+══════════════════════════════════════════════ */
 function buildCard(pick,idx){
-  const mktKey = pick.mkt.key;
-  const rarCls = pick.rar;
-  const oddsColor = rarCls==='jackpot'?'violet':rarCls==='high'?'gold':'';
+  const rarCls=pick.rar;
+  const oddsClr=rarCls==='jackpot'?'violet':rarCls==='high'?'gold':'lime';
 
-  const wrap = document.createElement('div');
-  wrap.className = 'pcard-wrap';
-  wrap.dataset.mkt = mktKey;
+  const wrap=document.createElement('div');
+  wrap.className='pcard-wrap';wrap.dataset.mkt=pick.mkt.key;
 
-  const card = document.createElement('div');
-  card.className = `pcard r-${rarCls}`;
+  const card=document.createElement('div');
+  card.className=`pcard r-${rarCls}`;
 
-  // Image header
-  card.innerHTML = `
-    <div class="pcard-img" style="position:relative;height:70px;overflow:hidden">
-      <img src="${pick.imgUrl}" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.32">
-      <div class="pcard-img-overlay"></div>
-    </div>
-    <div class="rar-badge rb-${rarCls}">${RAR_LBL[rarCls]}</div>
-    <div class="pcard-body">
-      <div class="mkt-badge ${MKT_BADGE[mktKey]}">${pick.mkt.icon} ${pick.mkt.label}</div>
-      
-      <div class="pc-match">
+  card.innerHTML=`
+    <div class="pc-hero"><img src="${pick.imgUrl}" alt=""><div class="pc-hero-g"></div></div>
+    <div class="rar rar-${rarCls}">${RAR_LBL[rarCls]}</div>
+    <div class="pc-body">
+      <div class="mkt-badge ${pick.mkt.cls}">${pick.mkt.icon} ${pick.mkt.label}</div>
+      <div class="pc-matchrow">
         <div class="pc-players">
           <div class="pc-backed">${pick.player}</div>
           <div class="pc-vs">vs</div>
           <div class="pc-opp">${pick.opp}</div>
         </div>
-        <div class="pc-odds-blk">
-          <div class="pc-odds-val${oddsColor?' '+oddsColor:''}">${pick.odds.toFixed(2)}</div>
-          <div class="pc-odds-lbl">kurs</div>
+        <div class="pc-oddsblk">
+          <div class="pc-oddsval ${oddsClr}">${pick.odds.toFixed(2)}</div>
+          <div class="pc-oddslbl">kurs</div>
         </div>
       </div>
-
       <div class="pc-sel">${pick.selDesc}</div>
-
-      <div class="pc-probs">
+      <div class="prob-stack">
         <div class="prob-row">
           <span class="prob-lbl">Model P</span>
           <div class="prob-track"><div class="prob-fill ${rarCls==='high'||rarCls==='jackpot'?'pf-g':'pf-l'}" data-v="${(pick.pM*100).toFixed(0)}"></div></div>
@@ -927,85 +1261,39 @@ function buildCard(pick,idx){
           <span class="prob-val">${(pick.pB*100).toFixed(0)}%</span>
         </div>
         <div class="prob-row">
-          <span class="prob-lbl">Edge</span>
-          <div class="prob-track"><div class="prob-fill pf-g" data-v="${Math.min(pick.edge,60)/60*100}"></div></div>
+          <span class="prob-lbl">Edge (+wartosc)</span>
+          <div class="prob-track"><div class="prob-fill pf-g" data-v="${Math.min(pick.edge,55)/55*100}"></div></div>
           <span class="prob-val" style="color:var(--gold)">+${pick.edge.toFixed(1)}%</span>
         </div>
       </div>
-
       <div class="pc-reason">
-        <div class="pr-title">Dlaczego model typuje to?</div>
+        <div class="pr-hdr">Dlaczego model typuje to?</div>
         <div class="pr-factors">
           ${pick.reasons.map(r=>`
-            <div class="prf-row">
-              <div class="prf-dot${r.pos===true?'':r.pos===false?' n':' neutral'}"></div>
+            <div class="prf">
+              <div class="prf-dot ${r.pos===true?'pos':r.pos===false?'neg':'neu'}"></div>
               <span>${r.txt}</span>
             </div>`).join('')}
         </div>
       </div>
-
       <div class="pc-tags">
-        <div class="ptag pg">${pick.mkt.label==='Zwyciesca meczu'?'Trawa':pick.surf==='grass'?'Trawa':'Clay'}</div>
+        <div class="ptag pg">${pick.surf==='grass'?'Trawa':'Clay'}</div>
         <div class="ptag">${pick.tour}</div>
         <div class="ptag">Kelly: ${(Math.max(0,pick.edge/100/(pick.odds-1))*.25*1000).toFixed(0)} PLN</div>
       </div>
-
-      <div class="pc-confidence">
+      <div class="pc-conf">
         <span class="conf-lbl">Pewnosc modelu</span>
-        <div class="conf-bar"><div class="conf-fill" data-v="${(pick.conf*100).toFixed(0)}" style="width:0%"></div></div>
+        <div class="conf-bar"><div class="conf-fill" data-v="${(pick.conf*100).toFixed(0)}"></div></div>
         <span class="conf-val">${(pick.conf*100).toFixed(0)}%</span>
       </div>
-    </div>
-  `;
+    </div>`;
 
   wrap.appendChild(card);
   return{wrap,card};
 }
 
 /* ══════════════════════════════════════════════
-   SLOT MACHINE HELPERS
-══════════════════════════════════════════════ */
-const IH=80,NR=38;
-function buildTrack(el,pick){
-  el.innerHTML='';
-  const mktLabels=['Winner','Handi','Total','1st Set','Score'];
-  const pool=[...POOL].sort(()=>Math.random()-.5);
-  for(let i=0;i<NR;i++){
-    const div=document.createElement('div');div.className='ritem';
-    div.innerHTML=`<div class="ri-n">${pool[i%pool.length]}</div><div class="ri-o">${(1.3+Math.random()*2.2).toFixed(2)}</div><div class="ri-mkt">${mktLabels[i%mktLabels.length]}</div>`;
-    el.appendChild(div);
-  }
-  const fin=document.createElement('div');fin.className='ritem';
-  const col=pick.rar==='jackpot'?'var(--violet)':pick.rar==='high'?'var(--gold)':'var(--lime)';
-  fin.innerHTML=`<div class="ri-n" style="color:var(--t1)">${pick.player.split(' ').pop()}</div><div class="ri-o" style="color:${col}">${pick.odds.toFixed(2)}</div><div class="ri-mkt" style="color:${col}">${pick.mkt.icon}</div>`;
-  el.appendChild(fin);
-}
-function spinReel(tEl,rEl,pick,delay,onDone){
-  const finalY=-(NR-1)*IH;
-  gsap.set(tEl,{y:0});
-  setTimeout(()=>{
-    let last=0;
-    gsap.to(tEl,{y:finalY,duration:2.5,ease:'power4.out',
-      onUpdate(){const n=Date.now();if(n-last>50){pReel();last=n;}},
-      onComplete(){
-        rEl.classList.remove('lk','lkg','lkj');
-        if(pick.rar==='jackpot'){rEl.classList.add('lkj');}
-        else if(pick.rar==='high'){rEl.classList.add('lkg');}
-        else{rEl.classList.add('lk');}
-        const rb=rEl.getBoundingClientRect();
-        const bx=rb.left+rb.width/2,by=rb.top+rb.height/2;
-        if(pick.rar==='jackpot'){burst(bx,by,'#8b5cf6',24);burst(bx,by,'#ffc832',20);pJackpot();}
-        else if(pick.rar==='high'){burst(bx,by,'#ffc832',22);pLock(true);}
-        else{burst(bx,by,'#b8ff02',14);pLock(false);}
-        gsap.fromTo(rEl,{backgroundColor:'rgba(255,255,255,.18)'},{backgroundColor:'transparent',duration:.45,ease:'power2.out'});
-        if(onDone)onDone();
-      }
-    });
-  },delay);
-}
-
-/* ══════════════════════════════════════════════
-   GENERATE COUPON — MAIN FLOW
+   ITER 69-72: MAIN GENERATE FLOW — 5-phase ceremony
 ══════════════════════════════════════════════ */
 let genPicks=[],isGen=false;
 
@@ -1015,7 +1303,7 @@ document.getElementById('btn-gen').addEventListener('click',()=>{
   document.getElementById('csummary').style.display='none';
   document.getElementById('cards-area').innerHTML='';
 
-  genPicks = DEMO_PICKS;
+  genPicks=livePicks&&livePicks.length?livePicks:DEMO;
 
   const ov=document.getElementById('ov');
   ['ovp1','ovp2','ovp3','ovp4'].forEach(id=>document.getElementById(id).classList.remove('on'));
@@ -1027,67 +1315,87 @@ document.getElementById('btn-gen').addEventListener('click',()=>{
 
   const tl=gsap.timeline();
 
-  // Phase 1 — SCAN
-  tl.to(ov,{opacity:1,duration:.35})
-    .call(()=>{document.getElementById('ovp1').classList.add('on');gsap.set(['#ob1','#ob2','#ob3','#ob4'],{width:'0%'});})
-    .call(()=>scramble(document.getElementById('ovtxt'),'SKANOWANIE MECZY ATP...',500))
-    .to('#ob1',{width:'100%',duration:1.3,ease:'power1.inOut',onUpdate:()=>{if(Math.random()<.1)pTick()}})
-    .call(()=>scramble(document.getElementById('ovtxt'),'PREDYKCJA WINNER MARKET...',400))
-    .to('#ob2',{width:'100%',duration:1.0,ease:'power1.inOut',onUpdate:()=>{if(Math.random()<.08)pTick()}})
-    .call(()=>scramble(document.getElementById('ovtxt'),'PREDYKCJA SETS / HANDICAP...',400))
-    .to('#ob3',{width:'100%',duration:.9,ease:'power1.inOut',onUpdate:()=>{if(Math.random()<.07)pTick()}})
-    .call(()=>scramble(document.getElementById('ovtxt'),'KELLY SIZING & EDGE RANK...',350))
-    .to('#ob4',{width:'100%',duration:.7,ease:'power1.inOut',onUpdate:()=>{if(Math.random()<.06)pTick()}})
-    .to('#ovp1',{opacity:0,y:-16,duration:.3})
+  // ── Phase 1: SCAN ──
+  tl.to(ov,{opacity:1,duration:.32})
+    .call(()=>{
+      document.getElementById('ovp1').classList.add('on');
+      gsap.set(['#ob1','#ob2','#ob3','#ob4'],{width:'0%'});
+    })
+    .call(()=>scramble(document.getElementById('ovtxt'),'SKANOWANIE MECZY ATP...',520))
+    .to('#ob1',{width:'100%',duration:1.35,ease:'power1.inOut',onUpdate(){if(Math.random()<.1)pTick()}})
+    .call(()=>scramble(document.getElementById('ovtxt'),'WINNER / HANDICAP PREDICTION...',440))
+    .to('#ob2',{width:'100%',duration:1.1,ease:'power1.inOut',onUpdate(){if(Math.random()<.08)pTick()}})
+    .call(()=>scramble(document.getElementById('ovtxt'),'TOTAL SETS / SCORE MARKET...',400))
+    .to('#ob3',{width:'100%',duration:.95,ease:'power1.inOut',onUpdate(){if(Math.random()<.07)pTick()}})
+    .call(()=>scramble(document.getElementById('ovtxt'),'KELLY SIZING & EDGE RANKING...',360))
+    .to('#ob4',{width:'100%',duration:.75,ease:'power1.inOut',onUpdate(){if(Math.random()<.06)pTick()}})
+    .to('#ovp1',{opacity:0,y:-18,duration:.32,ease:'power2.in'})
     .call(()=>document.getElementById('ovp1').classList.remove('on'))
 
-  // Phase 2 — FOUND
+  // ── Phase 2: FOUND ──
     .call(()=>{
       document.getElementById('ovp2').classList.add('on');
-      document.getElementById('ovsub').textContent=(genPicks[0]?.tour||'ATP')+' 2026 · 3 typy · 3 rynki';
-      gsap.set('#ovp2',{opacity:0,scale:.7});gsap.to('#ovp2',{opacity:1,scale:1,duration:.5,ease:'back.out(1.5)'});
+      document.getElementById('ovsub').textContent=(genPicks[0]?.tour||'ATP 2026')+' · edge >10%';
+      gsap.set('#ovp2',{opacity:0,scale:.7});
+      gsap.to('#ovp2',{opacity:1,scale:1,duration:.5,ease:'back.out(1.5)'});
       const cnt=document.getElementById('ovcnt');let c=0;
-      const iv=setInterval(()=>{c++;cnt.textContent=c;burst(window.innerWidth/2,window.innerHeight/2,'#b8ff02',8);pTick();if(c>=genPicks.length)clearInterval(iv);},380);
+      const iv=setInterval(()=>{
+        c++;cnt.textContent=c;
+        burst(innerWidth/2,innerHeight*.45,'#c1ff3e',8);pTick();
+        if(c>=genPicks.length)clearInterval(iv);
+      },380);
     })
-    .to({},{duration:genPicks.length*.42+.4})
-    .to('#ovp2',{opacity:0,scale:1.2,duration:.3})
+    .to({},{duration:genPicks.length*.42+.45})
+    .to('#ovp2',{opacity:0,scale:1.2,duration:.32,ease:'power2.in'})
     .call(()=>document.getElementById('ovp2').classList.remove('on'))
 
-  // Phase 3 — SUSPENSE 3-2-1
+  // ── Phase 3: SUSPENSE 3-2-1 ──
     .call(()=>{
       document.getElementById('ovp3').classList.add('on');
       gsap.set('#ovp3',{opacity:0});gsap.to('#ovp3',{opacity:1,duration:.28});
       scramble(document.getElementById('ovst'),'PRZYGOTOWANIE KUPONU...',380);
+      dramaDrone();
       const cd=document.getElementById('ovcd');
-      [3,2,1].forEach((n,i)=>setTimeout(()=>{cd.textContent=n;pCount();gsap.fromTo(cd,{scale:1.6,opacity:0},{scale:1,opacity:1,duration:.28,ease:'back.out(1.5)'});},i*700));
+      [3,2,1].forEach((n,i)=>{
+        setTimeout(()=>{
+          cd.textContent=n;pCount();
+          gsap.fromTo(cd,{scale:1.7,opacity:0},{scale:1,opacity:1,duration:.3,ease:'back.out(1.5)'});
+          if(n===1){
+            gsap.to(cd,{color:'var(--lime)',duration:.25,delay:.1});
+            burst(innerWidth/2,innerHeight*.5,'#c1ff3e',18,1.3);
+          }
+        },i*720);
+      });
     })
-    .to({},{duration:2.4})
-    .to('#ovp3',{opacity:0,duration:.22})
+    .to({},{duration:2.5})
+    .to('#ovp3',{opacity:0,duration:.24})
     .call(()=>document.getElementById('ovp3').classList.remove('on'))
 
-  // Phase 4 — SLOT MACHINE
+  // ── Phase 4: SLOT MACHINE ──
     .call(()=>{
       document.getElementById('ovp4').classList.add('on');
-      gsap.set('#ovp4',{opacity:0,y:24});gsap.to('#ovp4',{opacity:1,y:0,duration:.4,ease:'back.out(1.5)'});
-      for(let i=0;i<3;i++)buildTrack(document.getElementById('rt'+i),genPicks[i]);
+      gsap.set('#ovp4',{opacity:0,y:26});
+      gsap.to('#ovp4',{opacity:1,y:0,duration:.42,ease:'back.out(1.5)'});
+      for(let i=0;i<3;i++)buildTrack(document.getElementById('rt'+i),genPicks[i]||DEMO[0]);
       pLaunch();
       let done=0;
       for(let i=0;i<3;i++){
-        spinReel(document.getElementById('rt'+i),document.getElementById('r'+i),genPicks[i],i*750,()=>{
+        spinReel(document.getElementById('rt'+i),document.getElementById('r'+i),genPicks[i]||DEMO[0],i*760,()=>{
           done++;
           if(done===3){
             const tot=genPicks.reduce((a,p)=>a*p.odds,1);
             document.getElementById('stv').textContent=tot.toFixed(2);
-            gsap.to('#slt',{opacity:1,y:0,duration:.6,ease:'elastic.out(1.2,.5)',delay:.12});
-            gsap.from('#stv',{scale:.35,duration:.6,ease:'elastic.out(1.5,.4)',delay:.12});
-            burst(window.innerWidth/2,window.innerHeight*.7,'#b8ff02',40);
+            gsap.to('#slt',{opacity:1,y:0,duration:.65,ease:'elastic.out(1.2,.5)',delay:.12});
+            gsap.from('#stv',{scale:.3,duration:.65,ease:'elastic.out(1.5,.4)',delay:.12});
+            rain('#c1ff3e',40);rain('#ffcc44',20);
             pJackpot();
             setTimeout(()=>{
               gsap.to(ov,{opacity:0,scale:.95,duration:.4,ease:'power2.in',onComplete:()=>{
-                ov.classList.remove('on');gsap.set(ov,{scale:1,opacity:0});
+                ov.classList.remove('on');
+                gsap.set(ov,{scale:1,opacity:0});
                 dealFlipCards(genPicks);
               }});
-            },1800);
+            },2000);
           }
         });
       }
@@ -1095,7 +1403,7 @@ document.getElementById('btn-gen').addEventListener('click',()=>{
 });
 
 /* ══════════════════════════════════════════════
-   FLIP CARD DEAL
+   ITER 73-76: FLIP CARD DEAL — FIFA UT pack opening
 ══════════════════════════════════════════════ */
 function dealFlipCards(picks){
   const area=document.getElementById('cards-area');
@@ -1103,22 +1411,20 @@ function dealFlipCards(picks){
   picks.forEach((pick,i)=>{
     const{wrap,card}=buildCard(pick,i);
 
-    // Build flip wrapper
     const flipWrap=document.createElement('div');flipWrap.className='flip-wrap';
     const flipCard=document.createElement('div');flipCard.className='flip-card';
-    gsap.set(flipCard,{height:160,rotateY:0});
+    gsap.set(flipCard,{height:136,rotateY:0});
 
-    // Front face
+    // Mystery front
     const front=document.createElement('div');front.className='flip-f';
-    front.innerHTML=`<div class="ffi"><img src="https://v3b.fal.media/files/b/0a9fe17c/5aXGKPrN0YKu8ZD2fKCcS_UD57jLsn.png" alt=""></div><div class="fft">TYP ${i+1} — ${pick.mkt.icon} ${pick.mkt.label}</div>`;
+    front.innerHTML=`
+      <div class="ffi"><img src="https://v3b.fal.media/files/b/0a9fe17c/5aXGKPrN0YKu8ZD2fKCcS_UD57jLsn.png" alt=""></div>
+      <div class="fft">TYP ${i+1} &mdash; ${pick.mkt.icon} ${pick.mkt.label}</div>`;
 
-    // Back = full pick card (set to rotateY 180 initially)
-    wrap.style.position='absolute';wrap.style.top='0';wrap.style.left='0';wrap.style.width='100%';
-    wrap.style.backfaceVisibility='hidden';wrap.style.webkitBackfaceVisibility='hidden';
-    wrap.style.borderRadius='var(--r)';
+    // Back = full pick card
+    wrap.style.cssText='position:absolute;top:0;left:0;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r)';
     gsap.set(wrap,{rotateY:180});
 
-    // Flash overlay
     const flash=document.createElement('div');flash.className='flip-flash';
 
     flipCard.appendChild(front);
@@ -1127,35 +1433,34 @@ function dealFlipCards(picks){
     flipWrap.appendChild(flipCard);
     area.appendChild(flipWrap);
 
-    gsap.from(flipWrap,{opacity:0,y:40,duration:.38,ease:'back.out(1.5)',delay:i*.08});
+    gsap.from(flipWrap,{opacity:0,y:42,duration:.4,ease:'back.out(1.5)',delay:i*.1});
 
     setTimeout(()=>{
       pFlip();
       gsap.to(flipCard,{
-        rotateY:180,duration:.7,ease:'power3.inOut',
+        rotateY:180,duration:.72,ease:'power3.inOut',
         onUpdate:function(){
           const p=this.progress();
-          gsap.set(flash,{opacity:p>.42&&p<.58?.8:0});
+          gsap.set(flash,{opacity:p>.4&&p<.6?.82:0});
         },
         onComplete(){
-          // Animate all bars
+          // Animate bars after reveal
           card.querySelectorAll('.prob-fill,.conf-fill').forEach(b=>{
-            gsap.to(b,{width:(b.dataset.v||b.dataset.v===0?b.dataset.v:parseFloat(b.style.width||0))+'%',duration:.9,ease:'power2.out',delay:.06});
+            const v=parseFloat(b.dataset.v)||0;
+            gsap.to(b,{width:v+'%',duration:.95,ease:'power2.out',delay:.05});
           });
-          // Update card height to match content
           gsap.set(flipCard,{height:'auto'});
 
-          // Rarity effects
           const rb=flipWrap.getBoundingClientRect();
           const bx=rb.left+rb.width/2,by=rb.top+rb.height/2;
-          if(pick.rar==='jackpot'){burst(bx,by,'#ffc832',28);burst(bx,by,'#8b5cf6',18);pJackpot();}
-          else if(pick.rar==='high'){burst(bx,by,'#ffc832',20);pLock(true);}
-          else if(pick.rar==='value'){burst(bx,by,'#b8ff02',14);}
+          if(pick.rar==='jackpot'){burst(bx,by,'#ffcc44',28,1.2);burst(bx,by,'#9d6fff',20,1.1);pJackpot();}
+          else if(pick.rar==='high'){burst(bx,by,'#ffcc44',22,1.1);pLock(true);}
+          else if(pick.rar==='value'){burst(bx,by,'#c1ff3e',14);}
 
-          if(i===picks.length-1)setTimeout(()=>showCoupon(picks),600);
+          if(i===picks.length-1)setTimeout(()=>showCoupon(picks),650);
         }
       });
-    }, 700+i*650);
+    },720+i*660);
   });
 
   isGen=false;
@@ -1172,58 +1477,80 @@ function showCoupon(picks){
   document.getElementById('cs-o').textContent=tot.toFixed(2);
   document.getElementById('cs-ev').textContent='+'+ev.toFixed(1)+'%';
   document.getElementById('cs-k').textContent=kelly.toFixed(0)+' PLN';
-  gsap.fromTo(cs,{opacity:0,y:16},{opacity:1,y:0,duration:.5,ease:'back.out(1.5)'});
-  burst(window.innerWidth/2,window.innerHeight-110,'#b8ff02',22);
+  gsap.fromTo(cs,{opacity:0,y:18},{opacity:1,y:0,duration:.5,ease:'back.out(1.5)'});
+  burst(innerWidth/2,innerHeight-110,'#c1ff3e',26);
+  toast('Kupon gotowy — '+picks.length+' typy, '+new Set(picks.map(p=>p.mkt.key)).size+' rynki','lime');
 }
 
 document.getElementById('btn-exp').addEventListener('click',()=>{
   if(!genPicks.length)return;
-  const txt=genPicks.map(p=>`${p.mkt.icon} ${p.mkt.label.toUpperCase()}\n  ${p.player} vs ${p.opp}\n  Wybor: ${p.sel} @ ${p.odds.toFixed(2)} | Edge: +${p.edge.toFixed(1)}%`).join('\n\n');
   const tot=genPicks.reduce((a,p)=>a*p.odds,1);
-  navigator.clipboard.writeText(`betatp.io — Daily Kupon\n${new Date().toLocaleDateString('pl-PL')}\n${'─'.repeat(32)}\n\n${txt}\n\n${'─'.repeat(32)}\nLaczny kurs: ${tot.toFixed(2)}`).then(()=>{toast('Kupon skopiowany — 5 rynkow');gsap.to('#btn-exp',{scale:.95,yoyo:true,repeat:1,duration:.08});});
+  const txt=genPicks.map(p=>`${p.mkt.icon} [${p.mkt.label.toUpperCase()}]\n  Selekcja: ${p.sel}\n  Kurs: ${p.odds.toFixed(2)} | Edge: +${p.edge.toFixed(1)}% | Model P: ${(p.pM*100).toFixed(0)}%`).join('\n\n');
+  navigator.clipboard.writeText(`betatp.io — Daily Kupon\n${new Date().toLocaleDateString('pl-PL')}\n${'─'.repeat(36)}\n\n${txt}\n\n${'─'.repeat(36)}\nLaczny kurs: ${tot.toFixed(2)}\n— Wygenerowane przez LightGBM v14 (AUC 0.9031)`).then(()=>{
+    toast('Kupon skopiowany!','lime');
+    gsap.to('#btn-exp',{scale:.95,yoyo:true,repeat:1,duration:.08});
+  });
 });
 
 /* ══════════════════════════════════════════════
-   SYSTEM BUILDER — 3 markets per match
+   ITER 77-79: SYSTEM BUILDER
 ══════════════════════════════════════════════ */
 let sysPicks=[];
 function renderMatches(){
   const list=document.getElementById('mlist');list.innerHTML='';
   MATCHES.forEach((m,mi)=>{
-    const div=document.createElement('div');div.className='mrow';
-    if(sysPicks.find(p=>p.mid===m.id))div.classList.add('sel');
+    const hasSel=sysPicks.find(p=>p.mid===m.id);
+    const div=document.createElement('div');
+    div.className='mrow'+(hasSel?' sel':'');
     div.innerHTML=`
-      <div class="mr-top"><span>${m.p1}</span><span class="mr-vs">vs</span><span>${m.p2}</span><span class="mr-time">${m.t}</span></div>
-      <div class="mr-markets">
-        <div class="mr-mkt-row"><div class="mr-mkt-lbl">🏆 Winner</div><div class="mr-btns">
-          ${m.w.map(o=>`<div class="mrb mkt-w${sysPicks.find(p=>p.mid===m.id&&p.sel===o.lbl)?' a':''}" data-mid="${m.id}" data-sel="${o.lbl}" data-o="${o.o}" data-e="${o.e}" data-mkt="winner">
-            <span class="mrb-n">${o.lbl}</span><span class="mrb-o">${o.o.toFixed(2)}</span>
-            <span class="mrb-e ${o.e>=10?'eg':o.e>=5?'eo':'en'}">${o.e>0?'+':''}${o.e.toFixed(1)}%</span></div>`).join('')}
-        </div></div>
-        <div class="mr-mkt-row"><div class="mr-mkt-lbl">± Handicap</div><div class="mr-btns">
-          ${m.h.map(o=>`<div class="mrb mkt-h${sysPicks.find(p=>p.mid===m.id&&p.sel===o.lbl)?' a':''}" data-mid="${m.id}" data-sel="${o.lbl}" data-o="${o.o}" data-e="${o.e}" data-mkt="handicap">
-            <span class="mrb-n">${o.lbl}</span><span class="mrb-o">${o.o.toFixed(2)}</span>
-            <span class="mrb-e ${o.e>=10?'eg':o.e>=5?'eo':'en'}">${o.e>0?'+':''}${o.e.toFixed(1)}%</span></div>`).join('')}
-        </div></div>
-        <div class="mr-mkt-row"><div class="mr-mkt-lbl">∑ Total Sets</div><div class="mr-btns">
-          ${m.to.map(o=>`<div class="mrb mkt-t${sysPicks.find(p=>p.mid===m.id&&p.sel===o.lbl)?' a':''}" data-mid="${m.id}" data-sel="${o.lbl}" data-o="${o.o}" data-e="${o.e}" data-mkt="total">
-            <span class="mrb-n">${o.lbl}</span><span class="mrb-o">${o.o.toFixed(2)}</span>
-            <span class="mrb-e ${o.e>=10?'eg':o.e>=5?'eo':'en'}">${o.e>0?'+':''}${o.e.toFixed(1)}%</span></div>`).join('')}
-        </div></div>
+      <div class="mr-top">
+        <span>${m.p1}</span><span class="mr-vs">vs</span><span>${m.p2}</span>
+        <span class="mr-time">${m.t}</span>
+      </div>
+      <div class="mr-mkts">
+        <div class="mr-mkt-row">
+          <div class="mr-mkt-lbl">🏆 Winner</div>
+          <div class="mr-btns">
+            ${m.w.map(o=>`<div class="mrb mw${sysPicks.find(p=>p.mid===m.id&&p.s===o.s)?' a':''}" data-mid="${m.id}" data-s="${o.s}" data-o="${o.o}" data-e="${o.e}" data-mkt="winner">
+              <span class="mrb-n">${o.s.split(' ').slice(0,2).join(' ')}</span>
+              <span class="mrb-o">${o.o.toFixed(2)}</span>
+              <span class="mrb-e ${o.e>=10?'eg':o.e>=5?'eo':'en'}">${o.e>0?'+':''}${o.e.toFixed(1)}%</span>
+            </div>`).join('')}
+          </div>
+        </div>
+        <div class="mr-mkt-row">
+          <div class="mr-mkt-lbl">± Handicap +1.5</div>
+          <div class="mr-btns">
+            ${m.h.map(o=>`<div class="mrb mh${sysPicks.find(p=>p.mid===m.id&&p.s===o.s)?' a':''}" data-mid="${m.id}" data-s="${o.s}" data-o="${o.o}" data-e="${o.e}" data-mkt="handicap">
+              <span class="mrb-n">${o.s}</span>
+              <span class="mrb-o">${o.o.toFixed(2)}</span>
+              <span class="mrb-e ${o.e>=10?'eg':o.e>=5?'eo':'en'}">${o.e>0?'+':''}${o.e.toFixed(1)}%</span>
+            </div>`).join('')}
+          </div>
+        </div>
+        <div class="mr-mkt-row">
+          <div class="mr-mkt-lbl">∑ Total Sets</div>
+          <div class="mr-btns">
+            ${m.to.map(o=>`<div class="mrb mt${sysPicks.find(p=>p.mid===m.id&&p.s===o.s)?' a':''}" data-mid="${m.id}" data-s="${o.s}" data-o="${o.o}" data-e="${o.e}" data-mkt="total">
+              <span class="mrb-n">${o.s}</span>
+              <span class="mrb-o">${o.o.toFixed(2)}</span>
+              <span class="mrb-e ${o.e>=10?'eg':o.e>=5?'eo':'en'}">${o.e>0?'+':''}${o.e.toFixed(1)}%</span>
+            </div>`).join('')}
+          </div>
+        </div>
       </div>`;
     div.querySelectorAll('.mrb').forEach(btn=>btn.addEventListener('click',e=>{
       e.stopPropagation();AC();pTick();
-      togglePick(parseInt(btn.dataset.mid),btn.dataset.sel,parseFloat(btn.dataset.o),parseFloat(btn.dataset.e),btn.dataset.mkt);
+      const mid=parseInt(btn.dataset.mid),s=btn.dataset.s,o=parseFloat(btn.dataset.o),edge=parseFloat(btn.dataset.e),mkt=btn.dataset.mkt;
+      const idx=sysPicks.findIndex(p=>p.mid===mid);
+      if(idx!==-1){if(sysPicks[idx].s===s)sysPicks.splice(idx,1);else sysPicks[idx]={mid,s,o,edge,mkt};}
+      else{if(sysPicks.length>=8){toast('Max 8 typow');return;}sysPicks.push({mid,s,o,edge,mkt});}
+      renderMatches();renderTray();updateFoot();
+      gsap.fromTo(btn,{scale:1.12},{scale:1,duration:.25,ease:'elastic.out(1.5,.4)'});
     }));
     list.appendChild(div);
-    gsap.from(div,{opacity:0,x:-7,duration:.18,ease:'power2.out',delay:mi*.025});
+    gsap.from(div,{opacity:0,x:-7,duration:.18,ease:'power2.out',delay:mi*.022});
   });
-}
-function togglePick(mid,sel,odds,edge,mkt){
-  const idx=sysPicks.findIndex(p=>p.mid===mid);
-  if(idx!==-1){if(sysPicks[idx].sel===sel)sysPicks.splice(idx,1);else sysPicks[idx]={mid,sel,odds,edge,mkt};}
-  else{if(sysPicks.length>=8){toast('Max 8 typow');return;}sysPicks.push({mid,sel,odds,edge,mkt});}
-  renderMatches();renderTray();updateFoot();
 }
 function renderTray(){
   const tray=document.getElementById('stray'),empty=document.getElementById('te');
@@ -1231,18 +1558,17 @@ function renderTray(){
   empty.style.display=sysPicks.length?'none':'flex';
   sysPicks.forEach((p,i)=>{
     const item=document.createElement('div');item.className='titem';
-    const mktIcon={winner:'🏆',handicap:'±',total:'∑',sets:'1️⃣',score:'⚡'}[p.mkt]||'';
-    item.innerHTML=`<span class="ti-n">${p.sel.split(' ').slice(0,2).join(' ')}</span><span class="ti-mkt">${mktIcon}</span><span class="ti-o">${p.odds.toFixed(2)}</span><div class="ti-rm" data-i="${i}">x</div>`;
+    item.innerHTML=`<span class="ti-n">${p.s.split(' ').slice(0,2).join(' ')}</span><span class="ti-m">${MKT_ICONS[p.mkt]||''}</span><span class="ti-o">${p.o.toFixed(2)}</span><div class="ti-rm" data-i="${i}">✕</div>`;
     item.querySelector('.ti-rm').addEventListener('click',()=>{sysPicks.splice(i,1);renderMatches();renderTray();updateFoot();});
     tray.insertBefore(item,empty);
-    gsap.from(item,{opacity:0,x:10,duration:.22,ease:'back.out(1.5)',delay:i*.035});
+    gsap.from(item,{opacity:0,x:12,duration:.22,ease:'back.out(1.5)',delay:i*.04});
   });
 }
 function updateFoot(){
   const n=sysPicks.length;
   document.getElementById('sf-cnt').textContent=n+'/8';
   if(!n){document.getElementById('sf-o').textContent='1.00';document.getElementById('sf-e').textContent='--';document.getElementById('btn-sys').classList.remove('rdy');return;}
-  const tot=sysPicks.reduce((a,p)=>a*p.odds,1);
+  const tot=sysPicks.reduce((a,p)=>a*p.o,1);
   const avg=sysPicks.reduce((a,p)=>a+p.edge,0)/n;
   const el=document.getElementById('sf-o');
   const obj={v:parseFloat(el.textContent)||1};
@@ -1252,33 +1578,42 @@ function updateFoot(){
 }
 document.getElementById('btn-sys').addEventListener('click',()=>{
   if(sysPicks.length<2)return;
-  const tot=sysPicks.reduce((a,p)=>a*p.odds,1);
+  const tot=sysPicks.reduce((a,p)=>a*p.o,1);
   const avg=sysPicks.reduce((a,p)=>a+p.edge,0)/sysPicks.length;
   const kelly=Math.min((avg/100)/(tot-1)*.3*1e3,400);
   pJackpot();
-  burst(window.innerWidth/2,window.innerHeight-80,tot>4?'#ffc832':'#00ffea',28);
-  gsap.fromTo('#sf-o',{color:'#fff',scale:1.3},{color:'#00ffea',scale:1,duration:.55,ease:'elastic.out(1.2,.5)'});
-  gsap.to('#btn-sys',{scale:.94,yoyo:true,repeat:1,duration:.1});
-  toast(`${sysPicks.length} typow | Kurs: ${tot.toFixed(2)} | Kelly: ${kelly.toFixed(0)} PLN`);
+  rain('#00f5e9',30);rain('#ffcc44',20);
+  gsap.fromTo('#sf-o',{color:'#fff',scale:1.35},{color:'var(--cyan)',scale:1,duration:.55,ease:'elastic.out(1.2,.5)'});
+  gsap.to('#btn-sys',{scale:.93,yoyo:true,repeat:1,duration:.1});
+  toast(`${sysPicks.length} typow | Kurs: ${tot.toFixed(2)} | Kelly: ${kelly.toFixed(0)} PLN`,'gold');
 });
 
 /* ══════════════════════════════════════════════
-   TOAST
+   ITER 80: CINEMATIC ENTRANCE + POLISH
+   Dopamine primer: hero animacja buduje anticipation
+   zanim user kliknie cokolwiek
 ══════════════════════════════════════════════ */
-function toast(msg,d=2800){
-  const t=document.createElement('div');t.className='tm';t.textContent=msg;
+function toast(msg,type,d=3000){
+  const t=document.createElement('div');
+  t.className='tm'+(type?' '+type:'');
+  t.textContent=msg;
   document.getElementById('ta').appendChild(t);
-  setTimeout(()=>gsap.to(t,{opacity:0,y:7,duration:.26,onComplete:()=>t.remove()}),d);
+  setTimeout(()=>gsap.to(t,{opacity:0,y:8,duration:.28,onComplete:()=>t.remove()}),d);
 }
 
-/* ══════════════════════════════════════════════
-   ENTRANCE
-══════════════════════════════════════════════ */
-gsap.from('.logo-pill',{y:-20,opacity:0,duration:.7,ease:'power2.out',delay:.35});
-gsap.from('#ht',{y:50,opacity:0,duration:.95,ease:'power3.out',delay:.55});
-gsap.from('#hs',{y:16,opacity:0,duration:.6,ease:'power2.out',delay:.9});
-gsap.from('.market-chips',{y:14,opacity:0,duration:.5,ease:'power2.out',delay:1.05});
-gsap.from('.hcard',{y:60,opacity:0,duration:.9,ease:'back.out(1.5)',stagger:.15,delay:1.2});
+// Staggered entrance — każdy element wchodzi z buildup
+const enter=gsap.timeline({delay:.3});
+enter
+  .from('.logo-pill',{y:-22,opacity:0,duration:.7,ease:'power2.out'})
+  .from('#ht',{y:60,opacity:0,duration:1,ease:'power3.out'},'.2')
+  .from('#s-home .hero-sub',{y:18,opacity:0,duration:.65,ease:'power2.out'},'.4')
+  .from('.market-row',{y:14,opacity:0,duration:.5,ease:'power2.out'},'.55')
+  .from('.hcard',{y:65,opacity:0,duration:.95,ease:'back.out(1.5)',stagger:.18},'.7');
+
+// Subtle pulse on logo after entrance
+enter.call(()=>{
+  gsap.to('.logo-pill',{boxShadow:'0 0 0 3px rgba(193,255,62,.12)',yoyo:true,repeat:-1,duration:2.5,ease:'sine.inOut'});
+});
 </script>
 </body>
 </html>
