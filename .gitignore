@@ -18,6 +18,8 @@ data/*.json
 !data/backtest_v4_bets.csv
 !data/backtest_v12.json
 !data/backtest_v12_bets.csv
+!data/backtest_v14.json
+!data/backtest_v14_bets.csv
 
 # Models (duże binaria)
 models/*.joblib
