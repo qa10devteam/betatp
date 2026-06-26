@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-06-25T18:04:55.955678",
+  "train_matches": 179045,
+  "test_matches": 18850,
+  "predictions": 37700,
+  "metrics": {
+    "accuracy": 0.499,
+    "brier_score": 0.2263,
+    "log_loss": 0.6434,
+    "avg_p_winner": 0.5
+  },
+  "surface_accuracy": {
+    "Hard": 0.5008,
+    "Clay": 0.4948,
+    "Grass": 0.5021
+  },
+  "betting": {
+    "bets": 15663,
+    "won": 9148,
+    "win_rate": 0.584,
+    "roi": 18.39,
+    "final_bankroll": 144777.43,
+    "total_wagered": 782028.44,
+    "sharpe": 1.325,
+    "max_drawdown": 0.156
+  },
+  "calibration": [
+    {
+      "bin": "0.0-0.1",
+      "n": 16,
+      "avg_pred": 0.09,
+      "actual_win": 0.062,
+      "diff": -0.027
+    },
+    {
+      "bin": "0.1-0.2",
+      "n": 343,
+      "avg_pred": 0.165,
+      "actual_win": 0.085,
+      "diff": -0.081
+    },
+    {
+      "bin": "0.2-0.3",
+      "n": 1689,
+      "avg_pred": 0.261,
+      "actual_win": 0.189,
+      "diff": -0.072
+    },
+    {
+      "bin": "0.3-0.4",
+      "n": 5280,
+      "avg_pred": 0.358,
+      "actual_win": 0.308,
+      "diff": -0.05
+    },
+    {
+      "bin": "0.4-0.5",
+      "n": 11484,
+      "avg_pred": 0.455,
+      "actual_win": 0.449,
+      "diff": -0.005
+    },
+    {
+      "bin": "0.5-0.6",
+      "n": 11560,
+      "avg_pred": 0.545,
+      "actual_win": 0.55,
+      "diff": 0.005
+    },
+    {
+      "bin": "0.6-0.7",
+      "n": 5280,
+      "avg_pred": 0.642,
+      "actual_win": 0.692,
+      "diff": 0.05
+    },
+    {
+      "bin": "0.7-0.8",
+      "n": 1689,
+      "avg_pred": 0.739,
+      "actual_win": 0.811,
+      "diff": 0.072
+    },
+    {
+      "bin": "0.8-0.9",
+      "n": 343,
+      "avg_pred": 0.835,
+      "actual_win": 0.915,
+      "diff": 0.081
+    },
+    {
+      "bin": "0.9-1.0",
+      "n": 16,
+      "avg_pred": 0.91,
+      "actual_win": 0.938,
+      "diff": 0.027
+    }
+  ],
+  "elapsed_seconds": 14.2
+}

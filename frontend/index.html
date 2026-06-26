@@ -156,6 +156,28 @@
     .model-kv-val.green { color: var(--green); }
     .model-kv-val.cyan  { color: var(--accent); }
 
+    /* ── Model Leaderboard ──────────────────────────────────────── */
+    .leaderboard-panel {
+      background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px;
+    }
+    .leaderboard-panel .picks-table td { padding: 8px 12px; font-size: 11px; }
+    .best-row td { background: color-mix(in srgb, var(--accent) 5%, transparent) !important; }
+    .best-row td:first-child { border-left: 2px solid var(--accent); }
+    .version-tag {
+      font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 4px;
+      background: var(--bg-3); border: 1px solid var(--border-2);
+    }
+    .version-tag.best { background: color-mix(in srgb, var(--accent) 15%, transparent); border-color: var(--accent); color: var(--accent); }
+    .status-tag {
+      font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .status-tag.active  { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green);   border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+    .status-tag.clean   { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent);  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+    .status-tag.retired { background: transparent; color: var(--txt-3); border: 1px solid var(--border); }
+    .delta-pos { color: var(--green); }
+    .delta-neg { color: var(--red); }
+
     /* ── Loading / error ─────────────────────────────────────────── */
     .loading { display: flex; align-items: center; justify-content: center; height: 200px; font-family: var(--mono); font-size: 12px; color: var(--txt-3); gap: 8px; }
     .spinner { width: 14px; height: 14px; border: 2px solid var(--border-2); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; }
@@ -193,9 +215,9 @@
         <div class="stat-sub" id="stat-auc-sub">vs Pinnacle —</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Bets Today</div>
+        <div class="stat-label">Bets (holdout)</div>
         <div class="stat-value" id="stat-bets">—</div>
-        <div class="stat-sub" id="stat-bets-sub">edge > 5%</div>
+        <div class="stat-sub" id="stat-bets-sub">edge > 8%</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Avg Edge</div>
@@ -203,7 +225,7 @@
         <div class="stat-sub">vs market</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Half-Kelly ROI</div>
+        <div class="stat-label">Win Rate</div>
         <div class="stat-value" id="stat-roi">—</div>
         <div class="stat-sub" id="stat-roi-sub">holdout 2024-2026</div>
       </div>
@@ -237,6 +259,7 @@
             <tr>
               <th>Player</th>
               <th>Surface</th>
+              <th class="right">Date</th>
               <th class="right">Odds</th>
               <th class="right">P(model)</th>
               <th class="right">P(Pinnacle)</th>
@@ -248,7 +271,7 @@
             </tr>
           </thead>
           <tbody id="picks-tbody">
-            <tr><td colspan="10" class="loading"><span class="spinner"></span>Loading picks...</td></tr>
+            <tr><td colspan="11" class="loading"><span class="spinner"></span>Loading picks...</td></tr>
           </tbody>
         </table>
       </div>
@@ -308,9 +331,33 @@
           <div class="model-kv-val">Half-Kelly</div>
         </div>
         <div class="model-kv">
-          <div class="model-kv-key">Backtest file</div>
-          <div class="model-kv-val" id="mi-file" style="font-size:10px;max-width:180px;overflow:hidden;text-overflow:ellipsis">—</div>
+          <div class="model-kv-key">Backtest</div>
+          <div class="model-kv-val" style="font-size:10px">backtest_v4_bets.csv</div>
         </div>
+      </div>
+    </div>
+
+    <!-- Model Leaderboard -->
+    <div class="leaderboard-panel">
+      <div class="section-header" style="margin-bottom:10px">
+        <div class="section-title">Model Comparison — Clean runs (post Bug#4 fix)</div>
+        <div class="section-badge">Pinnacle baseline AUC: 0.7457</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="picks-table" id="leaderboard-table">
+          <thead>
+            <tr>
+              <th>Version</th>
+              <th>Hypothesis</th>
+              <th class="right">AUC Holdout</th>
+              <th class="right">vs Pinnacle</th>
+              <th class="right">Features</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-tbody">
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -325,22 +372,97 @@ const API_BASE = window.location.hostname === 'localhost' || window.location.hos
 
 /* ── Embedded model info (updated after clean training) ─── */
 const MODEL_INFO_STATIC = {
-  version: "v12",
-  holdout_auc: 0.8713,
+  version: "v14",
+  holdout_auc: 0.9031,
   pinnacle_auc: 0.7457,
-  features: 46,
-  hypothesis: "COMBO H2H + fatigue + weather (clean, post bug#4 fix)",
+  features: 44,
+  hypothesis: "+age×surface interaction — BEST clean model",
   train_period: "2004-2023",
   holdout_period: "2024-2026",
   n_train: 71872,
   n_holdout: 6150,
   versions_clean: [
-    { v: "v12", auc: 0.8713, desc: "COMBO H2H+fatigue+weather ← BEST" },
-    { v: "v9",  auc: 0.8070, desc: "+H2H features (clean)" },
-    { v: "v10", auc: 0.8060, desc: "+Ranking trajectory" },
-    { v: "v11", auc: 0.8046, desc: "+Serve/return stats" },
+    { v: "v9",  auc: 0.8070, feats: 23, desc: "+H2H features",             status: "clean"   },
+    { v: "v10", auc: 0.8060, feats: 23, desc: "+Ranking trajectory",        status: "clean"   },
+    { v: "v11", auc: 0.8046, feats: 35, desc: "+Serve/return stats",        status: "clean"   },
+    { v: "v12", auc: 0.8713, feats: 46, desc: "COMBO H2H+fatigue+weather",  status: "clean"   },
+    { v: "v13", auc: 0.8299, feats: 38, desc: "+Draw difficulty",           status: "clean"   },
+    { v: "v14", auc: 0.9031, feats: 44, desc: "+age×surface (BEST)",        status: "active"  },
   ]
 };
+
+/* ── Static backtest stats ────────────────────────────────── */
+const STATS_STATIC = {
+  n_bets_holdout: 900,
+  win_rate: 0.751,
+  avg_edge: 0.2712,
+  max_dd: 17.3,
+  best_version: 'v14',
+  best_auc: 0.9031,
+  pinnacle_auc: 0.7457,
+};
+
+/* ── Monthly PnL (backtest_v4_bets.csv, half-Kelly, edge>8%) */
+const MONTHLY_PNL = {
+  "2024-01": 48.73,
+  "2024-02": 90.97,
+  "2024-03": 127.21,
+  "2024-04": 418.01,
+  "2024-05": 749.10,
+  "2024-06": 62.55,
+  "2024-07": 2050.87,
+  "2024-08": 3174.93,
+  "2024-09": -177.78,
+  "2024-10": 2695.16,
+  "2024-11": -56.37,
+  "2024-12": -72.19,
+  "2025-01": 3917.28,
+  "2025-02": 3582.73,
+  "2025-03": 6338.87,
+  "2025-04": 7467.15,
+  "2025-05": 9566.78,
+  "2025-06": 24740.11,
+  "2025-07": 10710.22,
+  "2025-08": 44711.76,
+  "2025-09": 19252.12,
+  "2025-10": 6706.85,
+  "2025-11": -826.57,
+  "2026-01": -3562.82
+};
+
+/* ── PICKS DATA (backtest_v4_bets.csv — top 15 edge + 15 most recent) ── */
+const PICKS_DATA = [
+  {"player_backed":"Arthur Rinderknech","opponent":"Alexander Zverev","surface":"Grass","odds":8.34,"p_model":0.9444,"p_pin":0.1165,"edge":0.8278,"ev_pct":82.8,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-06-30"},
+  {"player_backed":"Benjamin Bonzi","opponent":"Daniil Medvedev","surface":"Grass","odds":9.03,"p_model":0.9314,"p_pin":0.1077,"edge":0.8237,"ev_pct":82.4,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-06-30"},
+  {"player_backed":"Alexander Zverev","opponent":"Jacob Fearnley","surface":"Hard","odds":5.62,"p_model":0.9241,"p_pin":0.1735,"edge":0.7506,"ev_pct":75.1,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-10-20"},
+  {"player_backed":"Lorenzo Musetti","opponent":"Taylor Fritz","surface":"Grass","odds":4.69,"p_model":0.9053,"p_pin":0.2078,"edge":0.6975,"ev_pct":69.8,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-07-01"},
+  {"player_backed":"Adam Walton","opponent":"Maximilian Marterer","surface":"Clay","odds":3.90,"p_model":0.9356,"p_pin":0.2500,"edge":0.6856,"ev_pct":68.6,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-05-26"},
+  {"player_backed":"Nikoloz Basilashvili","opponent":"Lorenzo Musetti","surface":"Grass","odds":3.90,"p_model":0.9312,"p_pin":0.2486,"edge":0.6827,"ev_pct":68.3,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-06-30"},
+  {"player_backed":"Alejandro Tabilo","opponent":"Novak Djokovic","surface":"Clay","odds":3.69,"p_model":0.9289,"p_pin":0.2530,"edge":0.6758,"ev_pct":67.6,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-04-07"},
+  {"player_backed":"Francisco Comesana","opponent":"Dominic Stricker","surface":"Hard","odds":3.45,"p_model":0.9569,"p_pin":0.2827,"edge":0.6742,"ev_pct":67.4,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-08-26"},
+  {"player_backed":"Richard Gasquet","opponent":"Matteo Arnaldi","surface":"Clay","odds":4.16,"p_model":0.8953,"p_pin":0.2339,"edge":0.6614,"ev_pct":66.1,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-04-07"},
+  {"player_backed":"Ugo Humbert","opponent":"Marcos Giron","surface":"Hard","odds":3.31,"p_model":0.9536,"p_pin":0.2927,"edge":0.6608,"ev_pct":66.1,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-10-28"},
+  {"player_backed":"Alexander Zverev","opponent":"Jacob Fearnley","surface":"Hard","odds":3.73,"p_model":0.9172,"p_pin":0.2599,"edge":0.6573,"ev_pct":65.7,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-08-24"},
+  {"player_backed":"Francisco Comesana","opponent":"Alex Michelsen","surface":"Hard","odds":3.59,"p_model":0.9225,"p_pin":0.2703,"edge":0.6522,"ev_pct":65.2,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-08-24"},
+  {"player_backed":"Daniel Evans","opponent":"Karen Khachanov","surface":"Hard","odds":4.56,"p_model":0.8657,"p_pin":0.2138,"edge":0.6520,"ev_pct":65.2,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-08-26"},
+  {"player_backed":"Aleksandar Vukic","opponent":"Frances Tiafoe","surface":"Hard","odds":3.11,"p_model":0.9615,"p_pin":0.3135,"edge":0.6480,"ev_pct":64.8,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-10-14"},
+  {"player_backed":"Richard Gasquet","opponent":"Borna Coric","surface":"Clay","odds":3.23,"p_model":0.9486,"p_pin":0.3024,"edge":0.6462,"ev_pct":64.6,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-05-26"},
+  {"player_backed":"Andrey Rublev","opponent":"Nuno Borges","surface":"Hard","odds":2.69,"p_model":0.7523,"p_pin":0.3626,"edge":0.3898,"ev_pct":39.0,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2026-01-09"},
+  {"player_backed":"Carlos Alcaraz","opponent":"Lorenzo Musetti","surface":"Hard","odds":6.88,"p_model":0.6239,"p_pin":0.1421,"edge":0.4817,"ev_pct":48.2,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-11-10"},
+  {"player_backed":"Alexander Zverev","opponent":"Ben Shelton","surface":"Hard","odds":1.56,"p_model":0.9450,"p_pin":0.6268,"edge":0.3182,"ev_pct":31.8,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-11-10"},
+  {"player_backed":"Taylor Fritz","opponent":"Lorenzo Musetti","surface":"Hard","odds":2.94,"p_model":0.5904,"p_pin":0.3318,"edge":0.2585,"ev_pct":25.9,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-11-10"},
+  {"player_backed":"Marcos Giron","opponent":"Michael Mmoh","surface":"Hard","odds":2.46,"p_model":0.6617,"p_pin":0.3971,"edge":0.2646,"ev_pct":26.5,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2026-01-09"},
+  {"player_backed":"Brandon Nakashima","opponent":"Aleksandar Kovacevic","surface":"Hard","odds":1.37,"p_model":0.8908,"p_pin":0.7116,"edge":0.1792,"ev_pct":17.9,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2026-01-10"},
+  {"player_backed":"Carlos Alcaraz","opponent":"Felix Auger-Aliassime","surface":"Hard","odds":1.21,"p_model":0.9781,"p_pin":0.8070,"edge":0.1711,"ev_pct":17.1,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-11-10"},
+  {"player_backed":"Jannik Sinner","opponent":"Carlos Alcaraz","surface":"Hard","odds":1.85,"p_model":0.6649,"p_pin":0.5281,"edge":0.1368,"ev_pct":13.7,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2025-11-10"},
+  {"player_backed":"Jannik Sinner","opponent":"Ben Shelton","surface":"Hard","odds":8.53,"p_model":0.2521,"p_pin":0.1142,"edge":0.1378,"ev_pct":13.8,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2025-11-10"},
+  {"player_backed":"Daniil Medvedev","opponent":"Kamil Majchrzak","surface":"Hard","odds":5.95,"p_model":0.2971,"p_pin":0.1643,"edge":0.1328,"ev_pct":13.3,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2026-01-09"},
+  {"player_backed":"Jannik Sinner","opponent":"Alexander Zverev","surface":"Hard","odds":1.13,"p_model":0.9599,"p_pin":0.8645,"edge":0.0954,"ev_pct":9.5,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2025-11-10"},
+  {"player_backed":"Brandon Nakashima","opponent":"Raphael Collignon","surface":"Hard","odds":1.68,"p_model":0.6752,"p_pin":0.5800,"edge":0.0952,"ev_pct":9.5,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2026-01-09"},
+  {"player_backed":"Alexander Bublik","opponent":"Lorenzo Musetti","surface":"Hard","odds":2.05,"p_model":0.5288,"p_pin":0.4757,"edge":0.0531,"ev_pct":5.3,"kelly_half":0.0125,"confidence":"LOW","signal":"BET","date":"2026-01-11"},
+  {"player_backed":"Alex Michelsen","opponent":"Sebastian Korda","surface":"Hard","odds":2.82,"p_model":0.3958,"p_pin":0.3457,"edge":0.0500,"ev_pct":5.0,"kelly_half":0.0125,"confidence":"LOW","signal":"BET","date":"2026-01-09"},
+  {"player_backed":"Jannik Sinner","opponent":"Felix Auger-Aliassime","surface":"Hard","odds":1.09,"p_model":0.9491,"p_pin":0.8983,"edge":0.0507,"ev_pct":5.1,"kelly_half":0.0125,"confidence":"LOW","signal":"BET","date":"2025-11-10"}
+];
 
 /* ── State ────────────────────────────────────────────────── */
 let allPicks = [];
@@ -355,18 +477,16 @@ const fmtPct2 = n => typeof n === 'number' ? (n >= 0 ? '+' : '') + n.toFixed(1) 
 /* ── Load data ────────────────────────────────────────────── */
 async function loadData() {
   try {
-    // Try API first, fall back to static backtest JSON
-    let backtestData = null;
     let modelInfo = null;
     let picks = [];
 
-    // Try model info
+    // Try model info from API
     try {
       const r = await fetch(API_BASE + '/predictions/model/info', { signal: AbortSignal.timeout(3000) });
       if (r.ok) modelInfo = await r.json();
     } catch(e) {}
 
-    // Try daily picks
+    // Try daily picks from API
     try {
       const r = await fetch(API_BASE + '/coupons/daily', { signal: AbortSignal.timeout(3000) });
       if (r.ok) {
@@ -375,111 +495,58 @@ async function loadData() {
       }
     } catch(e) {}
 
-    // Try backtest JSON as fallback/supplement
-    try {
-      // Try newest version first
-      for (const v of ['v22','v21','v20','v19','v18','v17','v16','v15','v14','v13','v12','v9']) {
-        const r = await fetch(`/data/backtest_${v}.json`, { signal: AbortSignal.timeout(2000) });
-        if (r.ok) { backtestData = await r.json(); break; }
-      }
-    } catch(e) {}
+    // Fallback to embedded PICKS_DATA if API picks are empty
+    if (picks.length === 0) {
+      picks = typeof PICKS_DATA !== 'undefined' ? PICKS_DATA : [];
+      $('picks-source').textContent = 'backtest 2024-2026';
+    } else {
+      $('picks-source').textContent = 'live api';
+    }
 
-    renderAll(picks, modelInfo, backtestData);
+    renderAll(picks, modelInfo);
   } catch(e) {
     console.error(e);
-    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Błąd ładowania danych: ${e.message}</td></tr>`;
+    $('picks-tbody').innerHTML = `<tr><td colspan="11" class="empty">Błąd ładowania danych: ${e.message}</td></tr>`;
   }
 }
 
 /* ── Render ────────────────────────────────────────────────── */
-function renderAll(picks, modelInfo, backtest) {
+function renderAll(picks, modelInfo) {
   const today = new Date().toLocaleDateString('pl-PL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
   $('nav-date').textContent = today;
 
   // Model info — API → static fallback
-  if (modelInfo) {
-    $('nav-model').textContent = `${modelInfo.version} · ${modelInfo.features}f · AUC ${modelInfo.holdout_auc?.toFixed(4) ?? '—'}`;
-    $('mi-version').textContent = modelInfo.version;
-    $('mi-auc').textContent = modelInfo.holdout_auc?.toFixed(4) ?? '—';
-    $('mi-delta').textContent = modelInfo.holdout_auc ? '+' + (modelInfo.holdout_auc - 0.7457).toFixed(4) : '—';
-    $('stat-auc').textContent = modelInfo.holdout_auc?.toFixed(4) ?? '—';
-    $('stat-auc-sub').textContent = `vs Pinnacle +${modelInfo.holdout_auc ? (modelInfo.holdout_auc - 0.7457).toFixed(4) : '—'}`;
-  } else {
-    // Static fallback — dane z treningu
-    const mi = MODEL_INFO_STATIC;
-    $('nav-model').textContent = `${mi.version} · ${mi.features}f · AUC ${mi.holdout_auc.toFixed(4)}`;
-    $('mi-version').textContent = mi.version;
-    $('mi-auc').textContent = mi.holdout_auc.toFixed(4);
-    $('mi-pin-auc').textContent = mi.pinnacle_auc.toFixed(4);
-    $('mi-delta').textContent = '+' + (mi.holdout_auc - mi.pinnacle_auc).toFixed(4);
-    $('stat-auc').textContent = mi.holdout_auc.toFixed(4);
-    $('stat-auc-sub').textContent = `vs Pinnacle +${(mi.holdout_auc - mi.pinnacle_auc).toFixed(4)}`;
-    if (backtest) {
-      $('mi-file').textContent = backtest.model ?? '—';
-    }
-  }
+  const mi = modelInfo || MODEL_INFO_STATIC;
+  $('nav-model').textContent = `${mi.version} · ${mi.features}f · AUC ${Number(mi.holdout_auc).toFixed(4)}`;
+  $('mi-version').textContent = mi.version;
+  $('mi-auc').textContent = Number(mi.holdout_auc).toFixed(4);
+  $('mi-pin-auc').textContent = Number(mi.pinnacle_auc || MODEL_INFO_STATIC.pinnacle_auc).toFixed(4);
+  const delta = Number(mi.holdout_auc) - (Number(mi.pinnacle_auc) || MODEL_INFO_STATIC.pinnacle_auc);
+  $('mi-delta').textContent = '+' + delta.toFixed(4);
+  $('stat-auc').textContent = Number(mi.holdout_auc).toFixed(4);
+  $('stat-auc-sub').textContent = `vs Pinnacle +${delta.toFixed(4)}`;
 
-  // ROI / DD from backtest
-  if (backtest) {
-    const best = backtest.best_strategy;
-    if (best) {
-      const roi = best.roi_pct;
-      $('stat-roi').textContent = fmtPct2(roi);
-      $('stat-roi').className = 'stat-value ' + (roi >= 0 ? 'green' : 'red');
-      $('stat-dd').textContent = best.max_drawdown_pct?.toFixed(1) + '%';
-    }
-    renderPnl(backtest);
-  }
-
-  // Picks from backtest if API picks empty
-  if (picks.length === 0 && backtest) {
-    picks = buildPicksFromBacktest(backtest);
-    $('picks-source').textContent = 'backtest csv';
-  } else if (picks.length > 0) {
-    $('picks-source').textContent = 'live api';
-  }
+  // Stats from static backtest
+  const s = STATS_STATIC;
+  $('stat-bets').textContent = s.n_bets_holdout;
+  $('stat-bets-sub').textContent = 'edge > 8% (holdout)';
+  $('stat-edge').textContent = fmtPct(s.avg_edge);
+  $('stat-roi').textContent = (s.win_rate * 100).toFixed(1) + '%';
+  $('stat-roi-sub').textContent = 'win rate 2024-2026';
+  $('stat-dd').textContent = s.max_dd.toFixed(1) + '%';
 
   allPicks = picks;
   renderPicks(picks);
-}
-
-function buildPicksFromBacktest(bt) {
-  // From best_strategy history + edge threshold analysis, build demo picks
-  const bets = bt.best_strategy?.history ?? [];
-  const nBets = bt.best_strategy?.n_bets ?? 0;
-  const avgEdge = 0.10;
-  const nPicks = bt.strategy_comparison?.find(s => s.strategy === 'half_kelly')?.n_bets ?? 0;
-
-  $('stat-bets').textContent = nPicks;
-  $('stat-bets-sub').textContent = `edge > 8% (holdout)`;
-  $('stat-edge').textContent = fmtPct(avgEdge);
-
-  // Build synthetic picks from edge_threshold_analysis
-  const edges = bt.edge_threshold_analysis ?? [];
-  const e8 = edges.find(e => Math.abs(e.edge_thresh - 0.08) < 0.01);
-
-  return buildDemoPicks(bt.n_matches ?? 0, bt.model ?? '');
-}
-
-function buildDemoPicks(n, model) {
-  // Return empty if no real data available
-  return [];
+  renderPnl(MONTHLY_PNL);
+  renderLeaderboard();
 }
 
 function renderPicks(picks) {
   $('picks-count').textContent = `${picks.length} picks`;
   if (picks.length === 0) {
-    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Brak wartościowych zakładów. Uruchom backtest najpierw: <code>PYTHONPATH=. python scripts/backtest_vX.py --best</code></td></tr>`;
-    $('stat-bets').textContent = '0';
-    $('stat-edge').textContent = '—';
+    $('picks-tbody').innerHTML = `<tr><td colspan="11" class="empty">Brak wartościowych zakładów.</td></tr>`;
     return;
   }
-
-  const edges = picks.map(p => p.edge ?? 0).filter(Boolean);
-  const avgEdge = edges.length ? edges.reduce((a,b)=>a+b,0)/edges.length : 0;
-  $('stat-bets').textContent = picks.length;
-  $('stat-edge').textContent = fmtPct(avgEdge);
-
   renderPicksTable(picks);
 }
 
@@ -489,7 +556,7 @@ function renderPicksTable(picks) {
     : picks.filter(p => (p.confidence === activeFilter) || (p.surface === activeFilter));
 
   if (filtered.length === 0) {
-    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Brak picks dla filtra "${activeFilter}"</td></tr>`;
+    $('picks-tbody').innerHTML = `<tr><td colspan="11" class="empty">Brak picks dla filtra "${activeFilter}"</td></tr>`;
     return;
   }
 
@@ -499,13 +566,14 @@ function renderPicksTable(picks) {
     const edgeBarFill = Math.min(edgePct / 20 * 100, 100); // max 20% = full bar
     const edgeColor = edgePct >= 15 ? '' : edgePct >= 8 ? 'yellow' : 'orange';
     const conf = p.confidence ?? (edgePct >= 15 ? 'HIGH' : edgePct >= 8 ? 'MEDIUM' : 'LOW');
-    const isBet = p.signal ? p.signal !== 'NO_BET' : edgePct >= 5;
+    const isBet = p.signal ? p.signal !== 'NO_BET' && p.signal !== 'PASS' : edgePct >= 5;
     const pModel = p.p_model ?? 0;
     const pPin = p.p_pin ?? (p.bk_odds ? 1/p.bk_odds : 0);
     const kelly = p.kelly_half ?? p.kelly_stake_pct ?? 0;
     const odds = p.odds ?? p.bk_odds ?? 0;
     const surf = p.surface ?? '—';
     const surfStr = surf.charAt(0).toUpperCase() + surf.slice(1).toLowerCase();
+    const dateStr = p.date ? p.date.slice(0,10) : '—';
 
     return `
     <tr>
@@ -514,16 +582,17 @@ function renderPicksTable(picks) {
         <div class="player-vs">vs ${p.opponent ?? p.player_b ?? '—'}</div>
       </td>
       <td><span class="surface-pill ${surfStr}">${surfStr}</span></td>
+      <td class="num-right" style="color:var(--txt-3);font-size:10px">${dateStr}</td>
       <td class="num-right">${odds ? odds.toFixed(2) : '—'}</td>
       <td class="num-right prob-val">${pModel ? (pModel*100).toFixed(1)+'%' : '—'}</td>
       <td class="num-right" style="color:var(--txt-3)">${pPin ? (pPin*100).toFixed(1)+'%' : '—'}</td>
       <td class="num-right">
         <div class="edge-bar-wrap">
-          <span style="color:${edgePct >= 15 ? 'var(--green)' : edgePct >= 8 ? 'var(--yellow)' : 'var(--orange)'}">${edgePct.toFixed(1)}%</span>
+          <span style="color:${edgePct >= 15 ? 'var(--green)' : edgePct >= 8 ? 'var(--yellow)' : 'var(--orange)'};">${edgePct.toFixed(1)}%</span>
           <div class="edge-bar"><div class="edge-bar-fill ${edgeColor}" style="width:${edgeBarFill}%"></div></div>
         </div>
       </td>
-      <td class="num-right" style="color:${p.ev_pct >= 0 ? 'var(--green)' : 'var(--red)'}">${p.ev_pct != null ? (p.ev_pct >= 0 ? '+' : '') + p.ev_pct.toFixed(1)+'%' : '—'}</td>
+      <td class="num-right" style="color:${(p.ev_pct ?? 0) >= 0 ? 'var(--green)' : 'var(--red)'}">${p.ev_pct != null ? (p.ev_pct >= 0 ? '+' : '') + p.ev_pct.toFixed(1)+'%' : '—'}</td>
       <td class="num-right kelly-val">${kelly ? (kelly*100 < 1 ? (kelly*100).toFixed(2) : (kelly*100).toFixed(1))+'%' : '—'}</td>
       <td><span class="signal-badge ${isBet ? 'bet' : 'pass'}">${isBet ? 'BET' : 'PASS'}</span></td>
       <td><span class="conf-badge ${conf}">${conf}</span></td>
@@ -531,15 +600,14 @@ function renderPicksTable(picks) {
   }).join('');
 }
 
-function renderPnl(bt) {
-  const monthly = bt.best_strategy?.monthly_pnl ?? {};
+function renderPnl(monthly) {
   const entries = Object.entries(monthly);
   if (!entries.length) { $('pnl-bars').innerHTML = '<div class="empty" style="width:100%">Brak danych PnL</div>'; return; }
 
   const values = entries.map(([,v]) => v);
   const maxAbs = Math.max(...values.map(Math.abs), 1);
   const maxBarH = 70;
-  const totalPnl = values.reduce((a,b)=>a+b,0);
+  const totalPnl = values.reduce((a,b) => a+b, 0);
   $('pnl-total').textContent = (totalPnl >= 0 ? '+' : '') + totalPnl.toFixed(0) + 'u';
 
   $('pnl-bars').innerHTML = entries.map(([month, pnl]) => {
@@ -555,11 +623,42 @@ function renderPnl(bt) {
   }).join('');
 }
 
+function renderLeaderboard() {
+  const versions = MODEL_INFO_STATIC.versions_clean;
+  const pinAuc = MODEL_INFO_STATIC.pinnacle_auc;
+
+  $('leaderboard-tbody').innerHTML = versions.map(v => {
+    const delta = v.auc - pinAuc;
+    const isActive = v.status === 'active';
+    const isBest = v.v === 'v14';
+    const statusClass = v.status === 'active' ? 'active' : v.status === 'clean' ? 'clean' : 'retired';
+    const statusLabel = v.status === 'active' ? 'ACTIVE' : v.status === 'clean' ? 'CLEAN' : 'RETIRED';
+    return `<tr class="${isBest ? 'best-row' : ''}">
+      <td><span class="version-tag ${isBest ? 'best' : ''}">${v.v}${isBest ? ' ★' : ''}</span></td>
+      <td style="color:var(--txt-2)">${v.desc}</td>
+      <td class="num-right" style="color:${isBest ? 'var(--accent)' : 'var(--txt)'}; font-weight:${isBest ? '600' : '400'}">${v.auc.toFixed(4)}</td>
+      <td class="num-right"><span class="delta-pos">+${delta.toFixed(4)}</span></td>
+      <td class="num-right" style="color:var(--txt-3)">${v.feats}</td>
+      <td><span class="status-tag ${statusClass}">${statusLabel}</span></td>
+    </tr>`;
+  }).join('') +
+  `<tr style="border-top:1px solid var(--border-2)">
+    <td><span class="version-tag" style="color:var(--txt-3)">Pinnacle</span></td>
+    <td style="color:var(--txt-3)">Market baseline (implied odds)</td>
+    <td class="num-right" style="color:var(--txt-3)">${pinAuc.toFixed(4)}</td>
+    <td class="num-right" style="color:var(--txt-3)">—</td>
+    <td class="num-right" style="color:var(--txt-3)">—</td>
+    <td><span class="status-tag retired">BASELINE</span></td>
+  </tr>`;
+}
+
 /* ── Filter picks ──────────────────────────────────────────── */
 function filterPicks(f) {
   activeFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent.trim() === (f === 'all' ? 'All' : f) || (f === 'HIGH' && b.textContent.trim() === 'High confidence'));
+    b.classList.toggle('active',
+      b.textContent.trim() === (f === 'all' ? 'All' : f) ||
+      (f === 'HIGH' && b.textContent.trim() === 'High confidence'));
   });
   renderPicksTable(allPicks);
 }
