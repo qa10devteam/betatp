@@ -500,19 +500,34 @@ BASE_PAIRS = [
 ]
 
 def fix_base_pairs(df):
-    """Popraw BASE_PAIRS dla faktycznych kolumn"""
+    """Popraw BASE_PAIRS dla faktycznych kolumn.
+    WAŻNE: b365/max/avg prob muszą być ASYMETRYCZNE (winner vs loser),
+    nie shared — inaczej model widzi P(winner wins) niezależnie od AB flipu.
+    Budujemy kolumny _l = 1 - _w jeśli brak _l w danych.
+    """
+    # Zbuduj _l kolumny z 1 - _w (prob loser wins = 1 - prob winner wins)
+    for col_w, col_l in [
+        ("b365_prob_w", "b365_prob_l"),
+        ("max_prob_w",  "max_prob_l"),
+        ("avg_prob_w",  "avg_prob_l"),
+        ("odds_consensus_w", "odds_consensus_l"),
+        ("pin_log_odds", "pin_log_odds_l"),
+        ("b365_log_odds", "b365_log_odds_l"),
+    ]:
+        if col_w in df.columns and col_l not in df.columns:
+            df[col_l] = 1.0 - df[col_w]
+
     pairs = [
-        ("pin_prob_w",       "pin_prob_l"),
-        ("b365_prob_w",      "b365_prob_w"),   # brak _l w parquet, użyj tej samej
-        ("max_prob_w",       "max_prob_w"),
-        ("avg_prob_w",       "avg_prob_w"),
-        ("odds_consensus_w", "odds_consensus_w"),
-        ("pin_log_odds",     "pin_log_odds"),
-        ("b365_log_odds",    "b365_log_odds"),
-        ("winner_rank",      "loser_rank"),
-        ("winner_age",       "loser_age"),
+        ("pin_prob_w",        "pin_prob_l"),
+        ("b365_prob_w",       "b365_prob_l"),
+        ("max_prob_w",        "max_prob_l"),
+        ("avg_prob_w",        "avg_prob_l"),
+        ("odds_consensus_w",  "odds_consensus_l"),
+        ("pin_log_odds",      "pin_log_odds_l"),
+        ("b365_log_odds",     "b365_log_odds_l"),
+        ("winner_rank",       "loser_rank"),
+        ("winner_age",        "loser_age"),
     ]
-    # Tylko te co istnieją w df
     return [(fw, fl) for fw, fl in pairs if fw in df.columns or fl in df.columns]
 
 WEATHER_PAIRS = [
