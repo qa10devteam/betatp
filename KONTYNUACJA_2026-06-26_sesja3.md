@@ -1,202 +1,362 @@
-# betatp.io — KONTYNUACJA (sesja 3, 2026-06-26)
-> Wczytaj ten plik na początku nowego wątku: `/home/ubuntu/betatp/KONTYNUACJA_2026-06-26_sesja3.md`
+# betatp.io — KONTYNUACJA SESJA 3
+> **Wczytaj ten plik w nowym wątku:**
+> `przeczytaj /home/ubuntu/betatp/KONTYNUACJA_2026-06-26_sesja3.md i kontynuuj`
 
 ---
 
-## 🔑 Podstawowe info
+## 🔑 Podstawy projektu
 
-| Klucz | Wartość |
+| | |
 |---|---|
-| Repo | `https://github.com/qa10devteam/betatp` (private, org: qa10devteam) |
-| Lokalizacja | `/home/ubuntu/betatp/` |
-| GitHub Pages | `https://qa10devteam.github.io/betatp/` ← LIVE |
-| PostgreSQL | `host=localhost dbname=betatp user=postgres password=betatp2024` |
-| Python | `3.11`, venv w systemie (brak venv — używaj `python3` bezpośrednio) |
-| Last commit main | `529ae85 chore: add model metas v5-v22, training logs, plan files, misc artifacts` |
+| **Repo** | `https://github.com/qa10devteam/betatp` (private) |
+| **Lokalizacja** | `/home/ubuntu/betatp/` |
+| **Live URL** | `https://qa10devteam.github.io/betatp/` |
+| **PostgreSQL** | `host=localhost dbname=betatp user=postgres password=betatp2024` |
+| **Python** | `3.11` — bez venv, używaj `python3` bezpośrednio |
+| **Last commit** | `e876a04 deploy: vercel config — frontend/index.html as root` |
 
 ---
 
-## 🏆 Stan modeli ML (LEAKAGE-CLEAN — tylko trained_at >= 20260626_1631)
+## 🏆 Model ML — CHAMPION
 
-| Wersja | Holdout AUC | WF AUC | Plik modelu | Status |
-|---|---|---|---|---|
-| **v22** | **0.9171** | **0.9422** | `lgbm_v22_20260626_1738.joblib` | ✅ BEST CHAMPION |
-| v14 | 0.9031 | 0.9482 | `lgbm_v14_20260626_1706.joblib` | ✅ backup |
-| v17 | 0.8844 | 0.9205 | `lgbm_v17_20260626_1725.joblib` | ok |
-| v16 | 0.8828 | 0.9204 | `lgbm_v16_20260626_1717.joblib` | ok |
+| Wersja | Holdout AUC | WF AUC | Plik |
+|---|---|---|---|
+| **v22** ✅ CHAMPION | **0.9171** | **0.9422** | `models/lgbm_v22_20260626_1738.joblib` |
+| v14 backup | 0.9031 | 0.9482 | `models/lgbm_v14_20260626_1706.joblib` |
 
-**LEAKAGE GUARD:** `versions_results.json` — TYLKO modele `trained_at >= 20260626_1631` są czyste.
-Nie używaj v5-v13 (stary training run, leakage w h2h_surf_winrate).
-
-**CURRENT CHAMPION: v22** (holdout_auc=0.9171, wf_auc=0.9422, 57 features, 71,872 train samples)
-
-Top features v22: winner_age_b, winner_rank_b, winner_rank_a, winner_age_a, pw_heat_edge, rank_inv_b, draw_diff_b, h2h_wins_delta_3_a
-
-Pełen model_meta: `/home/ubuntu/betatp/models/model_meta_v22_20260626_1738.json`
+**⚠️ LEAKAGE GUARD:** Używaj TYLKO modeli z `trained_at >= 20260626_1631`.
+Wcześniejsze wersje (v5–v13 stary run) = leakage w `h2h_surf_winrate`. Wykluczone.
 
 ---
 
-## 🐛 Historia bugów i napraw (do wglądu, nie wznawiać)
+## 🎯 MISJA SESJI 3
 
-| Bug | Status | Opis |
-|---|---|---|
-| Bug #1 | ✅ NAPRAWIONY | b365/max/avg odds shared (col,col) — Fix: dodano `_l` kolumny |
-| Bug #2 | ⚠️ SUSPECT | v6 pw_heat_wr (AUC=0.9866) — version pomijana, nie używamy |
-| Bug #3 | ✅ NAPRAWIONY | h2h delta features winner-oriented — Fix: _w/_l split |
-| Bug #4 | ✅ OBSERWOWANY | v9 AUC=0.9975 — h2h_surf_winrate_a leakage. v9 wyłączony z użycia |
+**"Stworzyć najbardziej innowacyjne doświadczenie betowania w historii"**
 
----
-
-## 🎯 GŁÓWNA MISJA SESJI 3 (niezrealizowane)
-
-### Cel nadrzędny
-**Stworzyć najbardziej innowacyjne doświadczenie betowania w historii** — platforma betatp.io z:
-1. WOW-level frontend (Three.js + GSAP + GLSL + Web Audio)
-2. Pełna przezroczystość AI — storytelling skąd bierze się predykcja
-3. 5 rynków: Winner / Handicap / Total Sets / First Set / Correct Score
-4. 35 iteracji własnych assetów (AI-generated + konwersja)
-5. Backend v22 live połączony z frontendem
-
-### Spec-off: 140 iteracji (niezrealizowane przed końcem sesji)
-Pełny plan w: `/home/ubuntu/betatp/PLAN-140-ITERACJI.md`
+Realizujesz **140 iteracji** w 5 fazach wg metodyki NEXUS Sprint.
+Plik jakości kodu: `/home/ubuntu/betatp/.codequality.yml` — obowiązuje wszystkich agentów.
+Agenci: `/home/ubuntu/agency-agents/` (237 agentów, 16 dywizji)
 
 ---
 
-## 🏗️ Stan infrastruktury
+## 📋 SPEC-OFF 140 ITERACJI
 
-### Frontend (LIVE)
-- **URL:** https://qa10devteam.github.io/betatp/
-- **Plik:** `/home/ubuntu/betatp/frontend/index.html` (1426 linii)
-- **Stack:** Pure HTML + GSAP 3.12.5 CDN + WebGL GLSL aurora shader + Web Audio API
-- **Co działa:**
-  - ✅ GLSL aurora background (5-oktawowy FBM noise, mouse parallax)
-  - ✅ 5-fazowa ceremonia generowania kuponu (Scan → Found → Suspense 3-2-1 → Slots → Flip)
-  - ✅ CS:GO slot machine z near-miss overshoot (Clark 2009)
-  - ✅ FIFA UT pack flip cards (rotateY 180° + light flash)
-  - ✅ 5 rynków: Winner / First Set / Handicap / Total Sets / Score
-  - ✅ Market filter tabs + System Builder (8 picks, 3 markets/match)
-  - ✅ Storytelling na kartach: "Dlaczego model typuje to?" + prob bars + Kelly
-  - ✅ Social proof ticker (backtest stats)
-  - ✅ Web Audio: ascending 200→800Hz anticipation (Cherkasova 2018)
-  - ✅ Particle system (canvas, square particles, burst + rain)
-  - ✅ The Odds API integration (the-odds-api.com, klucz w localStorage)
-  - ✅ DraftKings #61B510 CTA button, CS2 rarity color hierarchy
-  - ✅ 8 custom AI-generated assets (FAL images)
-- **Co NIE działa / do zrobienia:**
-  - ❌ Backend API połączony z frontendem (frontend używa demo PICKS)
-  - ❌ Cloudflare tunnel do API (FastAPI port 8000)
-  - ❌ Pozostałe 27/35 assetów
-  - ❌ Real v22 predictions w frontend (mock data)
+### FAZA A — Assets + Mobile Polish (iter 1–35)
+**Agenci:** Frontend Developer + UI Designer (równolegle)
 
-### Backend API (FastAPI)
-- **Plik startowy:** `cd /home/ubuntu/betatp && uvicorn api.main:app --host 0.0.0.0 --port 8000`
-- **Status:** Prawdopodobnie nie działa (sprawdź: `curl http://localhost:8000/health`)
-- **Endpointy:** `/health`, `/predictions`, `/coupons`, `/live`
-- **Model:** Do załadowania: `models/lgbm_v22_20260626_1738.joblib` + `models/feat_cols_v22_*.joblib`
+```
+Iter 1–7:    Wygeneruj 27 pozostałych assetów AI
+             → image_generate() × 27, zapisz URL FAL do index.html
+             Kategorie: player_silhouette ×6, court_texture ×4,
+             rarity_frame ×4, market_icon ×5, gradient_orb ×4,
+             trophy_3d ×2, probability_bg ×2
 
-### Deploy
-- **GitHub Pages:** Branch `gh-pages`, auto-deploy z `frontend/index.html` → `index.html`
-- **Render.com:** `render.yaml` + `Procfile` w repo (FastAPI backend)
+Iter 8–12:   Embed assetów do HTML
+             → podmień src w kartach na FAL URLs
+             → każdy asset: lazy loading, explicit width/height
+
+Iter 13–18:  Mobile responsive pass
+             → @media (max-width: 480px) dla .deck, .hcard, .slot-wrap
+             → touch targets min 44px (Apple HIG)
+             → .dbody, .stray: overflow-y: auto z momentum scroll
+             → env(safe-area-inset-*) dla iOS notch
+
+Iter 19–24:  Micro-interactions + hover states
+             → .mrb hover: scale(1.03) + border-color flash 160ms
+             → .pcard hover: subtle translateY(-2px) 200ms ease-out
+             → .mktab active: ripple effect 300ms
+             → All buttons: :active scale(.96) snap feedback
+
+Iter 25–28:  @media (prefers-reduced-motion: reduce)
+             → wszystkie animacje → opacity fade only
+             → GLSL shader → static gradient fallback
+             → slot machine → instant reveal
+
+Iter 29–35:  Performance pass
+             → GLSL canvas: IntersectionObserver → pause gdy hidden
+             → GSAP: killTweensOf() przed re-triggerem ceremonii
+             → canvas particles: pool zamiast new Array każdy frame
+             → AudioContext: suspend() gdy document.hidden
+```
+
+**Definition of Done Faza A:**
+- [ ] 35/35 assetów osadzonych w HTML
+- [ ] Mobile: deck pionowy, slot machine 1-kolumnowy, tap działa
+- [ ] 0 console errors na mobile Chrome + Safari
+- [ ] `@media (prefers-reduced-motion)` redukuje animacje
+- [ ] FCP < 2s na throttled 3G
 
 ---
 
-## 📋 SPEC-OFF 140 ITERACJI (do realizacji w sesji 3+)
+### FAZA B — AI Storytelling / SHAP (iter 36–70)
+**Agenci:** AI Engineer + Frontend Developer (równolegle)
 
-### NEXUS Metodyka
-Aktywuj zespoły agenturalne: `/home/ubuntu/agency-agents/`
-Skill: `agency-nexus-orchestrator`
+```
+Iter 36–40:  api/routes/explanations.py
+             → endpoint GET /predictions/{pick_id}/explanation
+             → response: {top_features: [{name, importance_pct, direction}×5],
+                           model_p, market_p, edge_pct,
+                           reasoning: [str×3-5], confidence, kelly}
+             → LightGBM feature_importance(type='gain') normalizowany do %
+             → cache TTL=3600s
 
-### Faza A: FRONTEND EXCELLENCE (iter 1–35) — ASSETS + POLISH
-```
-Iter 1–7:   Dokończ 27 pozostałych assetów AI (image_generate → local PNG/SVG)
-            Asset types: player silhouettes, court textures, trophy icons,
-            rarity frames, gradient orbs, UI icons (x35 total)
-Iter 8–14:  Embed assets do HTML (base64 lub GitHub raw URLs)
-Iter 15–21: Animacje detale — hover states, micro-interactions, haptics
-Iter 22–28: Mobile responsive — touch events, scroll UX, viewport fixes
-Iter 29–35: Performance pass — lazy loading, canvas optimizations, FPS profiling
+Iter 41–46:  SHAP bars na kartach (frontend)
+             → 5 poziomych pasków per pick — animowane po flip reveal
+             → gsap.to(bar, {width: pct+'%', duration:.95, stagger:.08})
+             → kolor: lime (pozytywny) / red (negatywny) wg direction
+             → tooltip on hover: pełna nazwa feature
+
+Iter 47–52:  "Jak model doszedł do tej predykcji" journey
+             → expand/collapse sekcja "Szczegóły AI" per karta
+             → 3 kroki: Dane historyczne → Elo + features → Decyzja modelu
+             → progress dots z GSAP morphing
+
+Iter 53–58:  Historical stats embed per pick
+             → surface W/R (trawa/clay/hard) ostatnie 24 mies.
+             → last 5 matches mini-timeline (W/L kolorowe kropki)
+             → H2H summary: X-Y z headlinerem
+             → dane z PostgreSQL / statyczne dla demo
+
+Iter 59–63:  Confidence calibration display
+             → rarity tier = wizualny język pewności
+             → JACKPOT (>28% edge): rainbow border pulsing
+             → HIGH (>18%): pink glow
+             → VALUE (>8%): blue border
+             → COMMON (<8%): grey — nie pojawia się w kuponie
+
+Iter 64–70:  Live odds → real-time probability update
+             → The Odds API polling co 90s gdy klucz podany
+             → jeśli odds zmienią się o >3%, animate prob bar update
+             → gsap.to(bar, {width: newPct+'%', duration:.4, ease:'power2.out'})
+             → toast "Kurs zaktualizowany" z nową wartością
 ```
 
-### Faza B: AI STORYTELLING ENGINE (iter 36–70)
+**Definition of Done Faza B:**
+- [ ] GET /predictions/{id}/explanation zwraca poprawny JSON
+- [ ] 5 SHAP bars widocznych na każdej karcie po reveal
+- [ ] "Szczegóły AI" expand/collapse działa
+- [ ] Live odds update animuje się bez page reload
+- [ ] 0 console errors
+
+---
+
+### FAZA C — Backend Connect (iter 71–105)
+**Agenci:** Backend Architect + DevOps Automator (równolegle)
+
 ```
-Iter 36–42: SHAP-style explanations — top 5 features per pick, visual bars
-Iter 43–49: "Jak model doszedł do predykcji" — journey UI (Schultz RPE flow)
-Iter 50–56: Historical stats embed — surface W/R, H2H, last 5 matches
-Iter 57–63: Confidence calibration display — reliability diagram per rarity tier
-Iter 64–70: Live odds integration — Odds API → real-time prob update animation
+Iter 71–74:  Uruchom API v22 stabilnie
+             cd /home/ubuntu/betatp
+             uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+             curl http://localhost:8000/health
+             → Zweryfikuj: model v22 załadowany, /coupons/daily zwraca picks
+
+Iter 75–79:  Napraw /coupons/daily endpoint
+             → wczytaj lgbm_v22_20260626_1738.joblib + feat_cols_v22_*.joblib
+             → compute predictions dla 3-5 dzisiejszych meczów ATP
+             → filter edge >= 8%
+             → response schema: {picks: [{player, opponent, mkt, sel,
+               odds, p_model, p_market, edge, reasoning, kelly, rarity}],
+               total_odds, ev_pct, generated_at}
+
+Iter 80–84:  Cloudflare tunnel → public URL
+             cloudflared tunnel --url http://localhost:8000
+             → zapisz public URL do frontend/index.html jako API_BASE_URL
+             → const API_BASE = 'https://xxxx.trycloudflare.com'
+
+Iter 85–90:  Podłącz frontend do API
+             → zamień demo PICKS na fetch(API_BASE + '/coupons/daily')
+             → loading state: btn-gen disabled + spinner podczas fetch
+             → error fallback: jeśli fetch fail → użyj DEMO picks + toast info
+             → timeout: 4000ms
+
+Iter 91–98:  Daily pipeline cron
+             scripts/run_daily_pipeline.py:
+             → 7:00 UTC: fetch meczów ATP (The Odds API lub schedule)
+             → compute v22 features → predict → filter → save JSON
+             → cron: "0 7 * * * cd /home/ubuntu/betatp && python3 scripts/run_daily_pipeline.py"
+             → output: /tmp/betatp_daily_coupon.json → serwowany przez /coupons/daily
+
+Iter 99–105: System Builder live
+             → /predictions?player_a=X&player_b=Y&surface=grass
+             → 3 rynki per mecz: winner/handicap/total z real odds
+             → frontend: mrb.odds i mrb.edge z API zamiast MATCHES[]
 ```
 
-### Faza C: BACKEND CONNECT (iter 71–105)
+**Definition of Done Faza C:**
+- [ ] `curl http://localhost:8000/health` → `{status: ok, model: v22}`
+- [ ] `curl http://localhost:8000/coupons/daily` → 3-5 picks z realnym edge
+- [ ] Frontend generuje kupon z API (nie demo)
+- [ ] Cloudflare tunnel działa — public URL dostępny
+- [ ] Daily cron uruchomiony: `crontab -l | grep betatp`
+
+---
+
+### FAZA D — Three.js 3D Court + Gyroscope (iter 106–125)
+**Agenci:** Frontend Developer + UI Designer (równolegle)
+
 ```
-Iter 71–77: Uruchom API v22 stabilnie (uvicorn + supervisord)
-Iter 78–84: Cloudflare tunnel → public URL → podłącz do frontend fetch()
-Iter 85–91: Daily pipeline cron — o 7:00 pobierz mecze ATP, compute predictions
-Iter 92–98: Coupon endpoint — /coupons/daily → JSON → frontend renders live
-Iter 99–105: System builder live — /predictions?match_id=X → odds + edges
+Iter 106–110: Three.js scene setup
+              CDN: https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js
+              → canvas#court-canvas: position:fixed, z-index:-1 (za .screen)
+              → PlaneGeometry(23.77, 10.97) — Wimbledon wymiary
+              → texture z asset court-texture
+              → LineSegments (linie boiska) kolor #c2ff3d
+              → PerspectiveCamera(45) @ [0, 12, 18] → lookAt(0,0,0)
+              → slow orbit: GSAP timeline 60s revolution
+
+Iter 111–114: Three.js particles + lighting
+              → 800 particles: float + sin wave z-axis
+              → AmbientLight(0x0d0d24, 0.6)
+              → DirectionalLight(0xc2ff3d, 0.4)
+              → UnrealBloomPass: threshold=0.4, strength=0.6
+              → IntersectionObserver: pause gdy tab niewidoczny
+
+Iter 115–118: Gyroscope tilt na kartach (.pcard, .hcard)
+              → DeviceOrientationEvent.requestPermission() — iOS 13+
+              → gamma → rotateY (max ±18deg)
+              → beta → rotateX (max ±14deg)
+              → lerp factor 0.08 per frame (requestAnimationFrame)
+              → fallback: mousemove parallax dla desktop
+
+Iter 119–122: GSAP morphSVG — ikony rynków
+              → SVG inline per market icon
+              → na tab switch: morph ikona poprzedniego → nowego rynku
+              → duration: 420ms ease-in-out
+
+Iter 123–125: "Win streak" achievement system
+              → localStorage: betatp_streak, betatp_wins
+              → po każdym wygenerowanym kuponie: streak++
+              → streak milestones: 3/7/14/30 → fireworks burst + toast
+              → mini badge w logo-pill: "🔥 7"
 ```
 
-### Faza D: WOW EXPERIENCE ESCALATION (iter 106–125)
-```
-Iter 106–110: Three.js 3D tennis court — rotating court z particle trails
-Iter 111–115: GSAP morphSVG — ikony zmieniają kształt między rynkami
-Iter 116–120: Tilt.js holographic card tilt per device gyroscope
-Iter 121–125: "Win streak" achievement system — local storage, fireworks
-```
+**Definition of Done Faza D:**
+- [ ] Three.js court widoczny w tle home screen
+- [ ] Particles animują się @ 60fps
+- [ ] Gyroscope tilt działa na iOS/Android (z permission dialog)
+- [ ] Fallback mouse parallax działa na desktop
+- [ ] Brak FPS drop poniżej 50fps z Three.js aktywnym
 
-### Faza E: LAUNCH (iter 126–140)
+---
+
+### FAZA E — Launch 🚀 (iter 126–140)
+**Agenci:** Senior Dev + Evidence Collector + DevOps (Sequential)
+
 ```
-Iter 126–130: SEO meta, OG image, PWA manifest, service worker
-Iter 131–134: Render.com deploy — API live na public URL
-Iter 135–137: Reality Checker — end-to-end test wszystkich flows
+Iter 126–128: SEO + PWA
+              → <title>betatp.io — AI Value Betting ATP | LightGBM v22</title>
+              → <meta name="description" content="..."> (max 155 znaków)
+              → og:image: FAL-generated 1200×630 hero
+              → frontend/manifest.json: PWA standalone, #020208 theme
+              → frontend/sw.js: NetworkFirst API + CacheFirst assets
+
+Iter 129–131: vercel.json finalizacja
+              → builds: frontend/** → @vercel/static
+              → headers: security (nosniff, DENY, XSS) + cache (immutable assets)
+              → routes: /* → /frontend/index.html
+              → Plik: /home/ubuntu/betatp/vercel.json ← JUŻ NAPISANY ✅
+
+Iter 132–134: render.yaml — API deploy
+              → services: web, python, startCommand: uvicorn api.main:app
+              → envVars: DATABASE_URL, MODEL_PATH, ODDS_API_KEY
+              → healthCheckPath: /health
+
+Iter 135–137: Reality Checker — Evidence Collector agent
+              WYMAGANE DOWODY (każdy = curl output lub screenshot):
+              ✓ curl /health → {status: ok, model: v22, auc: 0.9171}
+              ✓ curl /coupons/daily → 3-5 picks, edge >8% każdy
+              ✓ Frontend loads < 2s (DevTools Network → DOMContentLoaded)
+              ✓ Ceremonia 5-fazowa: Scan → Found → 3-2-1 → Slots → Flip
+              ✓ Slot near-miss overshoot animuje się (overshoots 2.3×IH)
+              ✓ Web Audio: ascending 200→800Hz podczas suspense
+              ✓ Mobile: deck pionowy, tap na karty działa
+              ✓ System Builder: 2 picks → total odds mnożą się
+              ✓ Market tabs: click "± Handicap" → tylko handicap karty
+              ✓ 0 console errors / 0 CORS errors
+              ✓ Wszystkie 8+ FAL assets: HTTP 200
+
 Iter 138–139: Final polish sprint
-Iter 140:     Ship 🚀 — finalne commit + gh-pages deploy + announcement
+              → usuń console.log() z JS (prod)
+              → sprawdź wc -l frontend/index.html < 2000
+              → git status --porcelain = clean
+
+Iter 140: SHIP 🚀
+              git checkout gh-pages
+              cp frontend/index.html index.html
+              git add -A && git commit -m "feat: v1.0 — 140 iterations complete"
+              git push origin gh-pages
+              git checkout main
+```
+
+**Definition of Done Faza E (= Definition of Done projektu):**
+- [ ] WSZYSTKIE 11 reality-check boxes zielone
+- [ ] `wc -l frontend/index.html` < 2000
+- [ ] `git log --oneline | wc -l` ≥ 50 (historia pracy)
+- [ ] Live URL działa: https://qa10devteam.github.io/betatp/
+- [ ] `vercel.json` + `render.yaml` gotowe do ręcznego deploy
+
+---
+
+## 🤖 NEXUS Sprint — Uruchomienie Batch 1 (natychmiast)
+
+```
+BATCH 1 — dispatch równolegle (3 agenty):
+
+Agent 1: Frontend Developer
+→ Faza A iter 1–12: wygeneruj 27 assetów + embed do index.html
+→ Narzędzia: image_generate, write_file, terminal
+→ Kontekst: /home/ubuntu/betatp/frontend/index.html (1426 linii)
+→ Quality: /home/ubuntu/betatp/.codequality.yml → phase_a.assets
+
+Agent 2: UI Designer
+→ Faza A iter 13–28: mobile responsive + micro-interactions
+→ Narzędzia: write_file, browser (visual check)
+→ Kontekst: ten sam index.html co Agent 1 — skoordynuj sekcje CSS
+→ Quality: phase_a.mobile_polish + phase_a.css_rules
+
+Agent 3: AI Engineer
+→ Faza B iter 36–46: api/routes/explanations.py + SHAP bars frontend
+→ Narzędzia: terminal, write_file
+→ Kontekst: models/lgbm_v22_20260626_1738.joblib, api/routes/
+→ Quality: phase_b.shap_approximation
+
+BATCH 2 — po zakończeniu Batch 1:
+
+Agent 4: Backend Architect
+→ Faza C iter 71–84: API v22 stable + /coupons/daily + cloudflare tunnel
+→ Narzędzia: terminal
+→ Kontekst: api/main.py, api/routes/, models/lgbm_v22_*.joblib
+
+Agent 5: DevOps Automator
+→ Faza C iter 85–105: daily pipeline cron + system builder live
+→ Narzędzia: terminal, write_file
+→ Kontekst: scripts/run_daily_pipeline.py, crontab
+
+Agent 6: Evidence Collector (OSTATNI — po Batch 2)
+→ Faza E iter 135–137: Reality check — WSZYSTKIE 11 dowodów
+→ Narzędzia: terminal, browser
+→ Zero tolerance dla "działa" bez curl output / screenshot
 ```
 
 ---
 
-## 🤖 ZESPOŁY AGENTURALNE (NEXUS-Sprint)
-
-### Batch 1 — równolegle (FRONTEND)
-```
-Agent: engineering-frontend-developer.md
-Cel: Iter 1–14 (assets embed + mobile responsive)
-
-Agent: design-ui-designer.md
-Cel: Iter 15–28 (micro-interactions, hover, touch UX)
-
-Agent: engineering-ai-engineer.md
-Cel: Iter 36–49 (SHAP explanations, storytelling engine)
-```
-
-### Batch 2 — równolegle (BACKEND)
-```
-Agent: engineering-backend-architect.md
-Cel: Iter 71–84 (API v22 + Cloudflare tunnel)
-
-Agent: engineering-devops-automator.md
-Cel: Iter 85–98 (daily pipeline cron + deploy)
-
-Agent: testing-evidence-collector.md
-Cel: Reality check po każdym batchu
-```
-
----
-
-## 🛠️ Komendy startowe (wklej natychmiast)
+## 🛠️ Komendy startowe (wklej od razu)
 
 ```bash
-# Sprawdź stan repo
+# 1. Stan repo
 cd /home/ubuntu/betatp && git log --oneline -3
 
-# Sprawdź model v22
+# 2. Weryfikacja champion modelu
 ls models/lgbm_v22_20260626_1738.joblib
 
-# Uruchom API
-uvicorn api.main:app --host 0.0.0.0 --port 8000 &
-sleep 2 && curl -s http://localhost:8000/health | python3 -m json.tool
+# 3. Stan API
+curl -s http://localhost:8000/health 2>/dev/null || echo "API offline"
 
-# Sprawdź frontend
+# 4. Stan frontendu
 wc -l frontend/index.html
+
+# 5. Sprawdź assetów już wygenerowanych (8/35)
+grep -c "fal.media" frontend/index.html
 ```
 
 ---
@@ -205,92 +365,56 @@ wc -l frontend/index.html
 
 ```
 /home/ubuntu/betatp/
-├── frontend/index.html          ← GŁÓWNY FRONTEND (1426 linii, LIVE)
+├── .codequality.yml              ← SPEC JAKOŚCI — obowiązuje wszystkich agentów
+├── frontend/
+│   └── index.html                ← FRONTEND (1426 linii, LIVE)
 ├── api/
-│   ├── main.py                  ← FastAPI entry point
-│   ├── routes/predictions.py   ← /predictions endpoint
-│   ├── routes/coupons.py       ← /coupons endpoint
-│   └── routes/live.py          ← /live endpoint
+│   ├── main.py                   ← FastAPI entry point
+│   ├── routes/predictions.py
+│   ├── routes/coupons.py
+│   └── routes/live.py
 ├── models/
-│   ├── lgbm_v22_20260626_1738.joblib  ← CHAMPION MODEL
-│   ├── feat_cols_v22_*.joblib          ← Feature columns
-│   └── versions_results.json           ← Wszystkie wersje
+│   ├── lgbm_v22_20260626_1738.joblib   ← CHAMPION MODEL
+│   └── versions_results.json
 ├── scripts/
-│   ├── train_versions.py        ← Training script
-│   ├── run_backtest.py          ← Backtest
-│   └── run_daily_pipeline.py   ← Daily cron
-├── PLAN-140-ITERACJI.md         ← Szczegółowy plan
-├── KONTYNUACJA_2026-06-26_sesja2.md  ← Poprzednia sesja
-└── specs/                       ← 22 aksjomaty matematyczne
+│   └── run_daily_pipeline.py
+├── vercel.json                   ← Deploy config (napisany ✅)
+└── specs/                        ← 22 aksjomaty matematyczne
 ```
 
 ---
 
-## 🎨 Frontend — custom assets wygenerowane (8/35)
+## 🎨 Assets wygenerowane (8/35)
 
-| # | Opis | URL FAL |
+| # | Opis | URL |
 |---|---|---|
-| 1 | Hero background (dark emerald tennis court) | `https://v3b.fal.media/files/b/0a9fe175/-RlAtf05yGWN2_a8AI7nL_CN3iRoZE.png` |
+| 1 | Hero background — dark emerald court | `https://v3b.fal.media/files/b/0a9fe175/-RlAtf05yGWN2_a8AI7nL_CN3iRoZE.png` |
 | 2 | Market icon set (5 icons) | `https://v3b.fal.media/files/b/0a9fe179/4JPA1-dbvC7GtlqDGGNvB_PYQ20ZpF.png` |
 | 3 | Holographic value bet card | `https://v3b.fal.media/files/b/0a9fe17c/5aXGKPrN0YKu8ZD2fKCcS_UD57jLsn.png` |
 | 4 | Player silhouette stat card | `https://v3b.fal.media/files/b/0a9fe17f/QP3Dmo9SL4LFd9Yp8D2ar_Jr2RMa5l.png` |
-| 5 | Data viz dashboard background | `https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png` |
-| 6 | JACKPOT rarity card (CS:GO rainbow) | (w index.html) |
-| 7 | Dark overlay background (ceremony) | `https://v3b.fal.media/files/b/0a9fe185/g84L_hEAvlP19geMTTYGr_jaVBZ7KR.png` |
-| 8 | System builder accent | `https://v3b.fal.media/files/b/0a9fe199/Du0tghwLqy4Iok3ECgYmt_9Jud0sAW.png` |
+| 5 | Data viz dashboard bg | `https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png` |
+| 6 | Ceremony overlay bg | `https://v3b.fal.media/files/b/0a9fe185/g84L_hEAvlP19geMTTYGr_jaVBZ7KR.png` |
+| 7 | System builder accent | `https://v3b.fal.media/files/b/0a9fe199/Du0tghwLqy4Iok3ECgYmt_9Jud0sAW.png` |
+| 8 | Additional court bg | `https://v3b.fal.media/files/b/0a9fe189/2lgVtIxPEOb0lHDTnsBPx_P5m5rzOS.png` |
 
-Pozostałe 27 assetów: DO WYGENEROWANIA (iter 1–7 sesji 3)
-
----
-
-## 🧠 Neuroscience design decisions (zachowaj w kodzie)
-
-| Mechanizm | Implementacja | Źródło |
-|---|---|---|
-| Dopamine peakuje w anticipation, nie po reveal | 4-fazowe okno suspense przed reveal | Schultz 2016 (RPE) |
-| Near-miss overshoot | reel → overshoot 2.3×IH → PRP 520ms → settle | Clark 2009 (Neuron, Z=4.30) |
-| ~50% uncertainty = max DA | Pick odds celowo między 1.5–3.0 | Jauhar 2021 (n=2000+) |
-| Ascending pitch 200→800Hz | `anticipationTone()` WebAudio | Cherkasova 2018 (JNeurosci) |
-| PRP 520ms po każdym locku | `setTimeout(onDone, 520)` | Dixon 2019 |
-| CS2 rarity color hierarchy | grey→blue→pink→gold | Barton 2017 |
-| AV sync | sound+visual burst synchronized | Presti 2021 |
-| Social proof ticker | real backtest stats w DOM | Cialdini 1984 |
-| DraftKings #61B510 CTA | `background: #61b510` | DraftKings brand |
+**Pozostałe 27 assetów = Faza A, iter 1–7**
 
 ---
 
-## 🚀 WYTYCZNA DLA SESJI 3
+## 🧠 Neuroscience design — zachowaj w kodzie
 
-Hasło misji: **"Najbardziej innowacyjne doświadczenie betowania w historii"**
+Komentarze inline WYMAGANE przy każdym mechanizmie:
 
-Priorytet 1 (natychmiast po wczytaniu):
-1. Sprawdź stan API (`curl localhost:8000/health`)
-2. Wygeneruj 10 kolejnych assetów (iter 1–3 assetów, image_generate)
-3. Uruchom NEXUS Batch 1 — 3 agenty równolegle (frontend+design+AI)
-
-Priorytet 2:
-4. Połącz frontend z API v22 (real predictions, nie demo)
-5. Deploy Cloudflare tunnel → public API URL
-
-Priorytet 3:
-6. Three.js 3D tennis court scene
-7. SHAP feature importance bars na kartach
-8. Daily pipeline cron (o 7:00 UTC)
+| Implementacja | Komentarz w kodzie |
+|---|---|
+| `setTimeout(onDone, 520)` po locku reela | `// Dixon 2019: PRP 520ms — post-reinforcement pause increases perceived reward value` |
+| overshoot `finalY - 2.3*IH` | `// Clark 2009 (Neuron, PMC2658737): near-miss overshoot Z=4.30 ventral putamen` |
+| `anticipationTone()` 200→800Hz | `// Cherkasova 2018 (JNeurosci): ascending pitch signals reward imminence` |
+| animacje suspense 2–8s | `// Jauhar 2021 (45-study fMRI): anticipation > delivery for dopamine activation` |
+| `--t-drama: 4000ms` | `// Schultz 2016 (RPE): dopamine ramps during anticipation window` |
+| `#61b510` CTA button | `// DraftKings Vida Loca — verified via logotyp.us` |
+| CS2 rarity colors grey→blue→pink→gold | `// Barton 2017 (51-study): color hierarchy = engineered dopamine arousal ramp` |
 
 ---
 
-## 📊 Wyniki backtest (referenyjne)
-
-Model v22 (champion, clean):
-- Holdout AUC: **0.9171**
-- WF AUC: **0.9422** (4 spity 2014→2024)
-- Train samples: 71,872 | Holdout: 6,150
-- Features: 57 (top: age, rank, pw_heat_edge, draw_diff)
-
-Model v14 (backup, clean):
-- Holdout AUC: 0.9031 | WF AUC: 0.9482
-- Backtest Kelly: ROI +42.1%, 57 betów (zatwierdzony)
-
----
-
-*Wygenerowano automatycznie przez Hermes 2026-06-26. Plik do wczytania w nowym wątku.*
+*Hermes — 2026-06-26 | Sesja 3 | Model v22 champion | 140 iter spec-off*

@@ -1,0 +1,428 @@
+# ═══════════════════════════════════════════════════════════════
+# betatp.io — CODE QUALITY CONFIGURATION
+# Obowiązuje dla wszystkich 140 iteracji i wszystkich agentów
+# NEXUS Phase: ALL | Stack: Pure HTML/CSS/JS + Python 3.11
+# ═══════════════════════════════════════════════════════════════
+
+project:
+  name: betatp.io
+  version: "0.7.0"
+  stack:
+    frontend: "Pure HTML5 + GSAP 3.12.5 + WebGL GLSL + Web Audio API"
+    backend: "Python 3.11 + FastAPI + LightGBM + PostgreSQL"
+    deploy: "Vercel (frontend) + Render.com (API)"
+  champion_model: "lgbm_v22_20260626_1738.joblib"
+  leakage_guard: "trained_at >= 20260626_1631"
+
+# ─────────────────────────────────────────────
+# FAZA A — ASSETS + MOBILE POLISH (iter 1–35)
+# ─────────────────────────────────────────────
+phase_a:
+  scope: "frontend/index.html + assets/**"
+  agents: ["Frontend Developer", "UI Designer"]
+  
+  assets:
+    target_count: 35
+    completed: 8
+    remaining: 27
+    formats_allowed: ["png", "webp", "svg"]
+    max_size_kb: 400
+    naming: "asset-{category}-{n:02d}.{ext}"
+    embed_strategy: "fal_cdn_url"   # nie base64 — zbyt duże
+    categories:
+      - player_silhouette      # 6 sztuk
+      - court_texture          # 4 sztuki
+      - rarity_frame           # 4 sztuki (common/value/high/jackpot)
+      - market_icon            # 5 sztuk (winner/sets/handicap/total/score)
+      - gradient_orb           # 4 sztuki (kolor per rynek)
+      - trophy_3d              # 2 sztuki
+      - probability_bg         # 2 sztuki (ciemne, dane overlay)
+    
+  html_quality:
+    max_lines: 2000                  # powyżej → split na moduły
+    one_file_rule: true              # frontend = 1 index.html (Vercel static)
+    semantic_html: true
+    aria_labels: required            # każdy interaktywny el. ma aria-label
+    lang_attribute: "pl"
+    viewport_meta: required
+    
+  css_rules:
+    css_variables_only: true         # zero hardkodowanych hex poza :root
+    no_!important: true
+    mobile_first: true
+    breakpoints:
+      mobile: "max-width: 480px"
+      tablet: "max-width: 768px"
+      desktop: "min-width: 769px"
+    animation_rules:
+      respect_reduced_motion: true   # @media (prefers-reduced-motion: reduce)
+      max_duration_routine_ms: 400   # NN/g 2020 — UI transitions
+      max_duration_reward_ms: 8000   # reward ceremony (Jauhar 2021)
+      easing_reward: "cubic-bezier(.16,1,.3,1)"
+      easing_reel: "cubic-bezier(.06,.96,.22,1)"
+      no_linear_for_rewards: true
+    
+  js_rules:
+    no_global_pollution: true        # tylko window.burst, window.rain (canvas API)
+    gsap_version: "3.12.5"          # pinned — nie aktualizuj
+    no_jquery: true
+    async_api_calls: true
+    error_handling: "try/catch na wszystkich fetch() i WebAudio calls"
+    web_audio_lazy_init: true        # AC() tworzy AudioContext on user gesture
+    
+  performance:
+    target_fcp_ms: 1800              # First Contentful Paint
+    target_cls: 0.07                 # Cumulative Layout Shift
+    target_fps_idle: 60              # GLSL canvas idle
+    target_fps_ceremony: 60         # slot machine ceremony
+    canvas_willchange: true          # will-change: transform na .rtk
+    image_loading: "lazy"
+    gsap_will_change: true
+    
+  mobile_polish:
+    touch_targets_min_px: 44         # Apple HIG minimum
+    scroll_momentum: "-webkit-overflow-scrolling: touch"
+    no_hover_only_states: true       # touch users nie mają hover
+    haptic_feedback: "navigator.vibrate(50) na lock events"
+    font_size_min_px: 11             # no tiny text on mobile
+    safe_area_insets: true           # padding: env(safe-area-inset-*)
+
+# ─────────────────────────────────────────────
+# FAZA B — AI STORYTELLING / SHAP (iter 36–70)
+# ─────────────────────────────────────────────
+phase_b:
+  scope: "frontend/index.html (storytelling layer) + api/routes/explanations.py"
+  agents: ["AI Engineer", "Frontend Developer"]
+  
+  transparency_layer:
+    # Berridge 2016: "wanting" oparty na rozumieniu — zaufanie buduje się przez przejrzystość
+    required_per_card:
+      - model_probability_bar      # P(model) vs P(bukmacher) vs edge %
+      - top_5_features_bars        # SHAP-style feature importance per pick
+      - reasoning_bullets          # 3-5 punktów dlaczego (pos/neg/neutral)
+      - confidence_meter           # overall certainty % z kalibracji
+      - kelly_stake_pln            # Kelly fraction × 1000 PLN bankroll
+      - market_badge               # winner/sets/handicap/total/score
+      - rarity_tier                # common/value/high/jackpot (CS2 system)
+    
+    shap_approximation:
+      method: "feature_contribution_lgbm"   # LightGBM built-in feature_importance
+      normalize: "percentage_of_total"
+      top_n: 5
+      display: "horizontal_bars_animated"   # gsap width tween na reveal
+      colors:
+        positive: "#c2ff3d"     # lime — feature pomaga predykcji
+        negative: "#ef3340"     # red — feature osłabia
+        neutral: "#78909c"      # grey
+      animation:
+        trigger: "after_flip_card_reveal"
+        duration_ms: 950
+        ease: "power2.out"
+        stagger_ms: 80          # każdy bar osobno z opóźnieniem
+    
+    probability_bars:
+      show_model_p: true
+      show_market_p: true       # implied z kursów bukmachera
+      show_edge: true           # (model_p - market_p) / market_p * 100
+      animate_on_reveal: true
+      
+    reasoning_quality:
+      min_bullets: 3
+      max_bullets: 5
+      must_reference_features: true   # każdy bullet → konkretna cecha (surface W/R, H2H, itp.)
+      tone: "obiektywny, concise, po polsku"
+      no_buzzwords: ["rewelacyjny", "fenomenalny", "pewnik"]
+      
+  api_explanations_endpoint:
+    path: "/predictions/{match_id}/explanation"
+    response_fields:
+      - top_features: "list[{name, value, importance_pct}]"
+      - model_probability: float
+      - market_probability: float
+      - edge_pct: float
+      - reasoning: "list[str]"
+      - confidence: float
+      - kelly_fraction: float
+    cache_ttl_s: 3600            # wyjaśnienia nie zmieniają się w ciągu dnia
+
+# ─────────────────────────────────────────────
+# FAZA C — BACKEND CONNECT (iter 71–105)
+# ─────────────────────────────────────────────
+phase_c:
+  scope: "api/** + scripts/run_daily_pipeline.py + Cloudflare tunnel"
+  agents: ["Backend Architect", "DevOps Automator"]
+  
+  api_standards:
+    framework: "FastAPI 0.111+"
+    python: "3.11"
+    response_time_p95_ms: 280        # poniżej 280ms p95 dla /predictions
+    response_time_p99_ms: 800
+    model_loading: "startup_event"   # ładuj model RAZ przy starcie, nie per-request
+    
+    endpoints:
+      health:
+        path: "/health"
+        response: "{status: ok, model: v22, auc: 0.9171, ts: ISO8601}"
+        cache: false
+      predictions:
+        path: "/predictions"
+        method: GET
+        params: ["match_id?", "player_a", "player_b", "surface", "tournament"]
+        response_fields: ["p_win_a", "p_win_b", "edge_pct", "kelly", "market", "explanation"]
+        cache_ttl_s: 1800
+      coupons:
+        path: "/coupons/daily"
+        method: GET
+        response_fields: ["picks[{player, opponent, market, selection, odds, p_model, p_market, edge, reasoning, kelly, rarity}]", "total_odds", "ev_pct", "generated_at"]
+        max_picks: 5
+        min_edge_pct: 8.0
+        cache_ttl_s: 3600
+      live:
+        path: "/live/odds"
+        method: GET
+        source: "the-odds-api.com"
+        fallback: "demo_picks"
+        timeout_ms: 4000
+        
+    model_serving:
+      champion: "lgbm_v22_20260626_1738.joblib"
+      feat_cols: "feat_cols_v22_*.joblib"          # najnowszy wg timestamp
+      leakage_guard: "assert trained_at >= '20260626_1631'"
+      fallback: "lgbm_v14_20260626_1706.joblib"    # jeśli v22 fail
+      warm_up_on_start: true                       # predict na dummy input przy starcie
+      
+    error_handling:
+      model_load_failure: "500 + log + fallback to v14"
+      prediction_exception: "422 + reason string"
+      odds_api_timeout: "200 + demo_picks fallback"
+      db_connection_loss: "503 + retry 3x backoff"
+      
+    security:
+      cors_origins: ["https://qa10devteam.github.io", "https://*.vercel.app"]
+      rate_limit: "60 req/min per IP"
+      no_raw_model_exposure: true       # /models/ endpoint = 403
+      
+  database:
+    engine: "PostgreSQL 15"
+    connection: "host=localhost dbname=betatp user=postgres password=betatp2024"
+    connection_pool: "min=2 max=10"
+    query_timeout_ms: 5000
+    indexes_required:
+      - "matches(match_date, surface)"
+      - "players(player_id)"
+      - "elo_history(player_id, computed_at)"
+      
+  daily_pipeline:
+    schedule: "0 7 * * *"             # cron — 7:00 UTC
+    script: "scripts/run_daily_pipeline.py"
+    steps:
+      - fetch_today_atp_matches       # The Odds API lub ATP schedule
+      - compute_features_v22          # ELO + surface + H2H + weather
+      - run_predictions_v22           # model inference
+      - filter_value_bets             # edge >= 8%
+      - generate_daily_coupon         # top 3–5 picks, Kelly sized
+      - cache_to_json                 # /tmp/daily_coupon.json → API serwuje
+    timeout_s: 180
+    alert_on_failure: true
+    
+  cloudflare_tunnel:
+    local_port: 8000
+    command: "cloudflared tunnel --url http://localhost:8000"
+    config_file: "~/.cloudflared/config.yml"
+    embed_url_in: "frontend/index.html → API_BASE_URL constant"
+
+# ─────────────────────────────────────────────
+# FAZA D — THREE.JS 3D COURT + GYROSCOPE (iter 106–125)
+# ─────────────────────────────────────────────
+phase_d:
+  scope: "frontend/index.html (Three.js layer)"
+  agents: ["Frontend Developer", "UI Designer"]
+  
+  threejs:
+    version: "r165"                   # CDN: https://cdn.jsdelivr.net/npm/three@0.165.0/
+    scene:
+      court:
+        geometry: "PlaneGeometry(23.77, 10.97)"   # Wimbledon wymiary w metrach
+        texture: "ai-asset court texture (dark emerald)"
+        lines: "LineSegments + EdgesGeometry → bright lime #c2ff3d"
+        rotation_x: -Math.PI / 2
+      camera:
+        type: "PerspectiveCamera(45, aspect, 0.1, 1000)"
+        position: "[0, 12, 18]"
+        lookAt: "[0, 0, 0]"
+        animation: "slow orbit — GSAP timeline, 60s full revolution"
+      lighting:
+        ambient: "AmbientLight(0x0d0d24, 0.6)"
+        directional: "DirectionalLight(0xc2ff3d, 0.4) — from top-right"
+        point_accent: "PointLight(0x00f2e8, 0.3) — under court"
+      particles:
+        count: 800
+        size: 0.04
+        color: "lerp(#c2ff3d, #00f2e8) per index"
+        motion: "gentle float, z-axis wave, sin(time + offset)"
+      post_processing:
+        bloom: "UnrealBloomPass — threshold 0.4, strength 0.6, radius 0.4"
+        vignette: "custom GLSL ShaderPass"
+    
+    integration:
+      position: "background layer — z-index below .screen"
+      canvas_id: "court-canvas"
+      resize_handler: true
+      pause_when_hidden: true      # IntersectionObserver — oszczędność baterii
+      
+  gyroscope_tilt:
+    api: "DeviceOrientationEvent"
+    permission_request: true        # iOS 13+ wymaga requestPermission()
+    fallback: "mouse parallax (istouch = false)"
+    card_tilt:
+      max_deg: 18                   # max rotateX/Y
+      smooth_factor: 0.08           # lerp factor per frame
+      target_elements: ".pcard, .hcard"
+    implementation:
+      on_deviceorientation: |
+        // gamma = left/right tilt → rotateY
+        // beta = front/back tilt → rotateX
+        gsap.to(card, {
+          rotateY: gamma * 0.3,
+          rotateX: -beta * 0.2,
+          duration: 0.1,
+          ease: 'none'
+        })
+
+# ─────────────────────────────────────────────
+# FAZA E — LAUNCH (iter 126–140)
+# ─────────────────────────────────────────────
+phase_e:
+  scope: "całe repo — finalizacja"
+  agents: ["Senior Dev", "Evidence Collector", "DevOps Automator"]
+  
+  seo_pwa:
+    meta_required:
+      - "title: betatp.io — AI Value Betting ATP"
+      - "description: (max 155 znaków)"
+      - "og:title, og:description, og:image, og:url"
+      - "twitter:card: summary_large_image"
+      - "canonical URL"
+    og_image:
+      size: "1200x630"
+      source: "AI-generated — hero court + betatp logo"
+    pwa:
+      manifest: "frontend/manifest.json"
+      theme_color: "#020208"
+      background_color: "#020208"
+      display: "standalone"
+      icons: ["192x192", "512x512"]
+    service_worker:
+      strategy: "NetworkFirst dla API, CacheFirst dla assets"
+      offline_fallback: "ostatni kupon z cache"
+      
+  reality_check:
+    # Testing Evidence Collector — OSTATNI agent, po wszystkich
+    required_checks:
+      - "curl /health → {status: ok}"
+      - "curl /coupons/daily → 3–5 picks, każdy z market/selection/odds/edge/reasoning"
+      - "frontend loads w <2s na 3G throttle"
+      - "ceremony 5-fazowa działa end-to-end (Scan→Slots→Flip)"
+      - "slot near-miss overshoot animuje się (Clark 2009)"
+      - "Web Audio plays on button click"
+      - "mobile touch targets ≥ 44px"
+      - "System Builder: dodaj 2 picks → kurs mnoży się poprawnie"
+      - "Market tabs filtrują karty"
+      - "No JS errors w console"
+      - "No CORS errors"
+      - "All FAL image assets load (HTTP 200)"
+    definition_of_done: "WSZYSTKIE 11 checkboxów zielone"
+    
+  git_workflow:
+    branch_strategy: "main → deploy"
+    commit_format: "type(scope): description"
+    commit_types: ["feat", "fix", "refactor", "perf", "docs", "chore", "test"]
+    pre_push: "sprawdź: wc -l frontend/index.html < 2000"
+    gh_pages_sync: |
+      git checkout gh-pages
+      cp frontend/index.html index.html
+      git add index.html frontend/index.html
+      git commit -m "deploy: <message>"
+      git push origin gh-pages
+      git checkout main
+      
+  vercel_deploy:
+    config_file: "vercel.json"
+    root: "frontend/"
+    entry: "index.html"
+    headers:
+      security:
+        - "X-Content-Type-Options: nosniff"
+        - "X-Frame-Options: DENY"
+        - "X-XSS-Protection: 1; mode=block"
+      caching:
+        html: "Cache-Control: public, max-age=0, must-revalidate"
+        assets: "Cache-Control: public, max-age=31536000, immutable"
+
+# ─────────────────────────────────────────────
+# GLOBALNE ZASADY JAKOŚCI KODU (wszystkie fazy)
+# ─────────────────────────────────────────────
+global_code_quality:
+
+  python_backend:
+    style: "PEP 8"
+    max_line_length: 100
+    type_hints: required
+    docstrings: "Google style — każda publiczna funkcja"
+    no_print_statements: true         # używaj logging
+    logging_level: "INFO w prod, DEBUG w dev"
+    exception_handling: "nigdy bare except: — zawsze konkretny wyjątek"
+    test_coverage_min_pct: 80
+    test_framework: "pytest"
+    fixtures: "conftest.py"
+    no_hardcoded_secrets: true        # secrets przez os.environ / .env
+    env_file: ".env (gitignored)"
+    
+  frontend_js:
+    no_var: true                      # const/let only
+    strict_mode: true                 # 'use strict' or ESM
+    no_console_log_in_prod: true      # usuwaj przed deploy
+    event_listeners: "removeEventListener na cleanup"
+    gsap_cleanup: "gsap.killTweensOf() przed re-animacją"
+    web_audio: "suspend AudioContext gdy tab nieaktywny"
+    canvas_resize: "ResizeObserver + devicePixelRatio"
+    error_boundary: "window.onerror → graceful degrade (no crash)"
+    
+  naming_conventions:
+    css_variables: "--category-name-variant"   # np. --t-drama, --rar-jackpot
+    js_functions: "camelCase, akcja + obiekt"  # np. buildCard, spinReel, showCoupon
+    js_constants: "UPPER_SNAKE_CASE"           # np. MKT_W, RAR_COLOR
+    python_functions: "snake_case"
+    python_classes: "PascalCase"
+    files: "kebab-case"
+    
+  documentation:
+    inline_comments_required_for:
+      - "każdy timing constant z odwołaniem do badań"   # np. "// Dixon 2019: PRP 520ms"
+      - "każdy GLSL shader nietrywialny"
+      - "każda implementacja mechanizmu psychologicznego"
+      - "każdy endpoint API"
+    readme_sections: ["Installation", "API", "Model", "Deploy", "Architecture"]
+    
+  security:
+    no_eval: true
+    no_innerHTML_with_user_input: true   # sanitize zawsze
+    api_keys: "localStorage only (client-side) lub env var (backend)"
+    no_api_keys_in_git: true
+    
+  performance_budgets:
+    frontend_html_max_kb: 250         # gzipped
+    api_cold_start_ms: 3000           # Render.com free tier
+    model_inference_ms: 50            # LightGBM v22 per prediction
+    db_query_ms: 20                   # SELECT z indeksem
+    
+  nexus_agent_rules:
+    handoff_required_fields:
+      - current_state              # co jest zrobione
+      - deliverables               # konkretne pliki/endpointy
+      - definition_of_done         # kiedy iteracja = done
+      - next_agent                 # kto przejmuje
+    max_retries_per_task: 3
+    escalate_on_failure: true
+    evidence_collector_final: true   # ZAWSZE ostatni agent w batchu
+    no_fabricated_output: true       # "installed successfully" wymaga dowodu (curl/stat)
