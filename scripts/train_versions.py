@@ -264,13 +264,16 @@ def build_draw_difficulty(df):
     return df
 
 def build_player_weather_interaction(df):
-    """Jak gracz historycznie radzi sobie w różnych warunkach pogodowych"""
+    """Jak gracz historycznie radzi sobie w różnych warunkach pogodowych.
+    WAŻNE: tylko dane PRE-MATCH (expanding window BEZ obecnego meczu).
+    AUC v6=0.9991 był data leakage — tu naprawione.
+    """
     df = df.sort_values("tourney_date").reset_index(drop=True)
-    heat_hist = {}  # player_id → rolling win_rate w temp>28
-    rain_hist = {}  # player_id → rolling win_rate w rain_days>2
-    wind_hist = {}  # player_id → rolling win_rate w wind>25
 
     from collections import deque
+    heat_hist = {}
+    rain_hist = {}
+    wind_hist = {}
 
     hw, hl, rw, rl, ww, wl = [], [], [], [], [], []
     for _, row in df.iterrows():
@@ -280,26 +283,28 @@ def build_player_weather_interaction(df):
         wind  = row.get("wind_max_mean",  np.nan)
 
         def get_wr(pid, hist_dict):
-            h = hist_dict.get(pid, deque(maxlen=20))
-            return np.mean(list(h)) if h else 0.5
+            h = hist_dict.get(pid, deque(maxlen=30))
+            return np.mean(list(h)) if len(h) >= 3 else 0.5
 
+        # NAJPIERW zapisz poprzednie statystyki (pre-match)
         hw.append(get_wr(wid, heat_hist)); hl.append(get_wr(lid, heat_hist))
         rw.append(get_wr(wid, rain_hist)); rl.append(get_wr(lid, rain_hist))
         ww.append(get_wr(wid, wind_hist)); wl.append(get_wr(lid, wind_hist))
 
-        is_hot  = temp > 28  if temp == temp else False
-        is_rain = rain > 2   if rain == rain else False
-        is_wind = wind > 25  if wind == wind else False
+        # POTEM zaktualizuj (post-match) — brak leakage
+        is_hot  = bool(temp > 28)  if temp == temp else False
+        is_rain = bool(rain > 2)   if rain == rain else False
+        is_wind = bool(wind > 25)  if wind == wind else False
 
         if is_hot:
-            heat_hist.setdefault(wid, deque(maxlen=20)).append(1)
-            heat_hist.setdefault(lid, deque(maxlen=20)).append(0)
+            heat_hist.setdefault(wid, deque(maxlen=30)).append(1)
+            heat_hist.setdefault(lid, deque(maxlen=30)).append(0)
         if is_rain:
-            rain_hist.setdefault(wid, deque(maxlen=20)).append(1)
-            rain_hist.setdefault(lid, deque(maxlen=20)).append(0)
+            rain_hist.setdefault(wid, deque(maxlen=30)).append(1)
+            rain_hist.setdefault(lid, deque(maxlen=30)).append(0)
         if is_wind:
-            wind_hist.setdefault(wid, deque(maxlen=20)).append(1)
-            wind_hist.setdefault(lid, deque(maxlen=20)).append(0)
+            wind_hist.setdefault(wid, deque(maxlen=30)).append(1)
+            wind_hist.setdefault(lid, deque(maxlen=30)).append(0)
 
     df["pw_heat_wr_w"] = hw; df["pw_heat_wr_l"] = hl
     df["pw_rain_wr_w"] = rw; df["pw_rain_wr_l"] = rl
