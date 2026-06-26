@@ -958,12 +958,19 @@ def run_v18(df):
     data, all_feats = make_ab_dataset(df2, pairs)
 
     # Generuj OOF predictions z każdego modelu bazowego
+    # Kluczowe: dobieramy tylko te feats które istnieją w data (ta sama kolejność co w treningu)
     meta_feats = []
     for vn, m, feats in base_models:
         avail = [f for f in feats if f in data.columns]
-        p = m.predict_proba(data[avail].fillna(-999))[:,1]
+        if len(avail) < len(feats) * 0.5:
+            log(f"  {vn}: za mało pasujących features ({len(avail)}/{len(feats)}) — skip")
+            continue
+        # Pad missing features with -999
+        X_pred = data.reindex(columns=feats, fill_value=-999).fillna(-999)
+        p = m.predict_proba(X_pred)[:,1]
         data[f"oof_{vn}"] = p
         meta_feats.append(f"oof_{vn}")
+        log(f"  {vn}: {len(avail)}/{len(feats)} feats matched, pred range [{p.min():.3f},{p.max():.3f}]")
     meta_feats += ["surface_enc"] if "surface_enc" in data.columns else []
 
     train = data[data["year"]<HOLDOUT_START]; hold = data[data["year"]>=HOLDOUT_START]
@@ -1032,7 +1039,8 @@ def run_v19(df):
         X_tr,y_tr   = tr[feat_cols].fillna(-999),tr["y"]
         X_val,y_val = val[feat_cols].fillna(-999),val["y"]
         m = xgb.XGBClassifier(**xgb_params)
-        m.fit(X_tr,y_tr,eval_set=[(X_val,y_val)],early_stopping_rounds=80,verbose=False)
+        m = xgb.XGBClassifier(**{**xgb_params, "early_stopping_rounds": 80})
+        m.fit(X_tr,y_tr,eval_set=[(X_val,y_val)],verbose=False)
         p = m.predict_proba(X_val)[:,1]
         auc=roc_auc_score(y_val,p); bs=brier_score_loss(y_val,p)
         wf_results.append({"auc":auc,"bs":bs,"iters":m.best_iteration})
@@ -1123,17 +1131,21 @@ def run_v21(df):
     df2["mkt_spread_w"]=mx-pin; df2["mkt_consensus_std"]=pd.concat([pin,avg,mx],axis=1).std(axis=1)
 
     # Polynomial: pin² (non-linear market confidence)
+    # WAŻNE: rank_ratio musi być dla winner i loser osobno (nie dzielić winner/loser przed AB flip)
     df2["pin_sq_w"]      = pin**2
-    df2["pin_x_rank_w"]  = pin * (1/(df2["winner_rank"].fillna(200)+1))
-    df2["rank_ratio"]    = (df2["winner_rank"].fillna(200)+1) / (df2["loser_rank"].fillna(200)+1)
+    df2["pin_sq_l"]      = (1-pin)**2
+    df2["rank_inv_w"]    = 1.0 / (df2["winner_rank"].fillna(200)+1)
+    df2["rank_inv_l"]    = 1.0 / (df2["loser_rank"].fillna(200)+1)
     df2["odds_ratio"]    = df2.get("PSW",pd.Series(1.0,index=df2.index)).fillna(2.0) / \
                            df2.get("PSL",pd.Series(1.0,index=df2.index)).fillna(2.0)
-    df2["pin_h2h_inter"] = pin * 0.5  # placeholder (będzie zastąpiony po build_h2h)
-
+    # odds_ratio = PSW/PSL — to jest shared (ta sama wartość dla obu stron po normalizacji)
+    # Jako shared feature (fw==fl) nie leakuje po AB flip
     pairs = fix_base_pairs(df2)+WEATHER_PAIRS+[
         ("h2h_wins_delta_3","h2h_wins_delta_3"),("rank_traj_diff","rank_traj_diff"),
         ("mkt_spread_w","mkt_spread_w"),("mkt_consensus_std","mkt_consensus_std"),
-        ("pin_sq_w","pin_sq_w"),("rank_ratio","rank_ratio"),("odds_ratio","odds_ratio")]
+        ("pin_sq_w","pin_sq_l"),   # asymetryczna: pin² dla zwycięzcy vs przegranego
+        ("rank_inv_w","rank_inv_l"),  # 1/rank — asymetryczna
+        ("odds_ratio","odds_ratio")]  # shared
     data, feat_cols = make_ab_dataset(df2, pairs)
     train=data[data["year"]<HOLDOUT_START]; hold=data[data["year"]>=HOLDOUT_START]
     return train_model("v21", train, hold, feat_cols,
@@ -1172,8 +1184,11 @@ def run_v22(df):
     df2["mkt_avg_pin_w"]   = avg  - pin
     df2["mkt_b365_pin_w"]  = b365 - pin
     df2["mkt_consensus_std"]= pd.concat([pin,avg,mx,b365],axis=1).std(axis=1)
+    # pin² asymetryczne — osobno dla winner i loser (bez leakage)
     df2["pin_sq_w"]         = pin**2
-    df2["rank_ratio"]       = (df2["winner_rank"].fillna(200)+1)/(df2["loser_rank"].fillna(200)+1)
+    df2["pin_sq_l"]         = (1-pin)**2
+    df2["rank_inv_w"]       = 1.0/(df2["winner_rank"].fillna(200)+1)
+    df2["rank_inv_l"]       = 1.0/(df2["loser_rank"].fillna(200)+1)
     df2["odds_ratio"]       = df2.get("PSW",pd.Series(2.0,index=df2.index)).fillna(2.0) / \
                               df2.get("PSL",pd.Series(2.0,index=df2.index)).fillna(2.0)
 
@@ -1196,9 +1211,9 @@ def run_v22(df):
         ("pw_heat_edge",       "pw_heat_edge"),
         ("pw_rain_edge",       "pw_rain_edge"),
         ("pw_wind_edge",       "pw_wind_edge"),
-        ("pin_sq_w",           "pin_sq_w"),
-        ("rank_ratio",         "rank_ratio"),
-        ("odds_ratio",         "odds_ratio"),
+        ("pin_sq_w",           "pin_sq_l"),   # asymetryczna
+        ("rank_inv_w",         "rank_inv_l"), # asymetryczna
+        ("odds_ratio",         "odds_ratio"), # shared
         ("clay_rain",          "clay_rain"),
         ("grass_wind",         "grass_wind"),
         ("age_w",              "age_l"),
@@ -1226,9 +1241,13 @@ def run_v22(df):
 
     # Platt calibration
     if model is not None:
-        cal = CalibratedClassifierCV(model, cv="prefit", method="sigmoid")
-        X_tr = train[feat_cols].fillna(-999); y_tr = train["y"]
-        cal.fit(X_tr, y_tr)
+        # sklearn 1.9 usunął cv="prefit" — używamy osobnego cal set (20%)
+        from sklearn.model_selection import train_test_split
+        X_full = train[feat_cols].fillna(-999); y_full = train["y"]
+        X_cal_tr, X_cal_val, y_cal_tr, y_cal_val = train_test_split(
+            X_full, y_full, test_size=0.2, random_state=42)
+        cal = CalibratedClassifierCV(model, cv=5, method="sigmoid")
+        cal.fit(X_cal_tr, y_cal_tr)
         X_ho = hold[feat_cols].fillna(-999);  y_ho = hold["y"]
         p_cal = cal.predict_proba(X_ho)[:,1]
         auc_cal = roc_auc_score(y_ho, p_cal); bs_cal = brier_score_loss(y_ho, p_cal)
