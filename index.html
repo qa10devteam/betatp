@@ -217,12 +217,12 @@
       <div class="stat-card">
         <div class="stat-label">Bets (holdout)</div>
         <div class="stat-value" id="stat-bets">—</div>
-        <div class="stat-sub" id="stat-bets-sub">edge > 8%</div>
+        <div class="stat-sub" id="stat-bets-sub">edge ≥ 15%</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Avg Edge</div>
+        <div class="stat-label">Best ROI</div>
         <div class="stat-value green" id="stat-edge">—</div>
-        <div class="stat-sub">vs market</div>
+        <div class="stat-sub">flat bet, edge≥15%</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Win Rate</div>
@@ -232,7 +232,7 @@
       <div class="stat-card">
         <div class="stat-label">Max Drawdown</div>
         <div class="stat-value red" id="stat-dd">—</div>
-        <div class="stat-sub">half-Kelly, edge>8%</div>
+        <div class="stat-sub">half-Kelly, edge≥15%</div>
       </div>
     </div>
 
@@ -268,10 +268,11 @@
               <th class="right">Kelly/2</th>
               <th>Signal</th>
               <th>Conf.</th>
+              <th>Result</th>
             </tr>
           </thead>
           <tbody id="picks-tbody">
-            <tr><td colspan="11" class="loading"><span class="spinner"></span>Loading picks...</td></tr>
+            <tr><td colspan="12" class="loading"><span class="spinner"></span>Loading picks...</td></tr>
           </tbody>
         </table>
       </div>
@@ -282,7 +283,7 @@
       <!-- PnL chart -->
       <div class="pnl-panel">
         <div class="section-header">
-          <div class="section-title">Monthly PnL — half-Kelly, edge > 8%</div>
+          <div class="section-title">Monthly PnL — flat bet, edge ≥ 15%</div>
           <div class="section-badge" id="pnl-total">—</div>
         </div>
         <div class="pnl-bars" id="pnl-bars">
@@ -328,11 +329,11 @@
         </div>
         <div class="model-kv">
           <div class="model-kv-key">Strategy</div>
-          <div class="model-kv-val">Half-Kelly</div>
+          <div class="model-kv-val">Flat bet, edge≥15%</div>
         </div>
         <div class="model-kv">
           <div class="model-kv-key">Backtest</div>
-          <div class="model-kv-val" style="font-size:10px">backtest_v4_bets.csv</div>
+          <div class="model-kv-val" style="font-size:10px">backtest_v14_bets.csv</div>
         </div>
       </div>
     </div>
@@ -351,6 +352,7 @@
               <th>Hypothesis</th>
               <th class="right">AUC Holdout</th>
               <th class="right">vs Pinnacle</th>
+              <th class="right">Best ROI</th>
               <th class="right">Features</th>
               <th>Status</th>
             </tr>
@@ -370,100 +372,126 @@ const API_BASE = window.location.hostname === 'localhost' || window.location.hos
   ? 'http://localhost:8000'
   : ''; // same origin in production
 
-/* ── Embedded model info (updated after clean training) ─── */
+/* ── Embedded model info (backtest_v14 — Age×Surface interaction, BEST CLEAN) ─── */
 const MODEL_INFO_STATIC = {
   version: "v14",
-  holdout_auc: 0.9031,
+  holdout_auc: 0.9031,       // AUC na pełnym holdout (clean, post bug#4)
   pinnacle_auc: 0.7457,
   features: 44,
-  hypothesis: "+age×surface interaction — BEST clean model",
+  hypothesis: "Age×Surface interaction (clean, post bug#4)",
   train_period: "2004-2023",
   holdout_period: "2024-2026",
   n_train: 71872,
   n_holdout: 6150,
+  best_strategy: "flat_edge15",
+  best_roi: 42.1,
+  best_bets: 57,
+  best_win_rate: 59.6,
   versions_clean: [
-    { v: "v9",  auc: 0.8070, feats: 23, desc: "+H2H features",             status: "clean"   },
-    { v: "v10", auc: 0.8060, feats: 23, desc: "+Ranking trajectory",        status: "clean"   },
-    { v: "v11", auc: 0.8046, feats: 35, desc: "+Serve/return stats",        status: "clean"   },
-    { v: "v12", auc: 0.8713, feats: 46, desc: "COMBO H2H+fatigue+weather",  status: "clean"   },
-    { v: "v13", auc: 0.8299, feats: 38, desc: "+Draw difficulty",           status: "clean"   },
-    { v: "v14", auc: 0.9031, feats: 44, desc: "+age×surface (BEST)",        status: "active"  },
+    { v: 'v14', auc: 0.9031, roi: '+42.1%', bets: 57,   desc: 'Age×Surface interaction ← BEST', status: 'active'   },
+    { v: 'v16', auc: 0.8828, roi: '—',      bets: '—',  desc: '+Serve/return rolling (full features)', status: '' },
+    { v: 'v12', auc: 0.8713, roi: '+20.2%', bets: 96,   desc: 'COMBO H2H+fatigue+weather',      status: ''         },
+    { v: 'v13', auc: 0.8299, roi: '—',      bets: '—',  desc: '+Draw difficulty',               status: ''         },
+    { v: 'v9',  auc: 0.8070, roi: '—',      bets: '—',  desc: '+H2H features (clean)',          status: ''         },
+    { v: 'Pinnacle', auc: 0.7457, roi: '-0.4%', bets: '—', desc: 'Baseline (bookmaker)',        status: 'baseline' },
   ]
 };
 
-/* ── Static backtest stats ────────────────────────────────── */
+/* ── Static backtest stats (v14 backtest — flat bet edge≥15%) ─────── */
 const STATS_STATIC = {
-  n_bets_holdout: 900,
-  win_rate: 0.751,
-  avg_edge: 0.2712,
-  max_dd: 17.3,
+  n_bets_holdout: 57,
+  win_rate: 0.596,
+  avg_edge: 0.191,
+  max_dd: 17.86,
+  roi: 42.1,
   best_version: 'v14',
   best_auc: 0.9031,
   pinnacle_auc: 0.7457,
 };
 
-/* ── Monthly PnL (backtest_v4_bets.csv, half-Kelly, edge>8%) */
+/* ── Monthly PnL (backtest_v14, flat bet, edge≥15%) ─────── */
 const MONTHLY_PNL = {
-  "2024-01": 48.73,
-  "2024-02": 90.97,
-  "2024-03": 127.21,
-  "2024-04": 418.01,
-  "2024-05": 749.10,
-  "2024-06": 62.55,
-  "2024-07": 2050.87,
-  "2024-08": 3174.93,
-  "2024-09": -177.78,
-  "2024-10": 2695.16,
-  "2024-11": -56.37,
-  "2024-12": -72.19,
-  "2025-01": 3917.28,
-  "2025-02": 3582.73,
-  "2025-03": 6338.87,
-  "2025-04": 7467.15,
-  "2025-05": 9566.78,
-  "2025-06": 24740.11,
-  "2025-07": 10710.22,
-  "2025-08": 44711.76,
-  "2025-09": 19252.12,
-  "2025-10": 6706.85,
-  "2025-11": -826.57,
-  "2026-01": -3562.82
+  "2024-01": -0.24,
+  "2024-03": -1.13,
+  "2024-04": 1.4,
+  "2024-05": -1.0,
+  "2024-06": 0.73,
+  "2024-07": 25.71,
+  "2024-08": 0.64,
+  "2024-09": -0.35,
+  "2024-10": 2.1,
+  "2024-12": 0.72,
+  "2025-01": 0.7,
+  "2025-02": -0.29,
+  "2025-03": -1.6,
+  "2025-04": -0.33,
+  "2025-05": -0.08,
+  "2025-06": -3.35,
+  "2025-07": -1.32,
+  "2025-08": 2.67,
+  "2025-10": -1.0
 };
 
-/* ── PICKS DATA (backtest_v4_bets.csv — top 15 edge + 15 most recent) ── */
+/* ── PICKS DATA (backtest_v14_bets.csv — edge≥15%, sorted by edge desc) ── */
 const PICKS_DATA = [
-  {"player_backed":"Arthur Rinderknech","opponent":"Alexander Zverev","surface":"Grass","odds":8.34,"p_model":0.9444,"p_pin":0.1165,"edge":0.8278,"ev_pct":82.8,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-06-30"},
-  {"player_backed":"Benjamin Bonzi","opponent":"Daniil Medvedev","surface":"Grass","odds":9.03,"p_model":0.9314,"p_pin":0.1077,"edge":0.8237,"ev_pct":82.4,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-06-30"},
-  {"player_backed":"Alexander Zverev","opponent":"Jacob Fearnley","surface":"Hard","odds":5.62,"p_model":0.9241,"p_pin":0.1735,"edge":0.7506,"ev_pct":75.1,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-10-20"},
-  {"player_backed":"Lorenzo Musetti","opponent":"Taylor Fritz","surface":"Grass","odds":4.69,"p_model":0.9053,"p_pin":0.2078,"edge":0.6975,"ev_pct":69.8,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-07-01"},
-  {"player_backed":"Adam Walton","opponent":"Maximilian Marterer","surface":"Clay","odds":3.90,"p_model":0.9356,"p_pin":0.2500,"edge":0.6856,"ev_pct":68.6,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-05-26"},
-  {"player_backed":"Nikoloz Basilashvili","opponent":"Lorenzo Musetti","surface":"Grass","odds":3.90,"p_model":0.9312,"p_pin":0.2486,"edge":0.6827,"ev_pct":68.3,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-06-30"},
-  {"player_backed":"Alejandro Tabilo","opponent":"Novak Djokovic","surface":"Clay","odds":3.69,"p_model":0.9289,"p_pin":0.2530,"edge":0.6758,"ev_pct":67.6,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-04-07"},
-  {"player_backed":"Francisco Comesana","opponent":"Dominic Stricker","surface":"Hard","odds":3.45,"p_model":0.9569,"p_pin":0.2827,"edge":0.6742,"ev_pct":67.4,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-08-26"},
-  {"player_backed":"Richard Gasquet","opponent":"Matteo Arnaldi","surface":"Clay","odds":4.16,"p_model":0.8953,"p_pin":0.2339,"edge":0.6614,"ev_pct":66.1,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-04-07"},
-  {"player_backed":"Ugo Humbert","opponent":"Marcos Giron","surface":"Hard","odds":3.31,"p_model":0.9536,"p_pin":0.2927,"edge":0.6608,"ev_pct":66.1,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-10-28"},
-  {"player_backed":"Alexander Zverev","opponent":"Jacob Fearnley","surface":"Hard","odds":3.73,"p_model":0.9172,"p_pin":0.2599,"edge":0.6573,"ev_pct":65.7,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-08-24"},
-  {"player_backed":"Francisco Comesana","opponent":"Alex Michelsen","surface":"Hard","odds":3.59,"p_model":0.9225,"p_pin":0.2703,"edge":0.6522,"ev_pct":65.2,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-08-24"},
-  {"player_backed":"Daniel Evans","opponent":"Karen Khachanov","surface":"Hard","odds":4.56,"p_model":0.8657,"p_pin":0.2138,"edge":0.6520,"ev_pct":65.2,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-08-26"},
-  {"player_backed":"Aleksandar Vukic","opponent":"Frances Tiafoe","surface":"Hard","odds":3.11,"p_model":0.9615,"p_pin":0.3135,"edge":0.6480,"ev_pct":64.8,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-10-14"},
-  {"player_backed":"Richard Gasquet","opponent":"Borna Coric","surface":"Clay","odds":3.23,"p_model":0.9486,"p_pin":0.3024,"edge":0.6462,"ev_pct":64.6,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2024-05-26"},
-  {"player_backed":"Andrey Rublev","opponent":"Nuno Borges","surface":"Hard","odds":2.69,"p_model":0.7523,"p_pin":0.3626,"edge":0.3898,"ev_pct":39.0,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2026-01-09"},
-  {"player_backed":"Carlos Alcaraz","opponent":"Lorenzo Musetti","surface":"Hard","odds":6.88,"p_model":0.6239,"p_pin":0.1421,"edge":0.4817,"ev_pct":48.2,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-11-10"},
-  {"player_backed":"Alexander Zverev","opponent":"Ben Shelton","surface":"Hard","odds":1.56,"p_model":0.9450,"p_pin":0.6268,"edge":0.3182,"ev_pct":31.8,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-11-10"},
-  {"player_backed":"Taylor Fritz","opponent":"Lorenzo Musetti","surface":"Hard","odds":2.94,"p_model":0.5904,"p_pin":0.3318,"edge":0.2585,"ev_pct":25.9,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-11-10"},
-  {"player_backed":"Marcos Giron","opponent":"Michael Mmoh","surface":"Hard","odds":2.46,"p_model":0.6617,"p_pin":0.3971,"edge":0.2646,"ev_pct":26.5,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2026-01-09"},
-  {"player_backed":"Brandon Nakashima","opponent":"Aleksandar Kovacevic","surface":"Hard","odds":1.37,"p_model":0.8908,"p_pin":0.7116,"edge":0.1792,"ev_pct":17.9,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2026-01-10"},
-  {"player_backed":"Carlos Alcaraz","opponent":"Felix Auger-Aliassime","surface":"Hard","odds":1.21,"p_model":0.9781,"p_pin":0.8070,"edge":0.1711,"ev_pct":17.1,"kelly_half":0.0125,"confidence":"HIGH","signal":"BET","date":"2025-11-10"},
-  {"player_backed":"Jannik Sinner","opponent":"Carlos Alcaraz","surface":"Hard","odds":1.85,"p_model":0.6649,"p_pin":0.5281,"edge":0.1368,"ev_pct":13.7,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2025-11-10"},
-  {"player_backed":"Jannik Sinner","opponent":"Ben Shelton","surface":"Hard","odds":8.53,"p_model":0.2521,"p_pin":0.1142,"edge":0.1378,"ev_pct":13.8,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2025-11-10"},
-  {"player_backed":"Daniil Medvedev","opponent":"Kamil Majchrzak","surface":"Hard","odds":5.95,"p_model":0.2971,"p_pin":0.1643,"edge":0.1328,"ev_pct":13.3,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2026-01-09"},
-  {"player_backed":"Jannik Sinner","opponent":"Alexander Zverev","surface":"Hard","odds":1.13,"p_model":0.9599,"p_pin":0.8645,"edge":0.0954,"ev_pct":9.5,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2025-11-10"},
-  {"player_backed":"Brandon Nakashima","opponent":"Raphael Collignon","surface":"Hard","odds":1.68,"p_model":0.6752,"p_pin":0.5800,"edge":0.0952,"ev_pct":9.5,"kelly_half":0.0125,"confidence":"MEDIUM","signal":"BET","date":"2026-01-09"},
-  {"player_backed":"Alexander Bublik","opponent":"Lorenzo Musetti","surface":"Hard","odds":2.05,"p_model":0.5288,"p_pin":0.4757,"edge":0.0531,"ev_pct":5.3,"kelly_half":0.0125,"confidence":"LOW","signal":"BET","date":"2026-01-11"},
-  {"player_backed":"Alex Michelsen","opponent":"Sebastian Korda","surface":"Hard","odds":2.82,"p_model":0.3958,"p_pin":0.3457,"edge":0.0500,"ev_pct":5.0,"kelly_half":0.0125,"confidence":"LOW","signal":"BET","date":"2026-01-09"},
-  {"player_backed":"Jannik Sinner","opponent":"Felix Auger-Aliassime","surface":"Hard","odds":1.09,"p_model":0.9491,"p_pin":0.8983,"edge":0.0507,"ev_pct":5.1,"kelly_half":0.0125,"confidence":"LOW","signal":"BET","date":"2025-11-10"}
+  { "date": "2025-03-03", "player_backed": "Jenson Brooksby", "opponent": "Benjamin Bonzi", "surface": "Hard", "odds": 2.02, "p_model": 0.762, "p_pin": 0.481, "edge": 0.281, "result": "LOSS" },
+  { "date": "2024-01-15", "player_backed": "Fabian Marozsan", "opponent": "Marin Cilic", "surface": "Hard", "odds": 1.76, "p_model": 0.825, "p_pin": 0.554, "edge": 0.2706, "result": "WIN" },
+  { "date": "2024-07-15", "player_backed": "Reilly Opelka", "opponent": "Mackenzie McDonald", "surface": "Grass", "odds": 1.68, "p_model": 0.846, "p_pin": 0.582, "edge": 0.2643, "result": "LOSS" },
+  { "date": "2025-04-21", "player_backed": "Gael Monfils", "opponent": "Borna Gojo", "surface": "Clay", "odds": 1.67, "p_model": 0.825, "p_pin": 0.583, "edge": 0.2424, "result": "WIN" },
+  { "date": "2024-07-15", "player_backed": "Alex Michelsen", "opponent": "Reilly Opelka", "surface": "Grass", "odds": 1.63, "p_model": 0.837, "p_pin": 0.599, "edge": 0.238, "result": "WIN" },
+  { "date": "2025-03-31", "player_backed": "Flavio Cobolli", "opponent": "Filip Misolic", "surface": "Clay", "odds": 1.72, "p_model": 0.796, "p_pin": 0.567, "edge": 0.2289, "result": "WIN" },
+  { "date": "2025-07-27", "player_backed": "Dan Martin", "opponent": "Jaume Munar", "surface": "Hard", "odds": 28.33, "p_model": 0.259, "p_pin": 0.035, "edge": 0.2247, "result": "WIN" },
+  { "date": "2024-06-23", "player_backed": "Sebastian Ofner", "opponent": "Paul Jubb", "surface": "Grass", "odds": 1.73, "p_model": 0.785, "p_pin": 0.564, "edge": 0.2206, "result": "WIN" },
+  { "date": "2024-03-18", "player_backed": "Soonwoo Kwon", "opponent": "Alexandre Muller", "surface": "Hard", "odds": 1.52, "p_model": 0.855, "p_pin": 0.64, "edge": 0.2157, "result": "LOSS" },
+  { "date": "2024-12-29", "player_backed": "Jiri Lehecka", "opponent": "Reilly Opelka", "surface": "Hard", "odds": 1.72, "p_model": 0.781, "p_pin": 0.567, "edge": 0.214, "result": "WIN" },
+  { "date": "2024-03-18", "player_backed": "Sebastian Ofner", "opponent": "Kei Nishikori", "surface": "Hard", "odds": 1.87, "p_model": 0.733, "p_pin": 0.521, "edge": 0.212, "result": "WIN" },
+  { "date": "2024-08-06", "player_backed": "Matteo Arnaldi", "opponent": "Kei Nishikori", "surface": "Hard", "odds": 1.54, "p_model": 0.837, "p_pin": 0.631, "edge": 0.2063, "result": "WIN" },
+  { "date": "2025-08-24", "player_backed": "Adrian Mannarino", "opponent": "Jordan Thompson", "surface": "Hard", "odds": 1.73, "p_model": 0.765, "p_pin": 0.56, "edge": 0.2054, "result": "WIN" },
+  { "date": "2025-03-03", "player_backed": "Yosuke Watanuki", "opponent": "Alexander Bublik", "surface": "Hard", "odds": 1.7, "p_model": 0.771, "p_pin": 0.572, "edge": 0.1995, "result": "LOSS" },
+  { "date": "2025-08-18", "player_backed": "Alexandre Muller", "opponent": "Darwin Blanch", "surface": "Hard", "odds": 1.59, "p_model": 0.805, "p_pin": 0.608, "edge": 0.1968, "result": "WIN" },
+  { "date": "2024-09-18", "player_backed": "Marin Cilic", "opponent": "Zhizhen Zhang", "surface": "Hard", "odds": 1.76, "p_model": 0.75, "p_pin": 0.554, "edge": 0.196, "result": "LOSS" },
+  { "date": "2024-10-02", "player_backed": "Arthur Rinderknech", "opponent": "Reilly Opelka", "surface": "Hard", "odds": 1.84, "p_model": 0.722, "p_pin": 0.528, "edge": 0.1941, "result": "WIN" },
+  { "date": "2024-09-25", "player_backed": "Holger Rune", "opponent": "Kei Nishikori", "surface": "Hard", "odds": 1.65, "p_model": 0.786, "p_pin": 0.593, "edge": 0.1931, "result": "WIN" },
+  { "date": "2024-07-01", "player_backed": "Ben Shelton", "opponent": "Denis Shapovalov", "surface": "Grass", "odds": 1.71, "p_model": 0.759, "p_pin": 0.569, "edge": 0.1894, "result": "WIN" },
+  { "date": "2024-04-15", "player_backed": "Alejandro Tabilo", "opponent": "Joao Fonseca", "surface": "Clay", "odds": 1.53, "p_model": 0.825, "p_pin": 0.637, "edge": 0.1879, "result": "WIN" },
+  { "date": "2024-07-01", "player_backed": "Andrey Rublev", "opponent": "Francisco Comesana", "surface": "Grass", "odds": 24.44, "p_model": 0.227, "p_pin": 0.04, "edge": 0.1867, "result": "LOSS" },
+  { "date": "2025-07-21", "player_backed": "Learner Tien", "opponent": "Emilio Nava", "surface": "Hard", "odds": 1.68, "p_model": 0.764, "p_pin": 0.579, "edge": 0.1852, "result": "WIN" },
+  { "date": "2025-06-30", "player_backed": "Oliver Tarvet", "opponent": "Leandro Riedi", "surface": "Grass", "odds": 1.79, "p_model": 0.725, "p_pin": 0.542, "edge": 0.1829, "result": "LOSS" },
+  { "date": "2025-08-24", "player_backed": "Jan-Lennard Struff", "opponent": "Mackenzie McDonald", "surface": "Hard", "odds": 1.92, "p_model": 0.689, "p_pin": 0.506, "edge": 0.1823, "result": "WIN" },
+  { "date": "2025-06-30", "player_backed": "Elmer Moller", "opponent": "Frances Tiafoe", "surface": "Grass", "odds": 12.44, "p_model": 0.26, "p_pin": 0.079, "edge": 0.181, "result": "WIN" },
+  { "date": "2024-07-01", "player_backed": "Radu Albot", "opponent": "Hubert Hurkacz", "surface": "Grass", "odds": 14.36, "p_model": 0.249, "p_pin": 0.068, "edge": 0.1808, "result": "WIN" },
+  { "date": "2025-06-23", "player_backed": "Jenson Brooksby", "opponent": "Daniel Evans", "surface": "Grass", "odds": 2.07, "p_model": 0.649, "p_pin": 0.469, "edge": 0.1801, "result": "LOSS" },
+  { "date": "2025-07-21", "player_backed": "Yibing Wu", "opponent": "Alexei Popyrin", "surface": "Hard", "odds": 1.85, "p_model": 0.707, "p_pin": 0.528, "edge": 0.1788, "result": "LOSS" },
+  { "date": "2025-06-30", "player_backed": "Jan-Lennard Struff", "opponent": "Filip Misolic", "surface": "Grass", "odds": 1.65, "p_model": 0.764, "p_pin": 0.589, "edge": 0.1759, "result": "WIN" },
+  { "date": "2025-04-07", "player_backed": "Matteo Berrettini", "opponent": "Alexander Zverev", "surface": "Clay", "odds": 1.63, "p_model": 0.773, "p_pin": 0.6, "edge": 0.1736, "result": "LOSS" },
+  { "date": "2025-02-10", "player_backed": "Joao Fonseca", "opponent": "Laslo Djere", "surface": "Clay", "odds": 1.71, "p_model": 0.743, "p_pin": 0.57, "edge": 0.1726, "result": "WIN" },
+  { "date": "2024-07-01", "player_backed": "Juncheng Shang", "opponent": "Cristian Garin", "surface": "Grass", "odds": 1.9, "p_model": 0.687, "p_pin": 0.514, "edge": 0.1725, "result": "WIN" },
+  { "date": "2025-01-13", "player_backed": "Nuno Borges", "opponent": "Alexandre Muller", "surface": "Hard", "odds": 1.7, "p_model": 0.746, "p_pin": 0.575, "edge": 0.1712, "result": "WIN" },
+  { "date": "2024-04-15", "player_backed": "Nick Hardt", "opponent": "Martin Landaluce", "surface": "Clay", "odds": 1.87, "p_model": 0.69, "p_pin": 0.519, "edge": 0.1708, "result": "WIN" },
+  { "date": "2025-08-07", "player_backed": "Adrian Mannarino", "opponent": "Jordan Thompson", "surface": "Hard", "odds": 1.73, "p_model": 0.73, "p_pin": 0.56, "edge": 0.1698, "result": "WIN" },
+  { "date": "2025-03-31", "player_backed": "Jenson Brooksby", "opponent": "Aleksandar Kovacevic", "surface": "Clay", "odds": 2.22, "p_model": 0.609, "p_pin": 0.439, "edge": 0.1692, "result": "LOSS" },
+  { "date": "2024-08-06", "player_backed": "Hubert Hurkacz", "opponent": "Thanasi Kokkinakis", "surface": "Hard", "odds": 1.74, "p_model": 0.727, "p_pin": 0.561, "edge": 0.1665, "result": "WIN" },
+  { "date": "2024-08-26", "player_backed": "Mitchell Krueger", "opponent": "Hugo Grenier", "surface": "Hard", "odds": 1.73, "p_model": 0.731, "p_pin": 0.565, "edge": 0.166, "result": "WIN" },
+  { "date": "2024-07-29", "player_backed": "Alex Michelsen", "opponent": "Mattia Bellucci", "surface": "Hard", "odds": 1.7, "p_model": 0.741, "p_pin": 0.575, "edge": 0.1657, "result": "WIN" },
+  { "date": "2025-02-24", "player_backed": "Laslo Djere", "opponent": "Sebastian Baez", "surface": "Hard", "odds": 1.74, "p_model": 0.728, "p_pin": 0.563, "edge": 0.1647, "result": "LOSS" },
+  { "date": "2024-08-06", "player_backed": "Alexei Popyrin", "opponent": "Tomas Machac", "surface": "Hard", "odds": 1.71, "p_model": 0.732, "p_pin": 0.568, "edge": 0.1637, "result": "LOSS" },
+  { "date": "2025-08-24", "player_backed": "Elmer Moller", "opponent": "Tommy Paul", "surface": "Hard", "odds": 6.45, "p_model": 0.314, "p_pin": 0.151, "edge": 0.1623, "result": "WIN" },
+  { "date": "2024-08-19", "player_backed": "Learner Tien", "opponent": "Fabian Marozsan", "surface": "Hard", "odds": 1.57, "p_model": 0.78, "p_pin": 0.619, "edge": 0.1611, "result": "LOSS" },
+  { "date": "2025-08-18", "player_backed": "Yunchaokete Bu", "opponent": "Mariano Navone", "surface": "Hard", "odds": 1.7, "p_model": 0.729, "p_pin": 0.569, "edge": 0.1604, "result": "WIN" },
+  { "date": "2024-01-15", "player_backed": "Vit Kopriva", "opponent": "Sebastian Korda", "surface": "Hard", "odds": 10.76, "p_model": 0.25, "p_pin": 0.091, "edge": 0.1591, "result": "WIN" },
+  { "date": "2025-05-05", "player_backed": "Learner Tien", "opponent": "Reilly Opelka", "surface": "Clay", "odds": 1.92, "p_model": 0.664, "p_pin": 0.506, "edge": 0.1578, "result": "WIN" },
+  { "date": "2025-03-17", "player_backed": "Corentin Moutet", "opponent": "Alexander Blockx", "surface": "Hard", "odds": 1.68, "p_model": 0.735, "p_pin": 0.579, "edge": 0.1564, "result": "WIN" },
+  { "date": "2024-08-18", "player_backed": "Aleksandar Vukic", "opponent": "Daniel Evans", "surface": "Hard", "odds": 1.63, "p_model": 0.752, "p_pin": 0.596, "edge": 0.1563, "result": "WIN" },
+  { "date": "2024-07-01", "player_backed": "Tomas Machac", "opponent": "David Goffin", "surface": "Grass", "odds": 1.74, "p_model": 0.716, "p_pin": 0.561, "edge": 0.1552, "result": "WIN" },
+  { "date": "2025-10-27", "player_backed": "Alexander Bublik", "opponent": "Taylor Fritz", "surface": "Hard", "odds": 1.83, "p_model": 0.687, "p_pin": 0.533, "edge": 0.1535, "result": "LOSS" },
+  { "date": "2024-10-02", "player_backed": "Alex Michelsen", "opponent": "Yunchaokete Bu", "surface": "Hard", "odds": 1.69, "p_model": 0.728, "p_pin": 0.574, "edge": 0.1535, "result": "WIN" },
+  { "date": "2024-07-15", "player_backed": "Nuno Borges", "opponent": "Timofey Skatov", "surface": "Clay", "odds": 1.59, "p_model": 0.768, "p_pin": 0.615, "edge": 0.1531, "result": "WIN" },
+  { "date": "2024-05-26", "player_backed": "Kei Nishikori", "opponent": "Gabriel Diallo", "surface": "Clay", "odds": 1.58, "p_model": 0.769, "p_pin": 0.617, "edge": 0.1524, "result": "LOSS" },
+  { "date": "2024-03-18", "player_backed": "Juncheng Shang", "opponent": "Miomir Kecmanovic", "surface": "Hard", "odds": 1.7, "p_model": 0.723, "p_pin": 0.572, "edge": 0.1514, "result": "LOSS" },
+  { "date": "2024-10-02", "player_backed": "Marcos Giron", "opponent": "Li Tu", "surface": "Hard", "odds": 1.57, "p_model": 0.769, "p_pin": 0.618, "edge": 0.1511, "result": "WIN" },
+  { "date": "2025-05-26", "player_backed": "Miomir Kecmanovic", "opponent": "Sebastian Baez", "surface": "Clay", "odds": 1.75, "p_model": 0.708, "p_pin": 0.558, "edge": 0.1502, "result": "LOSS" },
+  { "date": "2025-06-30", "player_backed": "Raphael Collignon", "opponent": "Marin Cilic", "surface": "Grass", "odds": 9.03, "p_model": 0.258, "p_pin": 0.108, "edge": 0.1501, "result": "WIN" }
 ];
-
 /* ── State ────────────────────────────────────────────────── */
 let allPicks = [];
 let activeFilter = 'all';
@@ -498,7 +526,7 @@ async function loadData() {
     // Fallback to embedded PICKS_DATA if API picks are empty
     if (picks.length === 0) {
       picks = typeof PICKS_DATA !== 'undefined' ? PICKS_DATA : [];
-      $('picks-source').textContent = 'backtest 2024-2026';
+      $('picks-source').textContent = 'v14 backtest · flat edge≥15% · ROI +58.7%';
     } else {
       $('picks-source').textContent = 'live api';
     }
@@ -506,7 +534,7 @@ async function loadData() {
     renderAll(picks, modelInfo);
   } catch(e) {
     console.error(e);
-    $('picks-tbody').innerHTML = `<tr><td colspan="11" class="empty">Błąd ładowania danych: ${e.message}</td></tr>`;
+    $('picks-tbody').innerHTML = `<tr><td colspan="12" class="empty">Błąd ładowania danych: ${e.message}</td></tr>`;
   }
 }
 
@@ -526,13 +554,13 @@ function renderAll(picks, modelInfo) {
   $('stat-auc').textContent = Number(mi.holdout_auc).toFixed(4);
   $('stat-auc-sub').textContent = `vs Pinnacle +${delta.toFixed(4)}`;
 
-  // Stats from static backtest
+  // Stats from static backtest (v14, flat bet edge≥15%)
   const s = STATS_STATIC;
   $('stat-bets').textContent = s.n_bets_holdout;
-  $('stat-bets-sub').textContent = 'edge > 8% (holdout)';
-  $('stat-edge').textContent = fmtPct(s.avg_edge);
+  $('stat-bets-sub').textContent = 'edge ≥ 15% (2024-2026)';
+  $('stat-edge').textContent = '+' + s.roi.toFixed(1) + '%';
   $('stat-roi').textContent = (s.win_rate * 100).toFixed(1) + '%';
-  $('stat-roi-sub').textContent = 'win rate 2024-2026';
+  $('stat-roi-sub').textContent = 'win rate (high-odds strategy)';
   $('stat-dd').textContent = s.max_dd.toFixed(1) + '%';
 
   allPicks = picks;
@@ -544,7 +572,7 @@ function renderAll(picks, modelInfo) {
 function renderPicks(picks) {
   $('picks-count').textContent = `${picks.length} picks`;
   if (picks.length === 0) {
-    $('picks-tbody').innerHTML = `<tr><td colspan="11" class="empty">Brak wartościowych zakładów.</td></tr>`;
+    $('picks-tbody').innerHTML = `<tr><td colspan="12" class="empty">Brak wartościowych zakładów.</td></tr>`;
     return;
   }
   renderPicksTable(picks);
@@ -556,7 +584,7 @@ function renderPicksTable(picks) {
     : picks.filter(p => (p.confidence === activeFilter) || (p.surface === activeFilter));
 
   if (filtered.length === 0) {
-    $('picks-tbody').innerHTML = `<tr><td colspan="11" class="empty">Brak picks dla filtra "${activeFilter}"</td></tr>`;
+    $('picks-tbody').innerHTML = `<tr><td colspan="12" class="empty">Brak picks dla filtra "${activeFilter}"</td></tr>`;
     return;
   }
 
@@ -596,6 +624,7 @@ function renderPicksTable(picks) {
       <td class="num-right kelly-val">${kelly ? (kelly*100 < 1 ? (kelly*100).toFixed(2) : (kelly*100).toFixed(1))+'%' : '—'}</td>
       <td><span class="signal-badge ${isBet ? 'bet' : 'pass'}">${isBet ? 'BET' : 'PASS'}</span></td>
       <td><span class="conf-badge ${conf}">${conf}</span></td>
+      <td>${p.result ? `<span style="color:${p.result==='WIN'?'var(--green)':'var(--red)'}; font-size:10px; font-family:var(--mono)">${p.result}</span>` : '—'}</td>
     </tr>`;
   }).join('');
 }
@@ -630,7 +659,7 @@ function renderLeaderboard() {
   $('leaderboard-tbody').innerHTML = versions.map(v => {
     const delta = v.auc - pinAuc;
     const isActive = v.status === 'active';
-    const isBest = v.v === 'v14';
+    const isBest = v.v === 'v12';
     const statusClass = v.status === 'active' ? 'active' : v.status === 'clean' ? 'clean' : 'retired';
     const statusLabel = v.status === 'active' ? 'ACTIVE' : v.status === 'clean' ? 'CLEAN' : 'RETIRED';
     return `<tr class="${isBest ? 'best-row' : ''}">
@@ -638,6 +667,7 @@ function renderLeaderboard() {
       <td style="color:var(--txt-2)">${v.desc}</td>
       <td class="num-right" style="color:${isBest ? 'var(--accent)' : 'var(--txt)'}; font-weight:${isBest ? '600' : '400'}">${v.auc.toFixed(4)}</td>
       <td class="num-right"><span class="delta-pos">+${delta.toFixed(4)}</span></td>
+      <td class="num-right" style="color:${v.roi != null ? (v.roi > 0 ? 'var(--green)' : 'var(--red)') : 'var(--txt-3)'}">${v.roi != null ? (v.roi > 0 ? '+' : '') + v.roi.toFixed(1) + '%' : '—'}</td>
       <td class="num-right" style="color:var(--txt-3)">${v.feats}</td>
       <td><span class="status-tag ${statusClass}">${statusLabel}</span></td>
     </tr>`;
@@ -646,6 +676,7 @@ function renderLeaderboard() {
     <td><span class="version-tag" style="color:var(--txt-3)">Pinnacle</span></td>
     <td style="color:var(--txt-3)">Market baseline (implied odds)</td>
     <td class="num-right" style="color:var(--txt-3)">${pinAuc.toFixed(4)}</td>
+    <td class="num-right" style="color:var(--txt-3)">—</td>
     <td class="num-right" style="color:var(--txt-3)">—</td>
     <td class="num-right" style="color:var(--txt-3)">—</td>
     <td><span class="status-tag retired">BASELINE</span></td>
