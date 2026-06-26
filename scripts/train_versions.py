@@ -501,21 +501,23 @@ BASE_PAIRS = [
 
 def fix_base_pairs(df):
     """Popraw BASE_PAIRS dla faktycznych kolumn.
-    WAŻNE: b365/max/avg prob muszą być ASYMETRYCZNE (winner vs loser),
+    WAŻNE: wszystkie prob/odds muszą być ASYMETRYCZNE (winner vs loser),
     nie shared — inaczej model widzi P(winner wins) niezależnie od AB flipu.
-    Budujemy kolumny _l = 1 - _w jeśli brak _l w danych.
     """
-    # Zbuduj _l kolumny z 1 - _w (prob loser wins = 1 - prob winner wins)
-    for col_w, col_l in [
-        ("b365_prob_w", "b365_prob_l"),
-        ("max_prob_w",  "max_prob_l"),
-        ("avg_prob_w",  "avg_prob_l"),
-        ("odds_consensus_w", "odds_consensus_l"),
-        ("pin_log_odds", "pin_log_odds_l"),
-        ("b365_log_odds", "b365_log_odds_l"),
+    # Zbuduj _l kolumny
+    for col_w, col_l, transform in [
+        ("b365_prob_w",      "b365_prob_l",      lambda x: 1.0 - x),
+        ("max_prob_w",       "max_prob_l",        lambda x: 1.0 - x),
+        ("avg_prob_w",       "avg_prob_l",        lambda x: 1.0 - x),
+        # odds_consensus = MaxW/PSW — dla losera to MaxL/PSL, ale nie mamy MaxL
+        # Zamiast tego: użyj odwrotności (1/x) jako proxy dla losera side
+        ("odds_consensus_w", "odds_consensus_l",  lambda x: 1.0 / x.replace(0, np.nan)),
+        # pin_log_odds = log(PSW/PSL) → dla losera = -log(PSW/PSL)
+        ("pin_log_odds",     "pin_log_odds_l",    lambda x: -x),
+        ("b365_log_odds",    "b365_log_odds_l",   lambda x: -x),
     ]:
         if col_w in df.columns and col_l not in df.columns:
-            df[col_l] = 1.0 - df[col_w]
+            df[col_l] = transform(df[col_w])
 
     pairs = [
         ("pin_prob_w",        "pin_prob_l"),
@@ -1304,7 +1306,12 @@ if __name__ == "__main__":
         fn = VERSION_MAP.get(v)
         if not fn: log(f"  Nieznana wersja {v} — skip"); continue
         try:
-            meta, model, feats = fn(df.copy())
+            result = fn(df.copy())
+            # v20 zwraca (meta, surf_dict, fc) — obsługa obu kształtów
+            if isinstance(result, tuple) and len(result) == 3:
+                meta, model, feats = result
+            else:
+                meta, model, feats = result, None, None
             if meta: all_results.append(meta)
         except Exception as e:
             import traceback

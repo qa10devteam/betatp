@@ -1,0 +1,20 @@
+{
+  "version": "v20",
+  "mean_holdout_auc": 0.8689,
+  "by_surface": {
+    "Hard": [
+      0.8736,
+      0.1437
+    ],
+    "Clay": [
+      0.8697,
+      0.144
+    ],
+    "Grass": [
+      0.8633,
+      0.234
+    ]
+  },
+  "hypothesis": "surface-specific LightGBM (Hard/Clay/Grass)",
+  "trained_at": "20260626_1106"
+}
