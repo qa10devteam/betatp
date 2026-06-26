@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>betatp.io — ATP Value Picks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & Tokens ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0a0a0b;
+      --bg-1:       #111113;
+      --bg-2:       #18181b;
+      --bg-3:       #1e1e23;
+      --border:     #27272a;
+      --border-2:   #3f3f46;
+      --txt:        #fafafa;
+      --txt-2:      #a1a1aa;
+      --txt-3:      #71717a;
+      --accent:     #22d3ee;   /* cyan */
+      --accent-2:   #0ea5e9;
+      --green:      #4ade80;
+      --red:        #f87171;
+      --yellow:     #fbbf24;
+      --orange:     #fb923c;
+      --radius:     6px;
+      --radius-lg:  10px;
+      --mono:       'Geist Mono', 'JetBrains Mono', monospace;
+      --sans:       'Geist', system-ui, sans-serif;
+    }
+
+    html { font-family: var(--sans); background: var(--bg); color: var(--txt); font-size: 14px; }
+    body { min-height: 100dvh; }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .app { display: grid; grid-template-rows: 48px 1fr; min-height: 100dvh; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; border-bottom: 1px solid var(--border);
+      background: var(--bg-1); position: sticky; top: 0; z-index: 10;
+    }
+    .nav-logo { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--txt); letter-spacing: 0.05em; }
+    .nav-logo span { color: var(--accent); }
+    .nav-meta { font-family: var(--mono); font-size: 11px; color: var(--txt-3); }
+    .nav-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--txt-3); font-family: var(--mono); }
+    .dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    main { padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; max-width: 1400px; width: 100%; margin: 0 auto; }
+
+    /* ── Stat cards row ─────────────────────────────────────────── */
+    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    @media (max-width: 900px) { .stats-row { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 540px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .stat-card {
+      background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-label { font-family: var(--mono); font-size: 10px; color: var(--txt-3); letter-spacing: 0.06em; text-transform: uppercase; }
+    .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--txt); line-height: 1; }
+    .stat-value.green { color: var(--green); }
+    .stat-value.red { color: var(--red); }
+    .stat-value.cyan { color: var(--accent); }
+    .stat-sub { font-family: var(--mono); font-size: 10px; color: var(--txt-3); }
+
+    /* ── Section header ─────────────────────────────────────────── */
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .section-title { font-family: var(--mono); font-size: 11px; color: var(--txt-3); text-transform: uppercase; letter-spacing: 0.08em; }
+    .section-badge {
+      font-family: var(--mono); font-size: 10px; padding: 2px 7px;
+      border-radius: 99px; border: 1px solid var(--border-2); color: var(--txt-2);
+    }
+    .section-badge.green { border-color: color-mix(in srgb, var(--green) 40%, transparent); color: var(--green); }
+
+    /* ── Picks table ─────────────────────────────────────────────── */
+    .picks-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .picks-filters { display: flex; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .filter-btn {
+      font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 99px;
+      border: 1px solid var(--border-2); background: transparent; color: var(--txt-2); cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+
+    .picks-table { width: 100%; border-collapse: collapse; }
+    .picks-table th {
+      font-family: var(--mono); font-size: 10px; color: var(--txt-3);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .picks-table th.right { text-align: right; }
+    .picks-table td { padding: 10px 12px; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); font-family: var(--mono); font-size: 12px; }
+    .picks-table tr:last-child td { border-bottom: none; }
+    .picks-table tr:hover td { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+
+    .player-name { font-weight: 500; color: var(--txt); }
+    .player-vs   { color: var(--txt-3); font-size: 10px; }
+    .surface-pill {
+      display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 3px;
+      font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .surface-pill.Hard  { background: color-mix(in srgb, var(--accent-2) 15%, transparent); color: var(--accent-2); border: 1px solid color-mix(in srgb, var(--accent-2) 30%, transparent); }
+    .surface-pill.Clay  { background: color-mix(in srgb, var(--orange) 15%, transparent); color: var(--orange); border: 1px solid color-mix(in srgb, var(--orange) 30%, transparent); }
+    .surface-pill.Grass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+
+    .num-right { text-align: right; }
+    .edge-bar-wrap { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+    .edge-bar { height: 3px; border-radius: 2px; background: var(--border-2); width: 48px; overflow: hidden; }
+    .edge-bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width .3s; }
+    .edge-bar-fill.yellow { background: var(--yellow); }
+    .edge-bar-fill.orange { background: var(--orange); }
+
+    .conf-badge {
+      font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .conf-badge.HIGH   { background: color-mix(in srgb, var(--green)  15%, transparent); color: var(--green);  border: 1px solid color-mix(in srgb, var(--green)  30%, transparent); }
+    .conf-badge.MEDIUM { background: color-mix(in srgb, var(--yellow) 15%, transparent); color: var(--yellow); border: 1px solid color-mix(in srgb, var(--yellow) 30%, transparent); }
+    .conf-badge.LOW    { background: color-mix(in srgb, var(--txt-3)  15%, transparent); color: var(--txt-3);  border: 1px solid color-mix(in srgb, var(--txt-3)  30%, transparent); }
+
+    .signal-badge {
+      font-family: var(--mono); font-size: 9px; padding: 2px 7px; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .signal-badge.bet  { background: color-mix(in srgb, var(--green)  15%, transparent); color: var(--green);  border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+    .signal-badge.pass { background: transparent; color: var(--txt-3); border: 1px solid var(--border); }
+
+    .kelly-val { color: var(--accent); font-weight: 500; }
+    .prob-val  { color: var(--txt-2); }
+
+    /* ── Bottom grid ────────────────────────────────────────────── */
+    .bottom-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+    @media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+    /* ── Monthly PnL chart ──────────────────────────────────────── */
+    .pnl-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; }
+    .pnl-bars { display: flex; align-items: flex-end; gap: 4px; height: 80px; padding-top: 4px; }
+    .pnl-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .pnl-bar-pos { background: color-mix(in srgb, var(--green) 60%, transparent); border-radius: 2px 2px 0 0; transition: height .4s; min-height: 1px; }
+    .pnl-bar-neg { background: color-mix(in srgb, var(--red)   60%, transparent); border-radius: 0 0 2px 2px; transition: height .4s; min-height: 1px; }
+    .pnl-bar-label { font-family: var(--mono); font-size: 8px; color: var(--txt-3); white-space: nowrap; }
+
+    /* ── Model info panel ───────────────────────────────────────── */
+    .model-panel { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .model-kv { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+    .model-kv:last-child { border-bottom: none; }
+    .model-kv-key { font-family: var(--mono); font-size: 10px; color: var(--txt-3); }
+    .model-kv-val { font-family: var(--mono); font-size: 12px; color: var(--txt); font-weight: 500; }
+    .model-kv-val.green { color: var(--green); }
+    .model-kv-val.cyan  { color: var(--accent); }
+
+    /* ── Loading / error ─────────────────────────────────────────── */
+    .loading { display: flex; align-items: center; justify-content: center; height: 200px; font-family: var(--mono); font-size: 12px; color: var(--txt-3); gap: 8px; }
+    .spinner { width: 14px; height: 14px; border: 2px solid var(--border-2); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty { text-align: center; padding: 40px; font-family: var(--mono); color: var(--txt-3); font-size: 12px; }
+
+    /* ── Scrollbar ──────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-logo">betatp<span>.</span>io</div>
+    <div class="nav-status">
+      <span class="dot-live"></span>
+      <span id="nav-date">—</span>
+    </div>
+    <div class="nav-meta" id="nav-model">model loading...</div>
+  </nav>
+
+  <!-- Main -->
+  <main>
+
+    <!-- Stats row -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Model AUC</div>
+        <div class="stat-value cyan" id="stat-auc">—</div>
+        <div class="stat-sub" id="stat-auc-sub">vs Pinnacle —</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Bets Today</div>
+        <div class="stat-value" id="stat-bets">—</div>
+        <div class="stat-sub" id="stat-bets-sub">edge > 5%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Edge</div>
+        <div class="stat-value green" id="stat-edge">—</div>
+        <div class="stat-sub">vs market</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Half-Kelly ROI</div>
+        <div class="stat-value" id="stat-roi">—</div>
+        <div class="stat-sub" id="stat-roi-sub">holdout 2024-2026</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Max Drawdown</div>
+        <div class="stat-value red" id="stat-dd">—</div>
+        <div class="stat-sub">half-Kelly, edge>8%</div>
+      </div>
+    </div>
+
+    <!-- Picks -->
+    <div class="picks-panel">
+      <div style="padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+        <div class="section-title">value picks</div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div class="section-badge green" id="picks-count">0 picks</div>
+          <div class="section-badge" id="picks-source">backtest</div>
+        </div>
+      </div>
+      <div class="picks-filters">
+        <button class="filter-btn active" onclick="filterPicks('all')">All</button>
+        <button class="filter-btn" onclick="filterPicks('HIGH')">High confidence</button>
+        <button class="filter-btn" onclick="filterPicks('MEDIUM')">Medium</button>
+        <button class="filter-btn" onclick="filterPicks('Hard')">Hard</button>
+        <button class="filter-btn" onclick="filterPicks('Clay')">Clay</button>
+        <button class="filter-btn" onclick="filterPicks('Grass')">Grass</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="picks-table">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Surface</th>
+              <th class="right">Odds</th>
+              <th class="right">P(model)</th>
+              <th class="right">P(Pinnacle)</th>
+              <th class="right">Edge</th>
+              <th class="right">EV%</th>
+              <th class="right">Kelly/2</th>
+              <th>Signal</th>
+              <th>Conf.</th>
+            </tr>
+          </thead>
+          <tbody id="picks-tbody">
+            <tr><td colspan="10" class="loading"><span class="spinner"></span>Loading picks...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div class="bottom-grid">
+      <!-- PnL chart -->
+      <div class="pnl-panel">
+        <div class="section-header">
+          <div class="section-title">Monthly PnL — half-Kelly, edge > 8%</div>
+          <div class="section-badge" id="pnl-total">—</div>
+        </div>
+        <div class="pnl-bars" id="pnl-bars">
+          <div class="loading"><span class="spinner"></span></div>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:4px;" id="pnl-labels"></div>
+      </div>
+
+      <!-- Model panel -->
+      <div class="model-panel">
+        <div class="section-title">Model Info</div>
+        <div class="model-kv">
+          <div class="model-kv-key">Version</div>
+          <div class="model-kv-val cyan" id="mi-version">—</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Holdout AUC</div>
+          <div class="model-kv-val green" id="mi-auc">—</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Pinnacle AUC</div>
+          <div class="model-kv-val" id="mi-pin-auc">0.7457</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">AUC delta</div>
+          <div class="model-kv-val green" id="mi-delta">—</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Train period</div>
+          <div class="model-kv-val">2004-2023</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Holdout</div>
+          <div class="model-kv-val">2024-2026</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Matches (train)</div>
+          <div class="model-kv-val">71,872</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Matches (holdout)</div>
+          <div class="model-kv-val">6,150</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Strategy</div>
+          <div class="model-kv-val">Half-Kelly</div>
+        </div>
+        <div class="model-kv">
+          <div class="model-kv-key">Backtest file</div>
+          <div class="model-kv-val" id="mi-file" style="font-size:10px;max-width:180px;overflow:hidden;text-overflow:ellipsis">—</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+
+const BACKTEST_DATA_EMBEDDED = {"backtest_date": "2026-06-25T22:20:19.655232", "model": "lgbm_v4_20260625_2011.joblib", "holdout": "2024-2026", "n_matches": 1989, "strategy_comparison": [{"strategy": "full_kelly", "edge_thresh": 0.08, "n_bets": 900, "win_rate": 0.7511, "final_bankroll": 98992818436.83, "roi_pct": 9899281743.68, "profit": 98992817436.83, "max_drawdown_pct": 32.12, "monthly_pnl": {"2024-01": 180.61185282089352, "2024-02": 384.8923866126314, "2024-03": 784.9402405289181, "2024-04": 4525.641644808264, "2024-05": 21443.089589773015, "2024-06": 2471.434424578606, "2024-07": 213218.78150547357, "2024-08": 1607807.741184937, "2024-09": -180756.8116711934, "2024-10": 3452066.404261256, "2024-11": -172220.65430156753, "2024-12": -152898.16382201842, "2025-01": 11128441.997047495, "2025-02": 21744348.41518663, "2025-03": 86353373.8121915, "2025-04": 225759347.45579484, "2025-05": 611530246.0415659, "2025-06": 4470979906.081715, "2025-07": 4023980404.5988946, "2025-08": 45666090003.418236, "2025-09": 40097430625.97985, "2025-10": 17611089121.577602, "2025-11": -3195358646.696094, "2026-01": -10642706743.757215}, "history": [{"date": "2025-10-27", "br": 102145436904.52}, {"date": "2025-10-27", "br": 97038165059.3}, {"date": "2025-10-27", "br": 98542256617.72}, {"date": "2025-10-27", "br": 112830883827.29}, {"date": "2025-11-03", "br": 113846361781.73}, {"date": "2025-11-03", "br": 108154043692.64}, {"date": "2025-11-03", "br": 112696513527.74}, {"date": "2025-11-03", "br": 117317070582.37}, {"date": "2025-11-10", "br": 111451217053.25}, {"date": "2025-11-10", "br": 114571851130.75}, {"date": "2025-11-10", "br": 108843258574.21}, {"date": "2025-11-10", "br": 103401095645.5}, {"date": "2025-11-10", "br": 104486807149.78}, {"date": "2025-11-10", "br": 108927496453.64}, {"date": "2025-11-10", "br": 109635525180.59}, {"date": "2026-01-09", "br": 104153748921.56}, {"date": "2026-01-09", "br": 98946061475.48}, {"date": "2026-01-09", "br": 102310227565.65}, {"date": "2026-01-09", "br": 97194716187.37}, {"date": "2026-01-10", "br": 98992818436.83}]}, {"strategy": "half_kelly", "edge_thresh": 0.08, "n_bets": 900, "win_rate": 0.7511, "final_bankroll": 15742081.68, "roi_pct": 1574108.17, "profit": 15741081.68, "max_drawdown_pct": 17.3, "monthly_pnl": {"2024-01": 95.38222262517897, "2024-02": 186.99425518455058, "2024-03": 297.7574066849708, "2024-04": 1182.9327648933117, "2024-05": 2947.5183113360786, "2024-06": 279.3762267164464, "2024-07": 12618.727902544797, "2024-08": 34220.97449480779, "2024-09": -2484.306105742912, "2024-10": 40731.797551256925, "2024-11": -1182.4367540376802, "2024-12": -1312.6933263254161, "2025-01": 78515.59366393798, "2025-02": 94055.1214335701, "2025-03": 218705.19851066306, "2025-04": 339049.0297173317, "2025-05": 562312.2727841929, "2025-06": 2072092.9075717037, "2025-07": 1178098.763069274, "2025-08": 6846872.411416365, "2025-09": 3824929.9125177786, "2025-10": 1448844.9833375195, "2025-11": -204702.48668030856, "2026-01": -805274.051279597}, "history": [{"date": "2025-10-27", "br": 15896936.9}, {"date": "2025-10-27", "br": 15499513.47}, {"date": "2025-10-27", "br": 15619634.7}, {"date": "2025-10-27", "br": 16752058.22}, {"date": "2025-11-03", "br": 16827442.48}, {"date": "2025-11-03", "br": 16406756.42}, {"date": "2025-11-03", "br": 16751298.3}, {"date": "2025-11-03", "br": 17094699.92}, {"date": "2025-11-10", "br": 16667332.42}, {"date": "2025-11-10", "br": 16900675.07}, {"date": "2025-11-10", "br": 16478158.2}, {"date": "2025-11-10", "br": 16066204.24}, {"date": "2025-11-10", "br": 16150551.82}, {"date": "2025-11-10", "br": 16493751.04}, {"date": "2025-11-10", "br": 16547355.73}, {"date": "2026-01-09", "br": 16133671.84}, {"date": "2026-01-09", "br": 15730330.04}, {"date": "2026-01-09", "br": 15997745.65}, {"date": "2026-01-09", "br": 15597802.01}, {"date": "2026-01-10", "br": 15742081.68}]}, {"strategy": "quarter_kelly", "edge_thresh": 0.08, "n_bets": 900, "win_rate": 0.7511, "final_bankroll": 142715.66, "roi_pct": 14171.57, "profit": 141715.66, "max_drawdown_pct": 8.98, "monthly_pnl": {"2024-01": 48.73427251525521, "2024-02": 90.96515850395193, "2024-03": 127.21062016959087, "2024-04": 418.00557701775546, "2024-05": 749.0970591153384, "2024-06": 62.551324641007255, "2024-07": 2050.8717490347326, "2024-08": 3174.9287080970016, "2024-09": -177.77912042195345, "2024-10": 2695.155643811053, "2024-11": -56.36538402528522, "2024-12": -72.18952465176672, "2025-01": 3917.2769294827035, "2025-02": 3582.7302844703627, "2025-03": 6338.870153934193, "2025-04": 7467.146231757027, "2025-05": 9566.776704407377, "2025-06": 24740.10788754036, "2025-07": 10710.217199817555, "2025-08": 44711.75941989046, "2025-09": 19252.124810716512, "2025-10": 6706.853740056085, "2025-11": -826.5716546534978, "2026-01": -3562.8181819393585}, "history": [{"date": "2025-10-27", "br": 143201.08}, {"date": "2025-10-27", "br": 141411.07}, {"date": "2025-10-27", "br": 141959.03}, {"date": "2025-10-27", "br": 147105.05}, {"date": "2025-11-03", "br": 147436.04}, {"date": "2025-11-03", "br": 145593.09}, {"date": "2025-11-03", "br": 147121.81}, {"date": "2025-11-03", "br": 148629.81}, {"date": "2025-11-10", "br": 146771.94}, {"date": "2025-11-10", "br": 147799.34}, {"date": "2025-11-10", "br": 145951.85}, {"date": "2025-11-10", "br": 144127.45}, {"date": "2025-11-10", "br": 144505.79}, {"date": "2025-11-10", "br": 146041.16}, {"date": "2025-11-10", "br": 146278.48}, {"date": "2026-01-09", "br": 144450.0}, {"date": "2026-01-09", "br": 142644.37}, {"date": "2026-01-09", "br": 143856.85}, {"date": "2026-01-09", "br": 142058.64}, {"date": "2026-01-10", "br": 142715.66}]}, {"strategy": "flat_2pct", "edge_thresh": 0.08, "n_bets": 900, "win_rate": 0.7511, "final_bankroll": 2468672.57, "roi_pct": 246767.26, "profit": 2467672.57, "max_drawdown_pct": 14.05, "monthly_pnl": {"2024-01": 77.00260832057216, "2024-02": 148.11437810827164, "2024-03": 224.03347608104602, "2024-04": 825.1584067880877, "2024-05": 1803.3240749700426, "2024-06": 162.86672050944, "2024-07": 6468.9880909706635, "2024-08": 14090.844702440214, "2024-09": -925.3355335677362, "2024-10": 14704.894506615796, "2024-11": -376.4734403047167, "2024-12": -441.1152120355456, "2025-01": 25373.636291699502, "2025-02": 27347.48187390853, "2025-03": 57032.70972557773, "2025-04": 79303.8886907283, "2025-05": 118747.32238798443, "2025-06": 380098.49502682424, "2025-07": 194529.7573880588, "2025-08": 990003.8006072993, "2025-09": 499818.7507496543, "2025-10": 183239.30910325976, "2025-11": -24537.759969605755, "2026-01": -100047.12769527879}, "history": [{"date": "2025-10-27", "br": 2485704.96}, {"date": "2025-10-27", "br": 2435990.86}, {"date": "2025-10-27", "br": 2451094.0}, {"date": "2025-10-27", "br": 2593257.45}, {"date": "2025-11-03", "br": 2602593.18}, {"date": "2025-11-03", "br": 2550541.32}, {"date": "2025-11-03", "br": 2593390.41}, {"date": "2025-11-03", "br": 2635922.01}, {"date": "2025-11-10", "br": 2583203.57}, {"date": "2025-11-10", "br": 2612135.45}, {"date": "2025-11-10", "br": 2559892.75}, {"date": "2025-11-10", "br": 2508694.89}, {"date": "2025-11-10", "br": 2519231.41}, {"date": "2025-11-10", "br": 2562058.34}, {"date": "2025-11-10", "br": 2568719.69}, {"date": "2026-01-09", "br": 2517345.3}, {"date": "2026-01-09", "br": 2466998.39}, {"date": "2026-01-09", "br": 2500549.57}, {"date": "2026-01-09", "br": 2450538.58}, {"date": "2026-01-10", "br": 2468672.57}]}], "edge_threshold_analysis": [{"strategy": "half_kelly", "edge_thresh": 0.02, "n_bets": 1078, "win_rate": 0.7328, "final_bankroll": 19593565.07, "roi_pct": 1959256.51, "profit": 19592565.07, "max_drawdown_pct": 18.41, "monthly_pnl": {"2024-01": -29.932757144638792, "2024-02": 229.8479660532547, "2024-03": 414.1208842311699, "2024-04": 1423.497846579437, "2024-05": 2688.6250302206595, "2024-06": 828.2373257815169, "2024-07": 12026.530445243701, "2024-08": 38428.62787907484, "2024-09": -2558.625231360672, "2024-10": 44382.241083686116, "2024-11": -3423.4646127687465, "2024-12": 7182.172379029454, "2025-01": 89867.73973105858, "2025-02": 159671.03764988613, "2025-03": 272497.33533372206, "2025-04": 440867.24494512, "2025-05": 564203.3545806592, "2025-06": 2132933.6988390614, "2025-07": 1399321.9856969696, "2025-08": 7064094.638852345, "2025-09": 7149606.502058364, "2025-10": 1513981.3831172066, "2025-11": -282231.66825645097, "2026-01": -1013840.0582500722}, "history": [{"date": "2025-11-03", "br": 20274926.87}, {"date": "2025-11-03", "br": 20700700.33}, {"date": "2025-11-03", "br": 21125064.69}, {"date": "2025-11-10", "br": 20596938.07}, {"date": "2025-11-10", "br": 20710221.23}, {"date": "2025-11-10", "br": 20756819.23}, {"date": "2025-11-10", "br": 21047414.7}, {"date": "2025-11-10", "br": 20521229.33}, {"date": "2025-11-10", "br": 20008198.6}, {"date": "2025-11-10", "br": 20113241.64}, {"date": "2025-11-10", "br": 20540648.02}, {"date": "2025-11-10", "br": 20607405.13}, {"date": "2026-01-09", "br": 20092220.0}, {"date": "2026-01-09", "br": 21006416.01}, {"date": "2026-01-09", "br": 20481255.61}, {"date": "2026-01-09", "br": 20829436.96}, {"date": "2026-01-09", "br": 20308701.03}, {"date": "2026-01-10", "br": 20496556.52}, {"date": "2026-01-11", "br": 20095964.18}, {"date": "2026-01-11", "br": 19593565.07}]}, {"strategy": "half_kelly", "edge_thresh": 0.05, "n_bets": 988, "win_rate": 0.7449, "final_bankroll": 19987831.54, "roi_pct": 1998683.15, "profit": 19986831.54, "max_drawdown_pct": 18.41, "monthly_pnl": {"2024-01": 19.07569976092305, "2024-02": 233.04193453912836, "2024-03": 410.999137946729, "2024-04": 1434.907533312549, "2024-05": 3543.4813654040786, "2024-06": 556.3904397480549, "2024-07": 13570.638793028344, "2024-08": 41687.955618844775, "2024-09": -2803.087194390218, "2024-10": 48751.06364802783, "2024-11": -1239.5421716221845, "2024-12": -4204.8836675307375, "2025-01": 89058.32093088827, "2025-02": 154283.5786226649, "2025-03": 282562.5143668412, "2025-04": 455599.8167989483, "2025-05": 613420.0664077293, "2025-06": 2337552.4655919243, "2025-07": 1691034.7104992745, "2025-08": 8108208.652417002, "2025-09": 5637614.771721994, "2025-10": 1347045.8836900683, "2025-11": -208131.708635666, "2026-01": -623377.5753009802}, "history": [{"date": "2025-10-27", "br": 20819340.82}, {"date": "2025-11-03", "br": 20913027.86}, {"date": "2025-11-03", "br": 20390202.16}, {"date": "2025-11-03", "br": 20818396.4}, {"date": "2025-11-03", "br": 21245173.53}, {"date": "2025-11-10", "br": 20714044.19}, {"date": "2025-11-10", "br": 20760650.79}, {"date": "2025-11-10", "br": 21051299.9}, {"date": "2025-11-10", "br": 20525017.41}, {"date": "2025-11-10", "br": 20011891.97}, {"date": "2025-11-10", "br": 20116954.4}, {"date": "2025-11-10", "br": 20544439.68}, {"date": "2025-11-10", "br": 20611209.11}, {"date": "2026-01-09", "br": 20095928.89}, {"date": "2026-01-09", "br": 21010293.65}, {"date": "2026-01-09", "br": 20485036.31}, {"date": "2026-01-09", "br": 20833281.93}, {"date": "2026-01-09", "br": 20312449.88}, {"date": "2026-01-10", "br": 20500340.04}, {"date": "2026-01-11", "br": 19987831.54}]}, {"strategy": "half_kelly", "edge_thresh": 0.08, "n_bets": 900, "win_rate": 0.7511, "final_bankroll": 15742081.68, "roi_pct": 1574108.17, "profit": 15741081.68, "max_drawdown_pct": 17.3, "monthly_pnl": {"2024-01": 95.38222262517897, "2024-02": 186.99425518455058, "2024-03": 297.7574066849708, "2024-04": 1182.9327648933117, "2024-05": 2947.5183113360786, "2024-06": 279.3762267164464, "2024-07": 12618.727902544797, "2024-08": 34220.97449480779, "2024-09": -2484.306105742912, "2024-10": 40731.797551256925, "2024-11": -1182.4367540376802, "2024-12": -1312.6933263254161, "2025-01": 78515.59366393798, "2025-02": 94055.1214335701, "2025-03": 218705.19851066306, "2025-04": 339049.0297173317, "2025-05": 562312.2727841929, "2025-06": 2072092.9075717037, "2025-07": 1178098.763069274, "2025-08": 6846872.411416365, "2025-09": 3824929.9125177786, "2025-10": 1448844.9833375195, "2025-11": -204702.48668030856, "2026-01": -805274.051279597}, "history": [{"date": "2025-10-27", "br": 15896936.9}, {"date": "2025-10-27", "br": 15499513.47}, {"date": "2025-10-27", "br": 15619634.7}, {"date": "2025-10-27", "br": 16752058.22}, {"date": "2025-11-03", "br": 16827442.48}, {"date": "2025-11-03", "br": 16406756.42}, {"date": "2025-11-03", "br": 16751298.3}, {"date": "2025-11-03", "br": 17094699.92}, {"date": "2025-11-10", "br": 16667332.42}, {"date": "2025-11-10", "br": 16900675.07}, {"date": "2025-11-10", "br": 16478158.2}, {"date": "2025-11-10", "br": 16066204.24}, {"date": "2025-11-10", "br": 16150551.82}, {"date": "2025-11-10", "br": 16493751.04}, {"date": "2025-11-10", "br": 16547355.73}, {"date": "2026-01-09", "br": 16133671.84}, {"date": "2026-01-09", "br": 15730330.04}, {"date": "2026-01-09", "br": 15997745.65}, {"date": "2026-01-09", "br": 15597802.01}, {"date": "2026-01-10", "br": 15742081.68}]}, {"strategy": "half_kelly", "edge_thresh": 0.1, "n_bets": 838, "win_rate": 0.7554, "final_bankroll": 11941831.09, "roi_pct": 1194083.11, "profit": 11940831.09, "max_drawdown_pct": 17.3, "monthly_pnl": {"2024-01": 64.14652674714965, "2024-02": 181.6619651717685, "2024-03": 264.23420304826374, "2024-04": 1105.3203475188743, "2024-05": 2770.6973199687745, "2024-06": 263.49966444398166, "2024-07": 11875.315329469242, "2024-08": 28601.23556931227, "2024-09": -1288.57556094201, "2024-10": 38434.03444511577, "2024-11": 3187.834719154372, "2024-12": -2768.9569950152004, "2025-01": 40690.360802649964, "2025-02": 68468.09302047998, "2025-03": 159214.99165264188, "2025-04": 269656.8244872136, "2025-05": 462870.11562005855, "2025-06": 1576904.4647791355, "2025-07": 999494.8958008299, "2025-08": 5376231.739117979, "2025-09": 2531502.6126661818, "2025-10": 1397306.5142144682, "2025-11": -199928.79940301774, "2026-01": -824271.1686817263}, "history": [{"date": "2025-10-27", "br": 12408713.73}, {"date": "2025-10-27", "br": 12619661.87}, {"date": "2025-10-27", "br": 12304170.32}, {"date": "2025-10-27", "br": 11996566.06}, {"date": "2025-10-27", "br": 12089539.45}, {"date": "2025-10-27", "br": 12966031.06}, {"date": "2025-11-03", "br": 13024378.2}, {"date": "2025-11-03", "br": 12698768.74}, {"date": "2025-11-03", "br": 12965442.89}, {"date": "2025-11-03", "br": 13231234.47}, {"date": "2025-11-10", "br": 12900453.61}, {"date": "2025-11-10", "br": 13081059.96}, {"date": "2025-11-10", "br": 12754033.46}, {"date": "2025-11-10", "br": 12435182.62}, {"date": "2025-11-10", "br": 12500467.33}, {"date": "2025-11-10", "br": 12766102.26}, {"date": "2026-01-09", "br": 12446949.7}, {"date": "2026-01-09", "br": 12135775.96}, {"date": "2026-01-09", "br": 11832381.56}, {"date": "2026-01-10", "br": 11941831.09}]}, {"strategy": "half_kelly", "edge_thresh": 0.15, "n_bets": 689, "win_rate": 0.7765, "final_bankroll": 7479381.1, "roi_pct": 747838.11, "profit": 7478381.1, "max_drawdown_pct": 13.38, "monthly_pnl": {"2024-01": 82.35638243597036, "2024-02": 172.42648232394754, "2024-03": 266.54151880156024, "2024-04": 1332.2504784811995, "2024-05": 2776.073897137796, "2024-06": 554.2950991669607, "2024-07": 4561.78305511616, "2024-08": 16194.555914746963, "2024-09": -1679.544504919062, "2024-10": 22078.257968078746, "2024-11": 2846.7026419208446, "2024-12": -2477.918884831247, "2025-01": 23166.091041410447, "2025-02": 41094.6650400799, "2025-03": 89664.34801829708, "2025-04": 177762.66012136266, "2025-05": 323745.2267622496, "2025-06": 986120.4966879518, "2025-07": 469462.5740806139, "2025-08": 3402250.586039102, "2025-09": 2064777.0317019362, "2025-10": 258184.66421983403, "2025-11": -88190.25878892202, "2026-01": -316364.7661387845}, "history": [{"date": "2025-10-13", "br": 8250922.26}, {"date": "2025-10-20", "br": 8044649.2}, {"date": "2025-10-20", "br": 7843532.97}, {"date": "2025-10-27", "br": 8027856.0}, {"date": "2025-10-27", "br": 8092078.85}, {"date": "2025-10-27", "br": 8229644.19}, {"date": "2025-10-27", "br": 8023903.08}, {"date": "2025-10-27", "br": 7823305.51}, {"date": "2025-10-27", "br": 7883936.12}, {"date": "2025-11-03", "br": 7919413.84}, {"date": "2025-11-03", "br": 7721428.49}, {"date": "2025-11-03", "br": 7883578.49}, {"date": "2025-11-03", "br": 8045191.85}, {"date": "2025-11-10", "br": 7844062.05}, {"date": "2025-11-10", "br": 7953878.92}, {"date": "2025-11-10", "br": 7755031.95}, {"date": "2025-11-10", "br": 7795745.86}, {"date": "2026-01-09", "br": 7600852.22}, {"date": "2026-01-09", "br": 7410830.91}, {"date": "2026-01-10", "br": 7479381.1}]}, {"strategy": "half_kelly", "edge_thresh": 0.2, "n_bets": 535, "win_rate": 0.7944, "final_bankroll": 4090148.88, "roi_pct": 408914.89, "profit": 4089148.88, "max_drawdown_pct": 13.57, "monthly_pnl": {"2024-01": 52.54082125101607, "2024-02": 263.96686234788285, "2024-03": 259.886624757005, "2024-04": 1139.1721879243723, "2024-05": 2996.897677957697, "2024-06": 338.2463948973331, "2024-07": 5224.963606846476, "2024-08": 17146.20666658391, "2024-09": -2078.794128500781, "2024-10": 10808.472781738112, "2024-11": 2933.3177111410796, "2024-12": -1002.1219301736027, "2025-01": 18988.763318383157, "2025-02": 24934.595490522624, "2025-03": 54596.088634061365, "2025-04": 114448.12615468338, "2025-05": 157373.84850137163, "2025-06": 576015.5499456486, "2025-07": 312900.00474337395, "2025-08": 1979877.010240818, "2025-09": 1095646.0567109333, "2025-10": 112197.16198273713, "2025-11": -183470.73638055747, "2026-01": -212440.34296555078}, "history": [{"date": "2025-09-24", "br": 4373862.8}, {"date": "2025-10-13", "br": 4484302.83}, {"date": "2025-10-13", "br": 4550446.3}, {"date": "2025-10-13", "br": 4609602.1}, {"date": "2025-10-13", "br": 4694879.74}, {"date": "2025-10-13", "br": 4732438.78}, {"date": "2025-10-20", "br": 4614127.81}, {"date": "2025-10-20", "br": 4498774.62}, {"date": "2025-10-27", "br": 4604495.82}, {"date": "2025-10-27", "br": 4682772.25}, {"date": "2025-10-27", "br": 4565702.94}, {"date": "2025-10-27", "br": 4451560.37}, {"date": "2025-10-27", "br": 4486059.96}, {"date": "2025-11-03", "br": 4373908.46}, {"date": "2025-11-03", "br": 4463573.59}, {"date": "2025-11-10", "br": 4351984.25}, {"date": "2025-11-10", "br": 4412912.03}, {"date": "2025-11-10", "br": 4302589.22}, {"date": "2026-01-09", "br": 4195024.49}, {"date": "2026-01-09", "br": 4090148.88}]}], "best_strategy": {"strategy": "half_kelly", "edge_thresh": 0.08, "n_bets": 900, "win_rate": 0.7511, "final_bankroll": 15742081.68, "roi_pct": 1574108.17, "profit": 15741081.68, "max_drawdown_pct": 17.3, "monthly_pnl": {"2024-01": 95.38222262517897, "2024-02": 186.99425518455058, "2024-03": 297.7574066849708, "2024-04": 1182.9327648933117, "2024-05": 2947.5183113360786, "2024-06": 279.3762267164464, "2024-07": 12618.727902544797, "2024-08": 34220.97449480779, "2024-09": -2484.306105742912, "2024-10": 40731.797551256925, "2024-11": -1182.4367540376802, "2024-12": -1312.6933263254161, "2025-01": 78515.59366393798, "2025-02": 94055.1214335701, "2025-03": 218705.19851066306, "2025-04": 339049.0297173317, "2025-05": 562312.2727841929, "2025-06": 2072092.9075717037, "2025-07": 1178098.763069274, "2025-08": 6846872.411416365, "2025-09": 3824929.9125177786, "2025-10": 1448844.9833375195, "2025-11": -204702.48668030856, "2026-01": -805274.051279597}, "history": [{"date": "2025-10-27", "br": 15896936.9}, {"date": "2025-10-27", "br": 15499513.47}, {"date": "2025-10-27", "br": 15619634.7}, {"date": "2025-10-27", "br": 16752058.22}, {"date": "2025-11-03", "br": 16827442.48}, {"date": "2025-11-03", "br": 16406756.42}, {"date": "2025-11-03", "br": 16751298.3}, {"date": "2025-11-03", "br": 17094699.92}, {"date": "2025-11-10", "br": 16667332.42}, {"date": "2025-11-10", "br": 16900675.07}, {"date": "2025-11-10", "br": 16478158.2}, {"date": "2025-11-10", "br": 16066204.24}, {"date": "2025-11-10", "br": 16150551.82}, {"date": "2025-11-10", "br": 16493751.04}, {"date": "2025-11-10", "br": 16547355.73}, {"date": "2026-01-09", "br": 16133671.84}, {"date": "2026-01-09", "br": 15730330.04}, {"date": "2026-01-09", "br": 15997745.65}, {"date": "2026-01-09", "br": 15597802.01}, {"date": "2026-01-10", "br": 15742081.68}]}, "pinnacle_baseline": {"strategy": "half_kelly", "edge_thresh": 0.0, "n_bets": 1, "win_rate": 0.0, "final_bankroll": 995.87, "roi_pct": -0.41, "profit": -4.13, "max_drawdown_pct": 0.41, "monthly_pnl": {"2024-01": -4.131054131053927}, "history": [{"date": "None", "br": 1000.0}, {"date": "2024-01-01", "br": 995.87}]}};
+/* ── Config ───────────────────────────────────────────────── */
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : ''; // same origin in production
+
+/* ── Embedded model info (updated after clean training) ─── */
+const MODEL_INFO_STATIC = {
+  version: "v12",
+  holdout_auc: 0.8713,
+  pinnacle_auc: 0.7457,
+  features: 46,
+  hypothesis: "COMBO H2H + fatigue + weather (clean, post bug#4 fix)",
+  train_period: "2004-2023",
+  holdout_period: "2024-2026",
+  n_train: 71872,
+  n_holdout: 6150,
+  versions_clean: [
+    { v: "v12", auc: 0.8713, desc: "COMBO H2H+fatigue+weather ← BEST" },
+    { v: "v9",  auc: 0.8070, desc: "+H2H features (clean)" },
+    { v: "v10", auc: 0.8060, desc: "+Ranking trajectory" },
+    { v: "v11", auc: 0.8046, desc: "+Serve/return stats" },
+  ]
+};
+
+/* ── State ────────────────────────────────────────────────── */
+let allPicks = [];
+let activeFilter = 'all';
+
+/* ── Utilities ────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const fmt = (n, dec=2) => (typeof n === 'number' ? n.toFixed(dec) : n ?? '—');
+const fmtPct = n => typeof n === 'number' ? (n >= 0 ? '+' : '') + (n * 100).toFixed(1) + '%' : '—';
+const fmtPct2 = n => typeof n === 'number' ? (n >= 0 ? '+' : '') + n.toFixed(1) + '%' : '—';
+
+/* ── Load data ────────────────────────────────────────────── */
+async function loadData() {
+  try {
+    // Try API first, fall back to static backtest JSON
+    let backtestData = typeof BACKTEST_DATA_EMBEDDED !== 'undefined' ? BACKTEST_DATA_EMBEDDED : null;
+    let modelInfo = null;
+    let picks = [];
+
+    // Try model info
+    try {
+      const r = await fetch(API_BASE + '/predictions/model/info', { signal: AbortSignal.timeout(3000) });
+      if (r.ok) modelInfo = await r.json();
+    } catch(e) {}
+
+    // Try daily picks
+    try {
+      const r = await fetch(API_BASE + '/coupons/daily', { signal: AbortSignal.timeout(3000) });
+      if (r.ok) {
+        const coupons = await r.json();
+        picks = coupons.flatMap(c => c.selections || []);
+      }
+    } catch(e) {}
+
+    // Try backtest JSON as fallback/supplement
+    try {
+      // Try newest version first
+      for (const v of ['v22','v21','v20','v19','v18','v17','v16','v15','v14','v13','v12','v9']) {
+        const r = await fetch(`/data/backtest_${v}.json`, { signal: AbortSignal.timeout(2000) });
+        if (r.ok) { backtestData = await r.json(); break; }
+      }
+    } catch(e) {}
+
+    renderAll(picks, modelInfo, backtestData);
+  } catch(e) {
+    console.error(e);
+    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Błąd ładowania danych: ${e.message}</td></tr>`;
+  }
+}
+
+/* ── Render ────────────────────────────────────────────────── */
+function renderAll(picks, modelInfo, backtest) {
+  const today = new Date().toLocaleDateString('pl-PL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  $('nav-date').textContent = today;
+
+  // Model info — API → static fallback
+  if (modelInfo) {
+    $('nav-model').textContent = `${modelInfo.version} · ${modelInfo.features}f · AUC ${modelInfo.holdout_auc?.toFixed(4) ?? '—'}`;
+    $('mi-version').textContent = modelInfo.version;
+    $('mi-auc').textContent = modelInfo.holdout_auc?.toFixed(4) ?? '—';
+    $('mi-delta').textContent = modelInfo.holdout_auc ? '+' + (modelInfo.holdout_auc - 0.7457).toFixed(4) : '—';
+    $('stat-auc').textContent = modelInfo.holdout_auc?.toFixed(4) ?? '—';
+    $('stat-auc-sub').textContent = `vs Pinnacle +${modelInfo.holdout_auc ? (modelInfo.holdout_auc - 0.7457).toFixed(4) : '—'}`;
+  } else {
+    // Static fallback — dane z treningu
+    const mi = MODEL_INFO_STATIC;
+    $('nav-model').textContent = `${mi.version} · ${mi.features}f · AUC ${mi.holdout_auc.toFixed(4)}`;
+    $('mi-version').textContent = mi.version;
+    $('mi-auc').textContent = mi.holdout_auc.toFixed(4);
+    $('mi-pin-auc').textContent = mi.pinnacle_auc.toFixed(4);
+    $('mi-delta').textContent = '+' + (mi.holdout_auc - mi.pinnacle_auc).toFixed(4);
+    $('stat-auc').textContent = mi.holdout_auc.toFixed(4);
+    $('stat-auc-sub').textContent = `vs Pinnacle +${(mi.holdout_auc - mi.pinnacle_auc).toFixed(4)}`;
+    if (backtest) {
+      $('mi-file').textContent = backtest.model ?? '—';
+    }
+  }
+
+  // ROI / DD from backtest
+  if (backtest) {
+    const best = backtest.best_strategy;
+    if (best) {
+      const roi = best.roi_pct;
+      $('stat-roi').textContent = fmtPct2(roi);
+      $('stat-roi').className = 'stat-value ' + (roi >= 0 ? 'green' : 'red');
+      $('stat-dd').textContent = best.max_drawdown_pct?.toFixed(1) + '%';
+    }
+    renderPnl(backtest);
+  }
+
+  // Picks from backtest if API picks empty
+  if (picks.length === 0 && backtest) {
+    picks = buildPicksFromBacktest(backtest);
+    $('picks-source').textContent = 'backtest csv';
+  } else if (picks.length > 0) {
+    $('picks-source').textContent = 'live api';
+  }
+
+  allPicks = picks;
+  renderPicks(picks);
+}
+
+function buildPicksFromBacktest(bt) {
+  // From best_strategy history + edge threshold analysis, build demo picks
+  const bets = bt.best_strategy?.history ?? [];
+  const nBets = bt.best_strategy?.n_bets ?? 0;
+  const avgEdge = 0.10;
+  const nPicks = bt.strategy_comparison?.find(s => s.strategy === 'half_kelly')?.n_bets ?? 0;
+
+  $('stat-bets').textContent = nPicks;
+  $('stat-bets-sub').textContent = `edge > 8% (holdout)`;
+  $('stat-edge').textContent = fmtPct(avgEdge);
+
+  // Build synthetic picks from edge_threshold_analysis
+  const edges = bt.edge_threshold_analysis ?? [];
+  const e8 = edges.find(e => Math.abs(e.edge_thresh - 0.08) < 0.01);
+
+  return buildDemoPicks(bt.n_matches ?? 0, bt.model ?? '');
+}
+
+function buildDemoPicks(n, model) {
+  // Return empty if no real data available
+  return [];
+}
+
+function renderPicks(picks) {
+  $('picks-count').textContent = `${picks.length} picks`;
+  if (picks.length === 0) {
+    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Brak wartościowych zakładów. Uruchom backtest najpierw: <code>PYTHONPATH=. python scripts/backtest_vX.py --best</code></td></tr>`;
+    $('stat-bets').textContent = '0';
+    $('stat-edge').textContent = '—';
+    return;
+  }
+
+  const edges = picks.map(p => p.edge ?? 0).filter(Boolean);
+  const avgEdge = edges.length ? edges.reduce((a,b)=>a+b,0)/edges.length : 0;
+  $('stat-bets').textContent = picks.length;
+  $('stat-edge').textContent = fmtPct(avgEdge);
+
+  renderPicksTable(picks);
+}
+
+function renderPicksTable(picks) {
+  const filtered = activeFilter === 'all'
+    ? picks
+    : picks.filter(p => (p.confidence === activeFilter) || (p.surface === activeFilter));
+
+  if (filtered.length === 0) {
+    $('picks-tbody').innerHTML = `<tr><td colspan="10" class="empty">Brak picks dla filtra "${activeFilter}"</td></tr>`;
+    return;
+  }
+
+  $('picks-tbody').innerHTML = filtered.map(p => {
+    const edge = p.edge ?? (p.ev_pct ? p.ev_pct / 100 : 0);
+    const edgePct = edge * 100;
+    const edgeBarFill = Math.min(edgePct / 20 * 100, 100); // max 20% = full bar
+    const edgeColor = edgePct >= 15 ? '' : edgePct >= 8 ? 'yellow' : 'orange';
+    const conf = p.confidence ?? (edgePct >= 15 ? 'HIGH' : edgePct >= 8 ? 'MEDIUM' : 'LOW');
+    const isBet = p.signal ? p.signal !== 'NO_BET' : edgePct >= 5;
+    const pModel = p.p_model ?? 0;
+    const pPin = p.p_pin ?? (p.bk_odds ? 1/p.bk_odds : 0);
+    const kelly = p.kelly_half ?? p.kelly_stake_pct ?? 0;
+    const odds = p.odds ?? p.bk_odds ?? 0;
+    const surf = p.surface ?? '—';
+    const surfStr = surf.charAt(0).toUpperCase() + surf.slice(1).toLowerCase();
+
+    return `
+    <tr>
+      <td>
+        <div class="player-name">${p.player_backed ?? p.player_a ?? '—'}</div>
+        <div class="player-vs">vs ${p.opponent ?? p.player_b ?? '—'}</div>
+      </td>
+      <td><span class="surface-pill ${surfStr}">${surfStr}</span></td>
+      <td class="num-right">${odds ? odds.toFixed(2) : '—'}</td>
+      <td class="num-right prob-val">${pModel ? (pModel*100).toFixed(1)+'%' : '—'}</td>
+      <td class="num-right" style="color:var(--txt-3)">${pPin ? (pPin*100).toFixed(1)+'%' : '—'}</td>
+      <td class="num-right">
+        <div class="edge-bar-wrap">
+          <span style="color:${edgePct >= 15 ? 'var(--green)' : edgePct >= 8 ? 'var(--yellow)' : 'var(--orange)'}">${edgePct.toFixed(1)}%</span>
+          <div class="edge-bar"><div class="edge-bar-fill ${edgeColor}" style="width:${edgeBarFill}%"></div></div>
+        </div>
+      </td>
+      <td class="num-right" style="color:${p.ev_pct >= 0 ? 'var(--green)' : 'var(--red)'}">${p.ev_pct != null ? (p.ev_pct >= 0 ? '+' : '') + p.ev_pct.toFixed(1)+'%' : '—'}</td>
+      <td class="num-right kelly-val">${kelly ? (kelly*100 < 1 ? (kelly*100).toFixed(2) : (kelly*100).toFixed(1))+'%' : '—'}</td>
+      <td><span class="signal-badge ${isBet ? 'bet' : 'pass'}">${isBet ? 'BET' : 'PASS'}</span></td>
+      <td><span class="conf-badge ${conf}">${conf}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPnl(bt) {
+  const monthly = bt.best_strategy?.monthly_pnl ?? {};
+  const entries = Object.entries(monthly);
+  if (!entries.length) { $('pnl-bars').innerHTML = '<div class="empty" style="width:100%">Brak danych PnL</div>'; return; }
+
+  const values = entries.map(([,v]) => v);
+  const maxAbs = Math.max(...values.map(Math.abs), 1);
+  const maxBarH = 70;
+  const totalPnl = values.reduce((a,b)=>a+b,0);
+  $('pnl-total').textContent = (totalPnl >= 0 ? '+' : '') + totalPnl.toFixed(0) + 'u';
+
+  $('pnl-bars').innerHTML = entries.map(([month, pnl]) => {
+    const posH = pnl > 0 ? Math.round(pnl / maxAbs * maxBarH) : 0;
+    const negH = pnl < 0 ? Math.round(-pnl / maxAbs * maxBarH) : 0;
+    const lbl = month.slice(2).replace('-', '/');
+    return `<div class="pnl-bar-wrap" style="height:${maxBarH+16}px;justify-content:flex-end;">
+      <div class="pnl-bar-pos" style="height:${posH}px;width:100%"></div>
+      <div style="height:1px;background:var(--border);width:100%"></div>
+      <div class="pnl-bar-neg" style="height:${negH}px;width:100%"></div>
+      <div class="pnl-bar-label" style="font-size:7px">${lbl}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Filter picks ──────────────────────────────────────────── */
+function filterPicks(f) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === (f === 'all' ? 'All' : f) || (f === 'HIGH' && b.textContent.trim() === 'High confidence'));
+  });
+  renderPicksTable(allPicks);
+}
+
+/* ── Init ─────────────────────────────────────────────────── */
+loadData();
+// Refresh every 5 min
+setInterval(loadData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
