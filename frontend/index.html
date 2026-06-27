@@ -220,8 +220,8 @@ body::after {
 .hero-body {
   position: relative; z-index: 2;
   display: flex; flex-direction: column;
-  padding: 28px 20px 0;
-  flex: 1;
+  padding: 24px 20px 0;
+  flex: 1; gap: 4px;
 }
 
 /* EYEBROW */
@@ -230,7 +230,7 @@ body::after {
   font-size: 9px; font-weight: 700;
   letter-spacing: .18em; text-transform: uppercase;
   color: var(--t3);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   opacity: 0;
 }
 
@@ -241,7 +241,7 @@ body::after {
   line-height: 1.08;
   letter-spacing: -.03em;
   color: var(--t1);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   opacity: 0;
 }
 .hero-h2 em {
@@ -259,7 +259,7 @@ body::after {
   letter-spacing: .01em;
   line-height: 1.5;
   max-width: 300px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   opacity: 0;
 }
 
@@ -302,35 +302,38 @@ body::after {
 .hero-stats {
   display: flex; gap: 8px; flex-wrap: wrap;
   justify-content: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   opacity: 0;
 }
 .hs-pill {
   position: relative;
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px;
-  background: rgba(255,255,255,.025);
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,.028);
   border-radius: var(--r-s);
   flex: 1; min-width: 90px;
+  transition: border-color var(--t-fast), transform var(--t-fast);
 }
+.hs-pill:hover { transform: translateY(-2px); }
 .hs-pill::before {
   content: ''; position: absolute; inset: 0; border-radius: var(--r-s); padding: 1px;
-  background: linear-gradient(135deg, rgba(194,255,61,.2) 0%, rgba(255,255,255,.04) 100%);
+  background: linear-gradient(135deg, rgba(194,255,61,.25) 0%, rgba(255,255,255,.05) 100%);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
 }
-.hs-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.hs-text { display: flex; flex-direction: column; gap: 3px; flex: 1; }
 .hs-num {
-  font-family: var(--m); font-size: 16px; font-weight: 700;
+  font-family: var(--m); font-size: 18px; font-weight: 700;
   color: var(--lime); letter-spacing: -.02em; line-height: 1;
 }
 .hs-lbl {
-  font-family: var(--m); font-size: 7px; font-weight: 500;
-  color: var(--t3); letter-spacing: .12em; text-transform: uppercase;
+  font-family: var(--m); font-size: 8px; font-weight: 600;
+  color: var(--t3); letter-spacing: .1em; text-transform: uppercase;
 }
 .hs-spark {
-  width: 60px; height: 24px; display: block; flex-shrink: 0;
+  width: 72px; height: 32px; display: block; flex-shrink: 0;
+  border-radius: 4px; background: rgba(194,255,61,.04);
 }
 
 /* CTA ROW */
@@ -546,21 +549,25 @@ body::after {
 
 /* TRUST STRIP */
 .trust-strip {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-  padding: 8px 16px;
-  border-top: 1px solid var(--bd0);
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  background: rgba(255,255,255,.012);
 }
 .trust-label {
-  font-family: var(--m); font-size: 9px; color: var(--t3);
-  letter-spacing: .08em; flex-shrink: 0;
+  font-family: var(--m); font-size: 9px; font-weight: 700;
+  color: var(--t2); letter-spacing: .1em; flex-shrink: 0;
+  text-transform: uppercase;
 }
-.trust-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+.trust-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .trust-pill {
-  padding: 2px 7px; border-radius: var(--r-full);
-  background: rgba(255,255,255,.025); border: 1px solid var(--bd1);
-  font-family: var(--m); font-size: 8px; font-weight: 600;
-  color: var(--t3); letter-spacing: .06em;
+  display: flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: var(--r-full);
+  background: rgba(255,255,255,.04); border: 1px solid var(--bd2);
+  font-family: var(--m); font-size: 9px; font-weight: 600;
+  color: var(--t2); letter-spacing: .05em;
 }
+.trust-pill::before { content: '✓'; color: var(--lime); font-size: 8px; }
 .trust-sep { font-family: var(--m); font-size: 9px; color: var(--t3); }
 .trust-meta { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .04em; }
 
@@ -1596,9 +1603,9 @@ function drawEquityCurve(canvas, targetROI) {
 /* ══════════════════════════════════════════════
    SPARKLINE DRAW — mini 60x24px
 ══════════════════════════════════════════════ */
-function drawSparkline(canvas, data) {
+function drawSparkline(canvas, data, W, H) {
+  W = W || 60; H = H || 24;
   const dpr = window.devicePixelRatio || 1;
-  const W = 60, H = 24;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
@@ -1678,11 +1685,11 @@ function heroEnter() {
   }
   setTimeout(() => tryDrawEquity(8), 400);
 
-  // Draw sparklines + count-up
+    // Draw sparklines + count-up
   setTimeout(() => {
     document.querySelectorAll('.hs-spark').forEach(cv => {
       const key = cv.dataset.spark;
-      if (sparkData[key]) drawSparkline(cv, sparkData[key]);
+      if (sparkData[key]) drawSparkline(cv, sparkData[key], 72, 32);
     });
     document.querySelectorAll('.hs-num[data-target]').forEach(el => {
       const target = parseFloat(el.dataset.target);
