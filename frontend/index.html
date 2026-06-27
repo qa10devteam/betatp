@@ -394,7 +394,7 @@ body::after {
 }
 .cta-ghost:hover { border-color: var(--bd3); background: rgba(255,255,255,.07); }
 
-/* MARKET CHIPS */
+/* MARKET CHIPS — kept for fallback */
 .market-row {
   display: flex; gap: 6px; flex-wrap: wrap;
   margin-bottom: 16px;
@@ -414,6 +414,30 @@ body::after {
   background: var(--lime3); border-color: rgba(194,255,61,.3);
   color: var(--lime);
 }
+
+/* URGENCY + TRUST ROW */
+.hero-urgency {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-bottom: 16px; opacity: 0;
+}
+.urg-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: var(--r-full);
+  background: rgba(194,255,61,.06); border: 1px solid rgba(194,255,61,.2);
+  font-family: var(--m); font-size: 9px; font-weight: 600;
+  color: rgba(194,255,61,.75); letter-spacing: .06em;
+  width: fit-content;
+}
+.urg-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--lime); flex-shrink: 0;
+  animation: ldot 1.4s ease infinite;
+}
+.urg-trust {
+  font-family: var(--m); font-size: 9px; font-weight: 600;
+  color: rgba(240,240,255,.35); letter-spacing: .05em;
+}
+.urg-check { color: var(--lime); margin-right: 2px; }
 
 /* ═══════════════════════════════════════════════════════
    LIVE STATS BAR — zastąpuje ticker z 2005 roku
@@ -1179,7 +1203,7 @@ body::after {
     </h2>
 
     <p class="hero-claim" id="hero-claim">
-      LightGBM v14 · 78 022 meczów ATP · Kelly Criterion live
+      Codzienne typy ATP z udokumentowanym zyskiem — model v14, 57 zakładów, 59.6% skuteczności.
     </p>
 
     <!-- EQUITY CURVE CANVAS -->
@@ -1220,17 +1244,21 @@ body::after {
 
     <!-- CTA BUTTONS -->
     <div class="hero-cta" id="hero-cta">
-      <button class="cta-primary" onclick="goTo('s-daily');AC()">&#9889; Dziś 3 typy</button>
+      <button class="cta-primary" onclick="goTo('s-daily');AC()">&#9889; Pokaż 3 typy na dziś</button>
       <button class="cta-ghost"   onclick="goTo('s-system')">System</button>
     </div>
 
-    <!-- MARKET CHIPS -->
-    <div class="market-row" id="hero-markets">
-      <div class="mc active">Winner</div>
-      <div class="mc">First Set</div>
-      <div class="mc">Handicap</div>
-      <div class="mc">Total Sets</div>
-      <div class="mc">Score</div>
+    <!-- URGENCY + TRUST ROW -->
+    <div class="hero-urgency" id="hero-markets">
+      <div class="urg-badge">
+        <span class="urg-dot"></span>
+        Typy dostępne do końca dnia · Wimbledon 2026
+      </div>
+      <div class="urg-trust">
+        <span class="urg-check">✓</span> ATP Official &nbsp;
+        <span class="urg-check">✓</span> Pinnacle &nbsp;
+        <span class="urg-check">✓</span> Odds API
+      </div>
     </div>
   </div>
 
