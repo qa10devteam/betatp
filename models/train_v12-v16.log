@@ -1,0 +1,200 @@
+[21:07:49] Uruchamiam wersje: [12, 13, 14, 15, 16]
+[21:07:49] Wczytywanie danych...
+[21:07:49]   Dataset: 78,022 meczów | 94 kolumn
+[21:07:49] 
+████████████████████████████████████████████████████████████
+[21:07:49] v12: COMBO (H2H + fatigue + weather)
+[21:07:49] ████████████████████████████████████████████████████████████
+[21:08:09] 
+============================================================
+[21:08:09] TRENING v12 | 61 feats | train=71,872 | hold=6,150
+[LightGBM] [Fatal] Feature (temp_mean) appears more than one time.
+[21:08:09]   ERROR v12: Feature (temp_mean) appears more than one time.
+Traceback (most recent call last):
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 1223, in <module>
+    meta, model, feats = fn(df.copy())
+                         ^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 699, in run_v12
+    return train_model("v12", train, hold, feat_cols,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 351, in train_model
+    m.fit(X_tr, y_tr,
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1560, in fit
+    super().fit(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1049, in fit
+    self._Booster = train(
+                    ^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/engine.py", line 297, in train
+    booster = Booster(params=params, train_set=train_set)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3656, in __init__
+    train_set.construct()
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2590, in construct
+    self._lazy_init(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2227, in _lazy_init
+    return self.set_feature_name(feature_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3046, in set_feature_name
+    _safe_call(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 313, in _safe_call
+    raise LightGBMError(_LIB.LGBM_GetLastError().decode("utf-8"))
+lightgbm.basic.LightGBMError: Feature (temp_mean) appears more than one time.
+[21:08:09] 
+████████████████████████████████████████████████████████████
+[21:08:09] v13: +DRAW DIFFICULTY (avg rank pokonanych w turnieju)
+[21:08:09] ████████████████████████████████████████████████████████████
+[21:08:24] 
+============================================================
+[21:08:24] TRENING v13 | 53 feats | train=71,872 | hold=6,150
+[LightGBM] [Fatal] Feature (temp_mean) appears more than one time.
+[21:08:24]   ERROR v13: Feature (temp_mean) appears more than one time.
+Traceback (most recent call last):
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 1223, in <module>
+    meta, model, feats = fn(df.copy())
+                         ^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 720, in run_v13
+    return train_model("v13", train, hold, feat_cols,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 351, in train_model
+    m.fit(X_tr, y_tr,
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1560, in fit
+    super().fit(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1049, in fit
+    self._Booster = train(
+                    ^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/engine.py", line 297, in train
+    booster = Booster(params=params, train_set=train_set)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3656, in __init__
+    train_set.construct()
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2590, in construct
+    self._lazy_init(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2227, in _lazy_init
+    return self.set_feature_name(feature_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3046, in set_feature_name
+    _safe_call(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 313, in _safe_call
+    raise LightGBMError(_LIB.LGBM_GetLastError().decode("utf-8"))
+lightgbm.basic.LightGBMError: Feature (temp_mean) appears more than one time.
+[21:08:25] 
+████████████████████████████████████████████████████████████
+[21:08:25] v14: +AGE×SURFACE INTERACTION
+[21:08:25] ████████████████████████████████████████████████████████████
+[21:08:35] 
+============================================================
+[21:08:35] TRENING v14 | 59 feats | train=71,872 | hold=6,150
+[LightGBM] [Fatal] Feature (temp_mean) appears more than one time.
+[21:08:35]   ERROR v14: Feature (temp_mean) appears more than one time.
+Traceback (most recent call last):
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 1223, in <module>
+    meta, model, feats = fn(df.copy())
+                         ^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 755, in run_v14
+    return train_model("v14", train, hold, feat_cols,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 351, in train_model
+    m.fit(X_tr, y_tr,
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1560, in fit
+    super().fit(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1049, in fit
+    self._Booster = train(
+                    ^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/engine.py", line 297, in train
+    booster = Booster(params=params, train_set=train_set)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3656, in __init__
+    train_set.construct()
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2590, in construct
+    self._lazy_init(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2227, in _lazy_init
+    return self.set_feature_name(feature_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3046, in set_feature_name
+    _safe_call(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 313, in _safe_call
+    raise LightGBMError(_LIB.LGBM_GetLastError().decode("utf-8"))
+lightgbm.basic.LightGBMError: Feature (temp_mean) appears more than one time.
+[21:08:35] 
+████████████████████████████████████████████████████████████
+[21:08:35] v15: +MARKET CONSENSUS DIVERGENCE (max vs avg vs pinnacle spread)
+[21:08:35] ████████████████████████████████████████████████████████████
+[21:08:46] 
+============================================================
+[21:08:46] TRENING v15 | 57 feats | train=71,872 | hold=6,150
+[LightGBM] [Fatal] Feature (temp_mean) appears more than one time.
+[21:08:46]   ERROR v15: Feature (temp_mean) appears more than one time.
+Traceback (most recent call last):
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 1223, in <module>
+    meta, model, feats = fn(df.copy())
+                         ^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 788, in run_v15
+    return train_model("v15", train, hold, feat_cols,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 351, in train_model
+    m.fit(X_tr, y_tr,
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1560, in fit
+    super().fit(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1049, in fit
+    self._Booster = train(
+                    ^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/engine.py", line 297, in train
+    booster = Booster(params=params, train_set=train_set)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3656, in __init__
+    train_set.construct()
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2590, in construct
+    self._lazy_init(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2227, in _lazy_init
+    return self.set_feature_name(feature_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3046, in set_feature_name
+    _safe_call(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 313, in _safe_call
+    raise LightGBMError(_LIB.LGBM_GetLastError().decode("utf-8"))
+lightgbm.basic.LightGBMError: Feature (temp_mean) appears more than one time.
+[21:08:47] 
+████████████████████████████████████████████████████████████
+[21:08:47] v16: FULL FEATURE SET (v15 + serve/return rolling stats)
+[21:08:47] ████████████████████████████████████████████████████████████
+[21:10:48] 
+============================================================
+[21:10:48] TRENING v16 | 75 feats | train=71,872 | hold=6,150
+[LightGBM] [Fatal] Feature (temp_mean) appears more than one time.
+[21:10:48]   ERROR v16: Feature (temp_mean) appears more than one time.
+Traceback (most recent call last):
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 1223, in <module>
+    meta, model, feats = fn(df.copy())
+                         ^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 825, in run_v16
+    return train_model("v16", train, hold, feat_cols,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/betatp/scripts/train_versions.py", line 351, in train_model
+    m.fit(X_tr, y_tr,
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1560, in fit
+    super().fit(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/sklearn.py", line 1049, in fit
+    self._Booster = train(
+                    ^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/engine.py", line 297, in train
+    booster = Booster(params=params, train_set=train_set)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3656, in __init__
+    train_set.construct()
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2590, in construct
+    self._lazy_init(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 2227, in _lazy_init
+    return self.set_feature_name(feature_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 3046, in set_feature_name
+    _safe_call(
+  File "/home/ubuntu/.hermes/hermes-agent/venv/lib/python3.11/site-packages/lightgbm/basic.py", line 313, in _safe_call
+    raise LightGBMError(_LIB.LGBM_GetLastError().decode("utf-8"))
+lightgbm.basic.LightGBMError: Feature (temp_mean) appears more than one time.
+[21:10:48] 
+============================================================
+[21:10:48] PODSUMOWANIE WSZYSTKICH WERSJI
+[21:10:48] ============================================================
+[21:10:48] 
+Zapisano: /home/ubuntu/betatp/models/versions_results.json
+[21:10:48] ============================================================

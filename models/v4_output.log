@@ -1,0 +1,138 @@
+[19:45:12] === v4 | ETAP 1: Wczytywanie odds ===
+[19:45:12]   Łącznie: 78,022 | z Pinnacle: 25,036
+[19:45:12] === v4 | ETAP 2: Elo + Form state (1990→2026) ===
+[19:45:13]   TML: 115,242 meczów
+[19:45:13]   Buduję indeks odds...
+[19:45:14]   Indeks odds: 24,039
+[19:45:14] === v4 | ETAP 3: Pre-match features (chronologicznie) ===
+[19:45:16]   [25,000/115,242] | z odds: 0 | 3s
+[19:45:17]   [50,000/115,242] | z odds: 0 | 4s
+[19:45:19]   [75,000/115,242] | z odds: 9,405 | 6s
+[19:45:20]   [100,000/115,242] | z odds: 19,534 | 8s
+[19:45:21]   Gotowe | z odds: 25,037 | 8.5s
+[19:45:21] === v4 | ETAP 4: Random A/B ===
+[19:45:22]   Dataset: (25037, 48)
+[19:45:22]   A/B dataset: (25037, 45) | balance: 0.498
+[19:45:22]   pin_prob_w coverage: 100.0%
+[19:45:22] 
+  Top 10 corr z y:
+max_prob_w        0.465914
+avg_prob_w        0.465302
+pin_prob_w        0.464935
+fat14_diff        0.449125
+a_fat14           0.305288
+b_fat14           0.294597
+ewma_diff         0.279213
+ewma_surf_diff    0.278253
+a_fat28           0.277077
+b_fat28           0.267072
+[19:45:22] 
+=== v4 | ETAP 5: Walk-Forward ===
+[19:47:58]   2004-2012→2015: AUC=0.9072 Acc=0.825 BS=0.1229 iters=636 [155.5s]
+[19:53:01]   2004-2015→2018: AUC=0.9058 Acc=0.8185 BS=0.1249 iters=1204 [303.5s]
+[19:55:33]   2004-2018→2021: AUC=0.8975 Acc=0.8038 BS=0.1309 iters=682 [151.3s]
+[19:57:38]   2004-2021→2023: AUC=0.8939 Acc=0.8075 BS=0.1324 iters=552 [125.1s]
+[20:03:00]   2004-2023→2024: AUC=0.9062 Acc=0.815 BS=0.125 iters=1905 [322.4s]
+[20:03:00] 
+  WF ŚREDNIE: AUC=0.9021 Acc=0.8140 BS=0.1272
+[20:03:00] === v4 | ETAP 6: Final (train≤2023, holdout 2024-2026) ===
+[20:03:00]   Train: 23,048 | Holdout: 1,989
+[100]	valid_0's auc: 0.866751
+[200]	valid_0's auc: 0.874996
+[300]	valid_0's auc: 0.884388
+[400]	valid_0's auc: 0.887994
+[500]	valid_0's auc: 0.890695
+[600]	valid_0's auc: 0.892578
+[700]	valid_0's auc: 0.8939
+[800]	valid_0's auc: 0.894517
+[900]	valid_0's auc: 0.894792
+[1000]	valid_0's auc: 0.895175
+[1100]	valid_0's auc: 0.895368
+[1200]	valid_0's auc: 0.895523
+[1300]	valid_0's auc: 0.895694
+[1400]	valid_0's auc: 0.89594
+[1500]	valid_0's auc: 0.895993
+[1600]	valid_0's auc: 0.89628
+[1700]	valid_0's auc: 0.896509
+[1800]	valid_0's auc: 0.896569
+[1900]	valid_0's auc: 0.89702
+[2000]	valid_0's auc: 0.897389
+[2100]	valid_0's auc: 0.89758
+[2200]	valid_0's auc: 0.898261
+[2300]	valid_0's auc: 0.898363
+[2400]	valid_0's auc: 0.898771
+[2500]	valid_0's auc: 0.898692
+[2600]	valid_0's auc: 0.898828
+[2700]	valid_0's auc: 0.899105
+[2800]	valid_0's auc: 0.899499
+[2900]	valid_0's auc: 0.899355
+[3000]	valid_0's auc: 0.899025
+[20:11:00]   HOLDOUT: AUC=0.8995 Acc=0.8105 BS=0.1297 iters=2824 [479.7s]
+[20:11:00] 
+=== v4 | ETAP 7: Model vs Pinnacle ===
+[20:11:00]   Pinnacle:   AUC=0.7457  BS=0.2039
+[20:11:00]   Nasz model: AUC=0.8995  BS=0.1297
+[20:11:00]   Delta:      AUC=+0.1538  BS=-0.0742
+[20:11:00] 
+  market_edge: μ=0.0054  σ=0.2695
+[20:11:00]   Rozkład edge: <-10%=36.0%  -10-0%=12.8%  0-10%=14.0%  >10%=37.2%
+[20:11:00] 
+  Value betting simulation (edge thresholds):
+[20:11:00]   edge>2%: n= 972 | win_rate=0.805 | ROI/zakład=+1.3520
+[20:11:00]   edge>5%: n= 891 | win_rate=0.816 | ROI/zakład=+1.3878
+[20:11:00]   edge>8%: n= 816 | win_rate=0.830 | ROI/zakład=+1.4469
+[20:11:00]   edge>10%: n= 740 | win_rate=0.839 | ROI/zakład=+1.4977
+[20:11:00]   edge>15%: n= 611 | win_rate=0.858 | ROI/zakład=+1.6187
+[20:11:00] 
+  Analiza edgów według bin:
+[20:11:00] 
+            n  win_rate   avg_pin  avg_model
+edge_bin                                    
+<-10%     716  0.164804  0.439347   0.160447
+-10-5%    143  0.335664  0.399859   0.323890
+-5-0%     112  0.366071  0.407238   0.381580
+0-5%      127  0.645669  0.574624   0.600388
+5-10%     151  0.701987  0.649046   0.727343
+>10%      740  0.839189  0.560519   0.843108
+[20:11:00] 
+=== v4 | Feature Importance TOP-20 ===
+[20:11:00]   odds_consensus_w: 5905
+[20:11:00]   pin_prob_w: 4758
+[20:11:00]   b_ret_pct: 3359
+[20:11:00]   b_surf_spec: 3164
+[20:11:00]   a_ret_pct: 3042
+[20:11:00]   a_surf_spec: 3024
+[20:11:00]   b_age: 3005
+[20:11:00]   max_prob_w: 2949
+[20:11:00]   srv_pct_diff: 2869
+[20:11:00]   a_age: 2851
+[20:11:00]   age_diff: 2851
+[20:11:00]   a_srv_pct: 2844
+[20:11:00]   b_srv_pct: 2760
+[20:11:00]   surf_spec_diff: 2549
+[20:11:00]   a_ewma: 2521
+[20:11:00]   ewma_surf_diff: 2493
+[20:11:00]   b_ewma_surf: 2428
+[20:11:00]   fat14_diff: 2316
+[20:11:00]   avg_prob_w: 2298
+[20:11:00]   a_ewma_surf: 2288
+[20:11:00] 
+=== v4 | ETAP 9: Zapis ===
+[20:11:00] 
+============================================================
+[20:11:00] v4 DONE | AUC=0.8995 | BS=0.1297 | iters=2824 | feats=43
+[20:11:00] ============================================================
+{
+  "version": "v4",
+  "trained_at": "20260625_2011",
+  "train_period": "2004-2023 (z Pinnacle)",
+  "holdout_period": "2024-2026",
+  "n_train": 23048,
+  "n_holdout": 1989,
+  "n_features": 43,
+  "mean_wf_auc": 0.9021,
+  "mean_wf_acc": 0.814,
+  "holdout_auc": 0.8995,
+  "holdout_acc": 0.8105,
+  "holdout_bs": 0.1297
+}

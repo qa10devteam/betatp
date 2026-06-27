@@ -1,0 +1,253 @@
+{
+  "built_at": "2026-06-25T19:33:26.041729",
+  "total_matches": 78022,
+  "matches_with_pinnacle": 25036,
+  "matches_with_b365": 28330,
+  "matches_with_max": 17801,
+  "year_range": "2000\u20132026",
+  "per_year": [
+    {
+      "year": 2000,
+      "total": 3376,
+      "has_pin": 0,
+      "has_b365": 0,
+      "has_max": 0,
+      "pin_pct": 0.0,
+      "b365_pct": 0.0
+    },
+    {
+      "year": 2001,
+      "total": 3309,
+      "has_pin": 0,
+      "has_b365": 0,
+      "has_max": 0,
+      "pin_pct": 0.0,
+      "b365_pct": 0.0
+    },
+    {
+      "year": 2002,
+      "total": 3210,
+      "has_pin": 0,
+      "has_b365": 658,
+      "has_max": 0,
+      "pin_pct": 0.0,
+      "b365_pct": 20.5
+    },
+    {
+      "year": 2003,
+      "total": 3215,
+      "has_pin": 0,
+      "has_b365": 1375,
+      "has_max": 0,
+      "pin_pct": 0.0,
+      "b365_pct": 42.8
+    },
+    {
+      "year": 2004,
+      "total": 3288,
+      "has_pin": 1359,
+      "has_b365": 1326,
+      "has_max": 0,
+      "pin_pct": 41.3,
+      "b365_pct": 40.3
+    },
+    {
+      "year": 2005,
+      "total": 3257,
+      "has_pin": 1503,
+      "has_b365": 1475,
+      "has_max": 0,
+      "pin_pct": 46.1,
+      "b365_pct": 45.3
+    },
+    {
+      "year": 2006,
+      "total": 3264,
+      "has_pin": 1474,
+      "has_b365": 1454,
+      "has_max": 0,
+      "pin_pct": 45.2,
+      "b365_pct": 44.5
+    },
+    {
+      "year": 2007,
+      "total": 3186,
+      "has_pin": 1425,
+      "has_b365": 1417,
+      "has_max": 0,
+      "pin_pct": 44.7,
+      "b365_pct": 44.5
+    },
+    {
+      "year": 2008,
+      "total": 3119,
+      "has_pin": 1242,
+      "has_b365": 1246,
+      "has_max": 0,
+      "pin_pct": 39.8,
+      "b365_pct": 39.9
+    },
+    {
+      "year": 2009,
+      "total": 3083,
+      "has_pin": 0,
+      "has_b365": 1285,
+      "has_max": 0,
+      "pin_pct": 0.0,
+      "b365_pct": 41.7
+    },
+    {
+      "year": 2010,
+      "total": 3030,
+      "has_pin": 1322,
+      "has_b365": 1322,
+      "has_max": 968,
+      "pin_pct": 43.6,
+      "b365_pct": 43.6
+    },
+    {
+      "year": 2011,
+      "total": 3013,
+      "has_pin": 1275,
+      "has_b365": 1270,
+      "has_max": 1278,
+      "pin_pct": 42.3,
+      "b365_pct": 42.2
+    },
+    {
+      "year": 2012,
+      "total": 3007,
+      "has_pin": 1165,
+      "has_b365": 1166,
+      "has_max": 1174,
+      "pin_pct": 38.7,
+      "b365_pct": 38.8
+    },
+    {
+      "year": 2013,
+      "total": 2944,
+      "has_pin": 1240,
+      "has_b365": 1244,
+      "has_max": 1244,
+      "pin_pct": 42.1,
+      "b365_pct": 42.3
+    },
+    {
+      "year": 2014,
+      "total": 2900,
+      "has_pin": 1258,
+      "has_b365": 1258,
+      "has_max": 1264,
+      "pin_pct": 43.4,
+      "b365_pct": 43.4
+    },
+    {
+      "year": 2015,
+      "total": 2943,
+      "has_pin": 1243,
+      "has_b365": 1241,
+      "has_max": 1245,
+      "pin_pct": 42.2,
+      "b365_pct": 42.2
+    },
+    {
+      "year": 2016,
+      "total": 2968,
+      "has_pin": 1201,
+      "has_b365": 1201,
+      "has_max": 1203,
+      "pin_pct": 40.5,
+      "b365_pct": 40.5
+    },
+    {
+      "year": 2017,
+      "total": 2928,
+      "has_pin": 1181,
+      "has_b365": 1183,
+      "has_max": 1184,
+      "pin_pct": 40.3,
+      "b365_pct": 40.4
+    },
+    {
+      "year": 2018,
+      "total": 2921,
+      "has_pin": 1144,
+      "has_b365": 1147,
+      "has_max": 1151,
+      "pin_pct": 39.2,
+      "b365_pct": 39.3
+    },
+    {
+      "year": 2019,
+      "total": 2805,
+      "has_pin": 1156,
+      "has_b365": 1154,
+      "has_max": 1157,
+      "pin_pct": 41.2,
+      "b365_pct": 41.1
+    },
+    {
+      "year": 2020,
+      "total": 1464,
+      "has_pin": 523,
+      "has_b365": 522,
+      "has_max": 523,
+      "pin_pct": 35.7,
+      "b365_pct": 35.7
+    },
+    {
+      "year": 2021,
+      "total": 2733,
+      "has_pin": 1167,
+      "has_b365": 1153,
+      "has_max": 1170,
+      "pin_pct": 42.7,
+      "b365_pct": 42.2
+    },
+    {
+      "year": 2022,
+      "total": 2916,
+      "has_pin": 1077,
+      "has_b365": 1081,
+      "has_max": 1082,
+      "pin_pct": 36.9,
+      "b365_pct": 37.1
+    },
+    {
+      "year": 2023,
+      "total": 2993,
+      "has_pin": 1092,
+      "has_b365": 1095,
+      "has_max": 1096,
+      "pin_pct": 36.5,
+      "b365_pct": 36.6
+    },
+    {
+      "year": 2024,
+      "total": 3073,
+      "has_pin": 1064,
+      "has_b365": 1065,
+      "has_max": 1067,
+      "pin_pct": 34.6,
+      "b365_pct": 34.7
+    },
+    {
+      "year": 2025,
+      "total": 2941,
+      "has_pin": 915,
+      "has_b365": 966,
+      "has_max": 969,
+      "pin_pct": 31.1,
+      "b365_pct": 32.8
+    },
+    {
+      "year": 2026,
+      "total": 136,
+      "has_pin": 10,
+      "has_b365": 26,
+      "has_max": 26,
+      "pin_pct": 7.4,
+      "b365_pct": 19.1
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+[21:12:31] ============================================================
+[21:12:31] AUDIT — PostgreSQL betatp
+[21:12:31] ============================================================
+[21:12:31] 
+[1] ROW COUNTS
+[21:12:31]   players                       :      7,561
+[21:12:31]   tournaments                   :      4,304
+[21:12:31]   tournament_editions           :      8,580
+[21:12:31]   matches                       :    197,495
+[21:12:31]   odds                          :     66,444
+[21:12:31]   weather_stations              :        123
+[21:12:31]   weather_daily                 :      1,426
+[21:12:31]   tournament_weather            :        822
+[21:12:31] 
+[2] NULL CHECKS
+[21:12:31]   players.(full_name IS NULL OR tml_id IS NULL     ): ✅ OK
+[21:12:31]   tournaments.(tourney_name IS NULL                    ): ✅ OK
+[21:12:31]   tournament_editions.(tournament_id IS NULL OR year IS NULL   ): ✅ OK
+[21:12:31]   matches.(edition_id IS NULL OR winner_id IS NULL ): ✅ OK
+[21:12:31]   odds.(match_id IS NULL OR bookmaker IS NULL   ): ✅ OK
+[21:12:31]   odds.(odds_winner IS NULL AND prob_winner IS N): ✅ OK
+[21:12:31] 
+[3] DUPLIKATY
+[21:12:31]   players(tml_id): ✅ OK
+[21:12:31]   odds(match_id, bookmaker): ✅ OK
+[21:12:31]   tournament_editions(tournament_id, year): ✅ OK
+[21:12:31] 
+[4] FK INTEGRITY
+[21:12:31]   matches.winner_id → players.player_id: ✅ OK
+[21:12:31]   matches.loser_id → players.player_id: ✅ OK
+[21:12:31]   matches.edition_id → tournament_editions.edition_id: ✅ OK
+[21:12:31]   odds.match_id → matches.match_id: ✅ OK
+[21:12:31]   tournament_editions.tournament_id → tournaments.tournament_id: ✅ OK
+[21:12:31] 
+[5] ODDS SANITY (bukmacher = PSW/PSL)
+[21:12:31]   pinnacle.odds<1              : ✅ 0
+[21:12:31]   pinnacle.odds>50             : ✅ 0
+[21:12:31]   pinnacle.odds_null           : ✅ 0
+[21:12:31]   pinnacle.prob_oor            : ✅ 0
+[21:12:31]   pinnacle.min_odds            : ✅ 1.0000
+[21:12:31]   pinnacle.max_odds            : ✅ 34.0000
+[21:12:31]   pinnacle.avg_margin          : ✅ 0.02291
+[21:12:31]   pinnacle.margin_anom         : ❌ 12
+[21:12:31] 
+[6] YEAR RANGE
+[21:12:31]   2013: matches=5,588  odds=3,526  ███████████████████████████
+[21:12:31]   2014: matches=5,721  odds=3,763  ████████████████████████████
+[21:12:31]   2015: matches=5,494  odds=3,400  ███████████████████████████
+[21:12:31]   2016: matches=5,632  odds=3,565  ████████████████████████████
+[21:12:31]   2017: matches=5,578  odds=3,524  ███████████████████████████
+[21:12:31]   2018: matches=5,550  odds=3,501  ███████████████████████████
+[21:12:31]   2019: matches=5,496  odds=3,588  ███████████████████████████
+[21:12:31]   2020: matches=2,777  odds=1,748  █████████████
+[21:12:31]   2021: matches=5,531  odds=3,733  ███████████████████████████
+[21:12:31]   2022: matches=5,405  odds=3,318  ███████████████████████████
+[21:12:31]   2023: matches=5,535  odds=3,388  ███████████████████████████
+[21:12:31]   2024: matches=5,524  odds=3,265  ███████████████████████████
+[21:12:31]   2025: matches=4,176  odds=2,333  ████████████████████
+[21:12:31]   2026: matches=  195  odds=   84  
+[21:12:31] 
+[7] WEATHER COVERAGE (tournament_weather)
+Traceback (most recent call last):
+  File "<stdin>", line 116, in <module>
+psycopg2.errors.UndefinedColumn: column "wind_max_mean" does not exist
+LINE 6:         COUNT(wind_max_mean)                         AS has_...
+                      ^
+
