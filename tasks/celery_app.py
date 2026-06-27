@@ -20,35 +20,37 @@ RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_AVAILABLE = False
 
 try:
-    from celery import Celery  # noqa: F401
+    from celery import Celery
     CELERY_AVAILABLE = True
 except ImportError:
-    logger.warning(
-        "Celery is not installed. Using stub app -- tasks run synchronously. "
-        "Install with: pip install celery[redis]"
-    )
+    Celery = None  # type: ignore[assignment,misc]
 
-if CELERY_AVAILABLE:
-    from celery import Celery
 
+if CELERY_AVAILABLE and Celery is not None:
     app = Celery(
         "betatp",
         broker=BROKER_URL,
         backend=RESULT_BACKEND,
     )
     app.config_from_object({
-        "task_serializer":   "json",
+        "task_serializer": "json",
         "result_serializer": "json",
-        "accept_content":    ["json"],
-        "timezone":          "Europe/Warsaw",
-        "enable_utc":        True,
+        "accept_content": ["json"],
+        "timezone": "Europe/Warsaw",
+        "enable_utc": True,
     })
 
 else:
-    # ---- Stub implementations -----------------------------------------------
+    # ---- Stub: Celery is not installed --------------------------------
+    import warnings
+    warnings.warn(
+        "Celery is not installed. Task decorators will run synchronously.",
+        ImportWarning,
+        stacklevel=2,
+    )
 
     class _TaskStub:
-        """Wraps a function so @app.task decorated code works without Celery."""
+        """Wraps a plain function so it can be called like a Celery task."""
 
         def __init__(self, fn):
             self._fn = fn
@@ -89,8 +91,10 @@ else:
         def task(self, *args, **kwargs):
             """Decorator: works both as @app.task and @app.task(...)."""
             if len(args) == 1 and callable(args[0]):
+                # Bare decorator: @app.task
                 return _TaskStub(args[0])
 
+            # With arguments: @app.task(bind=True, ...)
             def _decorator(fn):
                 return _TaskStub(fn)
 
