@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>betatp.io — AI Value Betting ATP · v10</title>
+<title>betatp.io — AI Value Betting ATP · v11</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c2ff3d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
@@ -439,7 +443,162 @@ body::after {
 }
 .cta-ghost:hover { border-color: var(--bd3); background: rgba(255,255,255,.07); }
 
-/* MARKET CHIPS — kept for fallback */
+/* ══════════════════════════════════
+   h20: ONBOARDING MODAL
+══════════════════════════════════ */
+.ob-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.85); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+}
+.ob-modal {
+  width: 320px; max-width: 90vw;
+  background: var(--c2); border: 1px solid var(--bd2);
+  border-radius: 20px; padding: 28px 24px 20px;
+  box-shadow: 0 0 60px rgba(194,255,61,.12);
+}
+.ob-step { display: none; flex-direction: column; align-items: center; gap: 12px; }
+.ob-step.active { display: flex; }
+.ob-icon { font-size: 40px; margin-bottom: 4px; }
+.ob-title { font-size: 18px; font-weight: 800; color: var(--t1); }
+.ob-sub { font-size: 11px; color: var(--t3); margin-bottom: 4px; }
+.ob-opts { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.ob-opts.multi { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+.ob-opt {
+  padding: 10px 14px; border-radius: 10px; width: 100%;
+  background: rgba(255,255,255,.04); border: 1px solid var(--bd1);
+  color: var(--t2); font-size: 12px; font-weight: 600; cursor: pointer;
+  text-align: left; transition: all .2s;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.ob-opts.multi .ob-opt { width: auto; flex: 1; min-width: 80px; text-align: center; justify-content: center; }
+.ob-opt:hover { border-color: var(--lime); color: var(--t1); }
+.ob-opt.selected { background: rgba(194,255,61,.12); border-color: var(--lime); color: var(--lime); }
+.ob-hint { font-size: 9px; color: var(--t3); font-weight: 400; }
+.ob-next, .ob-finish {
+  width: 100%; padding: 12px; border-radius: 10px; margin-top: 4px;
+  background: linear-gradient(135deg,#4a9d08,#61b510);
+  color: #000; font-weight: 800; font-size: 13px; cursor: pointer;
+  transition: opacity .2s;
+}
+.ob-next:disabled { opacity: .35; cursor: not-allowed; }
+.ob-finish { background: linear-gradient(135deg,var(--lime),#a8e028); }
+.ob-slider-wrap { width: 100%; }
+.ob-slider-wrap input[type=range] { width: 100%; accent-color: var(--lime); }
+.ob-bankroll-val { font-size: 22px; font-weight: 800; color: var(--lime); text-align: center; margin-top: 8px; }
+.ob-dots { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+.ob-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--bd2); transition: all .3s; }
+.ob-dot.active { background: var(--lime); width: 18px; border-radius: 3px; }
+
+/* ══════════════════════════════════
+   h21: CLV TRACKER SCREEN
+══════════════════════════════════ */
+.clv-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; flex: 1; }
+.clv-hero { display: flex; gap: 8px; }
+.clv-stat {
+  flex: 1; padding: 12px 8px; border-radius: 10px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--bd1);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.clv-stat.lime .clv-val { color: var(--lime); }
+.clv-stat.cyan .clv-val { color: var(--blue); }
+.clv-stat.gold .clv-val { color: var(--gold); }
+.clv-val { font-size: 18px; font-weight: 800; }
+.clv-lbl { font-size: 9px; color: var(--t3); text-align: center; }
+.clv-sig { padding: 8px 12px; border-radius: 8px; background: rgba(194,255,61,.07); font-size: 11px; color: var(--t2); text-align: center; }
+
+/* ══════════════════════════════════
+   h26: COUPON HISTORY SCREEN
+══════════════════════════════════ */
+.hist-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.hist-filter { display: flex; gap: 6px; padding: 10px 12px; overflow-x: auto; }
+.hf-btn {
+  padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,.04); border: 1px solid var(--bd1); color: var(--t2);
+  cursor: pointer; white-space: nowrap; transition: all .2s;
+}
+.hf-btn.on { background: rgba(194,255,61,.12); border-color: var(--lime); color: var(--lime); }
+#hist-list { padding: 8px 12px; display: flex; flex-direction: column; gap: 8px; }
+.hist-item {
+  padding: 12px; border-radius: 10px;
+  background: rgba(255,255,255,.03); border: 1px solid var(--bd1);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.hist-item.won { border-color: rgba(194,255,61,.3); }
+.hist-item.lost { border-color: rgba(255,60,80,.2); }
+.hist-date { font-size: 9px; color: var(--t3); }
+.hist-odds { font-size: 16px; font-weight: 800; color: var(--lime); }
+.hist-badge { padding: 3px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; }
+.hist-badge.won { background: rgba(194,255,61,.15); color: var(--lime); }
+.hist-badge.lost { background: rgba(255,60,80,.15); color: #ff3c50; }
+.hist-badge.pending { background: rgba(255,200,0,.1); color: var(--gold); }
+
+/* ══════════════════════════════════
+   h28: MATCH DETAIL DRAWER
+══════════════════════════════════ */
+.md-backdrop {
+  position: fixed; inset: 0; z-index: 150; background: rgba(0,0,0,.6);
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.md-backdrop.open { opacity: 1; pointer-events: all; }
+.match-drawer {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 160;
+  background: var(--c2); border-radius: 20px 20px 0 0;
+  border-top: 1px solid var(--bd2); padding: 0 0 env(safe-area-inset-bottom,20px);
+  transform: translateY(100%); transition: transform .35s cubic-bezier(.32,0,.67,0);
+  max-height: 80dvh; overflow-y: auto;
+}
+.match-drawer.open { transform: translateY(0); }
+.md-handle { width: 40px; height: 4px; background: var(--bd2); border-radius: 2px; margin: 12px auto 16px; cursor: pointer; }
+.md-body { padding: 0 16px 24px; }
+
+/* ══════════════════════════════════
+   h29: BANKROLL CALCULATOR
+══════════════════════════════════ */
+.bk-calc-modal {
+  position: fixed; inset: 0; z-index: 180;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.8); backdrop-filter: blur(8px);
+}
+.bkc-inner {
+  width: 300px; max-width: 90vw; padding: 24px;
+  background: var(--c2); border: 1px solid var(--bd2); border-radius: 16px;
+  box-shadow: 0 0 40px rgba(194,255,61,.1);
+}
+.bkc-title { font-size: 16px; font-weight: 800; color: var(--t1); margin-bottom: 16px; text-align: center; }
+.bkc-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.bkc-row label { font-size: 10px; font-weight: 600; color: var(--t3); text-transform: uppercase; letter-spacing: .08em; }
+.bkc-row input[type=range] { width: 100%; accent-color: var(--lime); }
+.bkc-val { font-size: 16px; font-weight: 700; color: var(--lime); }
+.bkc-result { padding: 12px; background: rgba(194,255,61,.06); border-radius: 10px; border: 1px solid rgba(194,255,61,.2); margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+.bkc-stake, .bkc-ev { font-size: 12px; color: var(--t2); }
+.bkc-stake strong, .bkc-ev strong { color: var(--lime); font-size: 16px; }
+.bkc-close { width: 100%; padding: 10px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid var(--bd1); color: var(--t2); font-size: 12px; cursor: pointer; }
+
+/* ══════════════════════════════════
+   h22: surface filter badge colors
+══════════════════════════════════ */
+.mktab-cnt { font-size: 9px; background: rgba(255,255,255,.08); border-radius: 8px; padding: 1px 5px; margin-left: 3px; }
+.mktab.hard { }
+.mktab.clay.on { background: rgba(210,100,40,.15); border-color: rgba(210,100,40,.5); color: #d26428; }
+.mktab.grass.on { background: rgba(60,180,80,.12); border-color: rgba(60,180,80,.4); color: #3cb450; }
+.mktab.hard.on { background: rgba(60,120,255,.12); border-color: rgba(60,120,255,.4); color: #4a8aff; }
+.nlive-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--lime); margin-right: 4px; animation: blink 1.4s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* h19: score ticker */
+.score-ticker {
+  display: flex; gap: 8px; padding: 6px 12px; overflow-x: auto;
+  border-bottom: 1px solid var(--bd1); flex-shrink: 0;
+}
+.score-ticker::-webkit-scrollbar { display: none; }
+.st-item {
+  flex-shrink: 0; padding: 5px 10px; border-radius: 8px;
+  background: rgba(255,255,255,.03); border: 1px solid var(--bd1);
+  font-size: 10px; color: var(--t2);
+}
+.st-item .st-live { color: var(--lime); font-weight: 700; font-size: 9px; }
+.st-item .st-score { font-weight: 700; color: var(--t1); margin: 0 4px; }
 .market-row {
   display: flex; gap: 6px; flex-wrap: wrap;
   margin-bottom: 16px;
@@ -1627,8 +1786,15 @@ body.light-mode {
   <div class="nav">
     <div class="nbk" id="bk-d">&#8592;</div>
     <span class="ntitle">Daily Kupon</span>
-    <div class="nlive"></div>
-    <div class="nbadge">v14 · 5 rynków</div>
+    <div class="nlive" id="nlive-picks"><span class="nlive-dot"></span><span id="live-cnt">3</span> typy</div>
+    <div class="nbadge" id="daily-badge">v14 · 5 rynków</div>
+  </div>
+  <!-- h27: surface filter tabs z count badges -->
+  <div class="mktabs" id="surface-tabs">
+    <div class="mktab on" data-surface="all">Wszystkie <span class="mktab-cnt" id="cnt-all"></span></div>
+    <div class="mktab hard" data-surface="hard">Hard <span class="mktab-cnt" id="cnt-hard"></span></div>
+    <div class="mktab clay" data-surface="clay">Clay <span class="mktab-cnt" id="cnt-clay"></span></div>
+    <div class="mktab grass" data-surface="grass">Grass <span class="mktab-cnt" id="cnt-grass"></span></div>
   </div>
   <div class="mktabs">
     <div class="mktab on" data-mkt="all">Wszystkie</div>
@@ -1644,6 +1810,8 @@ body.light-mode {
     <button id="api-btn">Live</button>
     <span id="api-st"></span>
   </div>
+  <!-- h19: score ticker -->
+  <div class="score-ticker" id="score-ticker"></div>
   <div class="dbody">
     <div class="dinfo">
       <div class="chip lime" id="chip-t">Wimbledon 2026</div>
@@ -1711,7 +1879,119 @@ body.light-mode {
   </div>
 </div>
 
-<!-- OVERLAY — 5-phase ceremony -->
+<!-- ══════════════════════════════════════════════════════
+     h20: ONBOARDING MODAL — 3 kroki
+══════════════════════════════════════════════════════ -->
+<div class="ob-overlay" id="ob-overlay" style="display:none">
+  <div class="ob-modal" id="ob-modal">
+    <div class="ob-steps">
+      <div class="ob-step active" id="ob1">
+        <div class="ob-icon">🎯</div>
+        <div class="ob-title">Styl gry</div>
+        <div class="ob-sub">Jak grasz?</div>
+        <div class="ob-opts">
+          <button class="ob-opt" data-v="conservative" onclick="obSelect(this,'style')">Konserwatywny <span class="ob-hint">Kelly ×0.5, max 2%</span></button>
+          <button class="ob-opt" data-v="moderate" onclick="obSelect(this,'style')">Umiarkowany <span class="ob-hint">Kelly ×1.0, max 3%</span></button>
+          <button class="ob-opt" data-v="aggressive" onclick="obSelect(this,'style')">Agresywny <span class="ob-hint">Kelly ×1.5, max 5%</span></button>
+        </div>
+        <button class="ob-next" onclick="obStep(2)" disabled id="ob1-next">Dalej →</button>
+      </div>
+      <div class="ob-step" id="ob2">
+        <div class="ob-icon">💰</div>
+        <div class="ob-title">Bankroll</div>
+        <div class="ob-sub">Twój bankroll zakładowy</div>
+        <div class="ob-slider-wrap">
+          <input type="range" id="ob-bankroll" min="500" max="50000" step="500" value="5000" oninput="obBankroll(this.value)">
+          <div class="ob-bankroll-val" id="ob-bankroll-val">5 000 PLN</div>
+        </div>
+        <button class="ob-next" onclick="obStep(3)">Dalej →</button>
+      </div>
+      <div class="ob-step" id="ob3">
+        <div class="ob-icon">🏟️</div>
+        <div class="ob-title">Nawierzchnia</div>
+        <div class="ob-sub">Ulubione turnieje?</div>
+        <div class="ob-opts multi">
+          <button class="ob-opt" data-v="hard" onclick="obToggle(this,'surface')">Hard 🏢</button>
+          <button class="ob-opt" data-v="clay" onclick="obToggle(this,'surface')">Clay 🧱</button>
+          <button class="ob-opt selected" data-v="grass" onclick="obToggle(this,'surface')">Grass 🌿</button>
+          <button class="ob-opt" data-v="all" onclick="obToggle(this,'surface')">Wszystkie ⭐</button>
+        </div>
+        <button class="ob-finish" onclick="obFinish()">&#9889; Zacznij grać</button>
+      </div>
+    </div>
+    <div class="ob-dots">
+      <span class="ob-dot active" id="odot1"></span>
+      <span class="ob-dot" id="odot2"></span>
+      <span class="ob-dot" id="odot3"></span>
+    </div>
+  </div>
+</div>
+
+<!-- h21: CLV TRACKER SCREEN -->
+<div class="screen off" id="s-clv">
+  <div class="nav">
+    <div class="nbk" id="bk-clv">&#8592;</div>
+    <span class="ntitle">CLV Tracker</span>
+    <div class="nbadge">7/30/90d</div>
+  </div>
+  <div class="clv-body">
+    <div class="clv-hero">
+      <div class="clv-stat lime"><span class="clv-val" id="clv-7d">+2.1%</span><span class="clv-lbl">7d CLV avg</span></div>
+      <div class="clv-stat cyan"><span class="clv-val" id="clv-30d">+1.8%</span><span class="clv-lbl">30d CLV avg</span></div>
+      <div class="clv-stat gold"><span class="clv-val" id="clv-90d">+1.5%</span><span class="clv-lbl">90d CLV avg</span></div>
+    </div>
+    <canvas id="clv-chart" height="120"></canvas>
+    <div class="clv-sig" id="clv-sig">🟢 Statystycznie istotne (p&lt;0.05)</div>
+    <div class="clv-bets" id="clv-bets"></div>
+  </div>
+</div>
+
+<!-- h26: COUPON HISTORY SCREEN -->
+<div class="screen off" id="s-history">
+  <div class="nav">
+    <div class="nbk" id="bk-hist">&#8592;</div>
+    <span class="ntitle">Historia kuponów</span>
+    <div class="nbadge" id="hist-roi">ROI --</div>
+  </div>
+  <div class="hist-body" id="hist-body">
+    <div class="hist-filter">
+      <button class="hf-btn on" data-f="all">Wszystkie</button>
+      <button class="hf-btn" data-f="won">Won ✅</button>
+      <button class="hf-btn" data-f="lost">Lost ❌</button>
+      <button class="hf-btn" data-f="pending">Pending ⏳</button>
+    </div>
+    <div id="hist-list"></div>
+  </div>
+</div>
+
+<!-- h28: MATCH DETAIL DRAWER -->
+<div class="match-drawer" id="match-drawer">
+  <div class="md-handle" onclick="closeDrawer()"></div>
+  <div class="md-body" id="md-body"></div>
+</div>
+<div class="md-backdrop" id="md-backdrop" onclick="closeDrawer()"></div>
+
+<!-- h29: BANKROLL CALCULATOR MODAL -->
+<div class="bk-calc-modal" id="bk-calc" style="display:none">
+  <div class="bkc-inner">
+    <div class="bkc-title">💰 Kalkulator Bankrollu</div>
+    <div class="bkc-row">
+      <label>Bankroll (PLN)</label>
+      <input type="range" id="bkc-bank" min="500" max="100000" step="500" value="10000" oninput="bkcUpdate()">
+      <span class="bkc-val" id="bkc-bank-val">10 000 PLN</span>
+    </div>
+    <div class="bkc-row">
+      <label>Kelly % (model)</label>
+      <input type="range" id="bkc-kelly" min="1" max="25" step="0.5" value="9.8" oninput="bkcUpdate()">
+      <span class="bkc-val" id="bkc-kelly-val">9.8%</span>
+    </div>
+    <div class="bkc-result" id="bkc-result">
+      <div class="bkc-stake">Stawka: <strong id="bkc-stake-val">490 PLN</strong></div>
+      <div class="bkc-ev">Half-Kelly: <strong id="bkc-hk-val">245 PLN</strong></div>
+    </div>
+    <button class="bkc-close" onclick="document.getElementById('bk-calc').style.display='none'">Zamknij</button>
+  </div>
+</div>
 <div id="ov">
   <div class="ov-bg"></div>
   <div class="ov-scanlines"></div>
@@ -2318,7 +2598,345 @@ function spinReel(tEl, rEl, pick, delay, onDone) {
 }
 
 /* ══════════════════════════════════════════════
-   PICK CARD BUILDER v10.0
+   h16: REAL API INTEGRATION
+══════════════════════════════════════════════ */
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000/api/v1'
+  : 'https://betatp-api.onrender.com/api/v1';
+
+async function fetchCouponsToday() {
+  try {
+    const r = await fetch(API_BASE + '/coupons/today', {signal: AbortSignal.timeout(3000)});
+    if (!r.ok) throw new Error('API ' + r.status);
+    return await r.json();
+  } catch(e) {
+    console.info('API offline, używam DEMO', e.message);
+    return null;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   h19: SCORE TICKER — mock live ATP scores
+══════════════════════════════════════════════ */
+const LIVE_SCORES = [
+  {p1:'Alcaraz', p2:'Rune', score:'6-4 3-2*', live:true},
+  {p1:'Sinner', p2:'Fritz', score:'7-6 4-5*', live:true},
+  {p1:'Djokovic', p2:'Tiafoe', score:'6-3 6-1', live:false},
+  {p1:'Medvedev', p2:'Hurkacz', score:'3-6 6-4 2-1*', live:true},
+];
+function initScoreTicker() {
+  const ticker = document.getElementById('score-ticker');
+  if (!ticker) return;
+  ticker.innerHTML = LIVE_SCORES.map(s =>
+    `<div class="st-item">
+      ${s.live ? '<span class="st-live">● LIVE</span>' : ''}
+      <span>${s.p1}</span><span class="st-score">${s.score}</span><span>${s.p2}</span>
+    </div>`
+  ).join('');
+}
+
+/* ══════════════════════════════════════════════
+   h20: ONBOARDING
+══════════════════════════════════════════════ */
+let obData = {style: null, bankroll: 5000, surfaces: ['grass']};
+function obSelect(btn, key) {
+  btn.closest('.ob-opts').querySelectorAll('.ob-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  obData[key] = btn.dataset.v;
+  const nextBtn = document.getElementById('ob1-next');
+  if (nextBtn) nextBtn.disabled = false;
+}
+function obToggle(btn, key) {
+  btn.classList.toggle('selected');
+  obData.surfaces = Array.from(btn.closest('.ob-opts').querySelectorAll('.ob-opt.selected')).map(b => b.dataset.v);
+}
+function obBankroll(val) {
+  obData.bankroll = parseInt(val);
+  document.getElementById('ob-bankroll-val').textContent = parseInt(val).toLocaleString('pl-PL') + ' PLN';
+}
+function obStep(n) {
+  document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('ob' + n).classList.add('active');
+  document.querySelectorAll('.ob-dot').forEach((d,i) => d.classList.toggle('active', i < n));
+}
+function obFinish() {
+  localStorage.setItem('betatp_ob', JSON.stringify(obData));
+  document.getElementById('ob-overlay').style.display = 'none';
+  // Wstrzyknij bankroll do kalkulatora
+  const bkcBank = document.getElementById('bkc-bank');
+  if (bkcBank) { bkcBank.value = obData.bankroll; bkcUpdate(); }
+}
+function checkOnboarding() {
+  if (!localStorage.getItem('betatp_ob')) {
+    setTimeout(() => {
+      const ob = document.getElementById('ob-overlay');
+      if (ob) ob.style.display = 'flex';
+    }, 2500);
+  } else {
+    obData = JSON.parse(localStorage.getItem('betatp_ob'));
+  }
+}
+
+/* ══════════════════════════════════════════════
+   h21: CLV TRACKER SCREEN
+══════════════════════════════════════════════ */
+function initCLVScreen() {
+  // Fetch from API or use mock
+  fetch(API_BASE + '/stats/clv', {signal: AbortSignal.timeout(2000)})
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('clv-7d').textContent = '+' + (d.avg_clv_7d*100).toFixed(1) + '%';
+      document.getElementById('clv-30d').textContent = '+' + (d.avg_clv_30d*100).toFixed(1) + '%';
+      document.getElementById('clv-90d').textContent = '+' + (d.avg_clv_90d*100).toFixed(1) + '%';
+    }).catch(() => {});
+  drawCLVChart();
+}
+function drawCLVChart() {
+  const cv = document.getElementById('clv-chart');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const w = cv.offsetWidth || 300; cv.width = w; cv.height = 120;
+  // Mock 30-day CLV sparkline
+  const data = Array.from({length:30}, (_,i) => 0.5 + Math.sin(i*0.4)*0.8 + Math.random()*0.5);
+  const min = Math.min(...data), max = Math.max(...data);
+  const pad = 10;
+  ctx.clearRect(0,0,w,120);
+  // Gridline
+  ctx.strokeStyle = 'rgba(255,255,255,.05)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0,60); ctx.lineTo(w,60); ctx.stroke();
+  // Line
+  const grad = ctx.createLinearGradient(0,0,0,120);
+  grad.addColorStop(0,'rgba(194,255,61,.6)'); grad.addColorStop(1,'rgba(194,255,61,0)');
+  ctx.beginPath();
+  data.forEach((v,i) => {
+    const x = pad + (i/(data.length-1))*(w-2*pad);
+    const y = 120 - pad - (v-min)/(max-min)*(120-2*pad);
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = 'rgba(194,255,61,.9)'; ctx.lineWidth = 2; ctx.stroke();
+  // Fill
+  ctx.lineTo(w-pad,120-pad); ctx.lineTo(pad,120-pad); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+}
+
+/* ══════════════════════════════════════════════
+   h26: COUPON HISTORY
+══════════════════════════════════════════════ */
+const HIST_DATA = [
+  {date:'2026-06-26', picks:'Sinner / Alcaraz / Djokovic', odds:5.82, status:'won'},
+  {date:'2026-06-25', picks:'Fritz / Rune', odds:3.24, status:'won'},
+  {date:'2026-06-24', picks:'Medvedev / Tiafoe / Zverev', odds:7.15, status:'lost'},
+  {date:'2026-06-23', picks:'Alcaraz / Hurkacz', odds:2.89, status:'pending'},
+  {date:'2026-06-22', picks:'Sinner / Fritz', odds:3.44, status:'won'},
+];
+function initHistScreen(filter='all') {
+  const list = document.getElementById('hist-list');
+  if (!list) return;
+  const items = filter === 'all' ? HIST_DATA : HIST_DATA.filter(h => h.status === filter);
+  const won = HIST_DATA.filter(h=>h.status==='won').length;
+  document.getElementById('hist-roi').textContent = 'WR ' + Math.round(won/HIST_DATA.length*100) + '%';
+  list.innerHTML = items.map(h => `
+    <div class="hist-item ${h.status}">
+      <div>
+        <div class="hist-date">${h.date}</div>
+        <div style="font-size:11px;color:var(--t2);margin-top:2px">${h.picks}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="hist-odds">${h.odds.toFixed(2)}x</div>
+        <div class="hist-badge ${h.status}">${h.status === 'won' ? '✅ WON' : h.status === 'lost' ? '❌ LOST' : '⏳ PENDING'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+document.querySelectorAll('.hf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.hf-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    initHistScreen(btn.dataset.f);
+  });
+});
+
+/* ══════════════════════════════════════════════
+   h27: SURFACE FILTER TABS
+══════════════════════════════════════════════ */
+function initSurfaceTabs() {
+  const tabs = document.getElementById('surface-tabs');
+  if (!tabs) return;
+  // Count picks per surface from genPicks
+  const counts = {all: genPicks.length, hard: 0, clay: 0, grass: 0};
+  genPicks.forEach(p => { if (counts[p.surface] !== undefined) counts[p.surface]++; });
+  Object.entries(counts).forEach(([surf, cnt]) => {
+    const el = document.getElementById('cnt-' + surf);
+    if (el) el.textContent = cnt || '';
+  });
+  tabs.querySelectorAll('.mktab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.querySelectorAll('.mktab').forEach(t => t.classList.remove('on'));
+      tab.classList.add('on');
+      const surf = tab.dataset.surface;
+      document.querySelectorAll('.pcard').forEach(card => {
+        card.style.display = (surf === 'all' || card.dataset.surface === surf) ? '' : 'none';
+      });
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════
+   h28: MATCH DETAIL DRAWER
+══════════════════════════════════════════════ */
+function openDrawer(pick) {
+  const body = document.getElementById('md-body');
+  const evPct = (pick.edge*100).toFixed(1);
+  const kellyPct = (pick.kelly*100).toFixed(1);
+  const bankroll = obData.bankroll || 10000;
+  const stake = (bankroll * pick.kelly * 0.5).toFixed(0);
+  body.innerHTML = `
+    <div style="font-size:11px;color:var(--t3);margin-bottom:8px">${pick.surface || 'Grass'} · ${pick.tourney || 'Wimbledon 2026'}</div>
+    <div style="font-size:20px;font-weight:800;margin-bottom:4px">${pick.player} <span style="color:var(--t3);font-size:13px">vs</span> ${pick.opp}</div>
+    <div style="font-size:28px;font-weight:900;color:var(--lime);margin:12px 0">@${pick.odds.toFixed(2)}</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <div style="flex:1;padding:10px;background:rgba(194,255,61,.07);border-radius:10px;border:1px solid rgba(194,255,61,.2)">
+        <div style="font-size:9px;color:var(--t3)">EDGE</div>
+        <div style="font-size:18px;font-weight:800;color:var(--lime)">+${evPct}%</div>
+      </div>
+      <div style="flex:1;padding:10px;background:rgba(0,242,232,.07);border-radius:10px;border:1px solid rgba(0,242,232,.2)">
+        <div style="font-size:9px;color:var(--t3)">KELLY</div>
+        <div style="font-size:18px;font-weight:800;color:#00f2e8">${kellyPct}%</div>
+      </div>
+      <div style="flex:1;padding:10px;background:rgba(255,255,255,.04);border-radius:10px;border:1px solid var(--bd1)">
+        <div style="font-size:9px;color:var(--t3)">STAWKA</div>
+        <div style="font-size:18px;font-weight:800;color:var(--gold)">${parseInt(stake).toLocaleString('pl-PL')} PLN</div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:9px;color:var(--t3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">Model vs Rynek</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t2);margin-bottom:3px"><span>Model P</span><span style="color:var(--lime)">${(pick.probModel*100).toFixed(1)}%</span></div>
+          <div style="height:6px;background:var(--bd1);border-radius:3px"><div style="width:${pick.probModel*100}%;height:100%;background:var(--lime);border-radius:3px"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t2);margin-bottom:3px"><span>Market P</span><span>${(pick.probMkt*100).toFixed(1)}%</span></div>
+          <div style="height:6px;background:var(--bd1);border-radius:3px"><div style="width:${pick.probMkt*100}%;height:100%;background:rgba(255,255,255,.25);border-radius:3px"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--t3);line-height:1.6">${pick.reason || 'Model wykrył przewagę wartościową względem kursu bookmakerskiego.'}</div>
+    <button onclick="closeDrawer()" style="width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--bd1);color:var(--t2);font-size:12px;cursor:pointer;margin-top:16px">Zamknij</button>
+  `;
+  document.getElementById('match-drawer').classList.add('open');
+  document.getElementById('md-backdrop').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('match-drawer').classList.remove('open');
+  document.getElementById('md-backdrop').classList.remove('open');
+}
+
+/* ══════════════════════════════════════════════
+   h29: BANKROLL CALCULATOR
+══════════════════════════════════════════════ */
+function bkcUpdate() {
+  const bank = parseFloat(document.getElementById('bkc-bank').value);
+  const kelly = parseFloat(document.getElementById('bkc-kelly').value) / 100;
+  document.getElementById('bkc-bank-val').textContent = bank.toLocaleString('pl-PL') + ' PLN';
+  document.getElementById('bkc-kelly-val').textContent = (kelly*100).toFixed(1) + '%';
+  const stake = bank * kelly;
+  const halfKelly = stake * 0.5;
+  document.getElementById('bkc-stake-val').textContent = Math.round(stake).toLocaleString('pl-PL') + ' PLN';
+  document.getElementById('bkc-hk-val').textContent = Math.round(halfKelly).toLocaleString('pl-PL') + ' PLN';
+}
+
+/* ══════════════════════════════════════════════
+   h22: PWA SERVICE WORKER REGISTRATION
+══════════════════════════════════════════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+/* ══════════════════════════════════════════════
+   h23: PUSH NOTIFICATIONS
+══════════════════════════════════════════════ */
+function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') {
+      new Notification('betatp.io ⚡', {
+        body: 'Powiadomienia o nowych typach włączone!',
+        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text y="26" font-size="28">🎾</text></svg>'
+      });
+      toast('Powiadomienia włączone!');
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════
+   h25: HERO A/B — ROI live counter
+══════════════════════════════════════════════ */
+function initROICounter() {
+  const el = document.getElementById('hero-stats');
+  if (!el) return;
+  // Animuj pills count-up przy wejściu (już jest GSAP stagger — OK)
+}
+
+/* ══════════════════════════════════════════════
+   h18: INTERSECTION OBSERVER — prob bars
+══════════════════════════════════════════════ */
+function initProbIO() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const fill = e.target.querySelector('.prob-fill');
+        if (fill && !fill.dataset.animated) {
+          fill.dataset.animated = '1';
+          const target = fill.style.width;
+          fill.style.width = '0';
+          requestAnimationFrame(() => { fill.style.transition = 'width .8s cubic-bezier(.4,0,.2,1)'; fill.style.width = target; });
+        }
+      }
+    });
+  }, {threshold: 0.3});
+  document.querySelectorAll('.prob-row').forEach(row => io.observe(row));
+}
+
+/* ══════════════════════════════════════════════
+   INIT ALL NEW FEATURES
+══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  checkOnboarding();
+  initScoreTicker();
+  bkcUpdate();
+  initHistScreen();
+  // Navigation extras
+  const bkClv = document.getElementById('bk-clv');
+  if (bkClv) bkClv.addEventListener('click', () => goTo('s-home'));
+  const bkHist = document.getElementById('bk-hist');
+  if (bkHist) bkHist.addEventListener('click', () => goTo('s-home'));
+  // Bankroll button w hero (dodaj onclick)
+  document.querySelectorAll('[onclick*="bk-calc"]').forEach(b => {
+    b.addEventListener('click', () => {
+      document.getElementById('bk-calc').style.display = 'flex';
+    });
+  });
+});
+
+/* po wygenerowaniu pick cards */
+const _origDealFlip = typeof dealFlipCards === 'function' ? dealFlipCards : null;
+function postGenHooks() {
+  initProbIO();
+  initSurfaceTabs();
+  // Dodaj onclick do kart → drawer
+  document.querySelectorAll('.pcard').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.prob-row,.cta-primary,.pb-edge,.pc-kelly-strip')) return;
+      const idx = card.dataset.idx;
+      if (idx !== undefined && genPicks[idx]) openDrawer(genPicks[idx]);
+    });
+  });
+}
+/* ══════════════════════════════════════════════
+   PICK CARD BUILDER v11.0
 ══════════════════════════════════════════════ */
 function buildCard(pick) {
   const rarCls = pick.rar;
@@ -2627,8 +3245,13 @@ function dealFlipCards(picks) {
       ov.classList.remove('on');
       document.getElementById('ovp4').classList.remove('on');
       document.getElementById('cards-area').innerHTML = '';
-      genPicks.forEach(p => document.getElementById('cards-area').appendChild(buildCard(p)));
-      // Show coupon summary
+      genPicks.forEach((p,i) => {
+        const card = buildCard(p);
+        card.dataset.idx = i;
+        document.getElementById('cards-area').appendChild(card);
+      });
+      document.getElementById('empty-state') && (document.getElementById('empty-state').style.display = 'none');
+      postGenHooks();
       const totalOdds = genPicks.reduce((a, p) => a * p.odds, 1);
       const avgKelly = genPicks.reduce((a, p) => a + p.kelly, 0) / genPicks.length;
       document.getElementById('csummary').style.display = 'block';

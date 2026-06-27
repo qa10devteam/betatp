@@ -12,6 +12,17 @@ from api.routes.predictions import router as predictions_router
 from api.routes.live import router as live_router
 from api.schemas import HealthResponse
 
+# ── Optional routers ────────────────────────────────────────────────────────
+try:
+    from api.routes.value import router as value_router
+except Exception:
+    value_router = None  # type: ignore[assignment]
+
+try:
+    from api.routes.stats import router as stats_router
+except Exception:
+    stats_router = None  # type: ignore[assignment]
+
 # ── Paths ──────────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -21,7 +32,7 @@ DATA_DIR = BASE_DIR / "data"
 app = FastAPI(
     title="betatp.io API",
     description="Profesjonalne kupony tenisowe ATP",
-    version="0.1.0",
+    version="10.1",
 )
 
 app.add_middleware(
@@ -32,9 +43,22 @@ app.add_middleware(
 )
 app.add_middleware(GZipMiddleware)
 
+# ── TierLimitMiddleware ────────────────────────────────────────────────────────
+try:
+    from api.middleware.subscription import TierLimitMiddleware
+    app.add_middleware(TierLimitMiddleware)
+except Exception:
+    pass
+
 app.include_router(coupons_router, prefix="/coupons", tags=["coupons"])
 app.include_router(predictions_router, prefix="/predictions", tags=["predictions"])
 app.include_router(live_router, prefix="/live", tags=["live"])
+
+if value_router is not None:
+    app.include_router(value_router)
+
+if stats_router is not None:
+    app.include_router(stats_router)
 
 
 # ── Startup event ──────────────────────────────────────────────────────────────
@@ -85,4 +109,5 @@ async def serve_data(filename: str):
 @app.get("/health", response_model=HealthResponse)
 async def health():
     """Health check — lekki, NIE triggeruje ładowania modelu ML."""
-    return {"status": "ok", "version": "0.1.0"}
+    return {"status": "ok", "version": "v10.1"}
+

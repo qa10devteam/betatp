@@ -1,6 +1,7 @@
 version: "3.9"
 
 services:
+  # Baza danych PostgreSQL
   postgres:
     image: postgres:16-alpine
     container_name: betatp_postgres
@@ -20,6 +21,7 @@ services:
       start_period: 10s
     restart: unless-stopped
 
+  # Broker wiadomosci i cache - Redis
   redis:
     image: redis:7-alpine
     container_name: betatp_redis
@@ -34,6 +36,68 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+    restart: unless-stopped
+
+  # Serwis API - FastAPI + Uvicorn
+  api:
+    image: python:3.11
+    container_name: betatp_api
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install -r requirements.txt -q &&
+             uvicorn api.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://betatp:***@postgres:5432/betatp
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - postgres
+    restart: unless-stopped
+
+  # Worker Celery - przetwarza zadania asynchroniczne (pipeline daily, alerty)
+  celery-worker:
+    image: python:3.11
+    container_name: betatp_celery_worker
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install -r requirements.txt -q &&
+             celery -A tasks.celery_app worker -l info"
+    environment:
+      - DATABASE_URL=postgresql://betatp:***@postgres:5432/betatp
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - postgres
+    restart: unless-stopped
+
+  # Scheduler Celery Beat - uruchamia zadania cykliczne (daily pipeline 07:00 CET)
+  celery-beat:
+    image: python:3.11
+    container_name: betatp_celery_beat
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install -r requirements.txt -q &&
+             celery -A tasks.celery_app beat -l info"
+    environment:
+      - DATABASE_URL=postgresql://betatp:***@postgres:5432/betatp
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - postgres
     restart: unless-stopped
 
 volumes:

@@ -10,6 +10,13 @@ import hashlib
 import math
 from itertools import combinations
 
+# ── Optional CouponRanker integration ──────────────────────────────────────
+try:
+    from engine.coupon_ranker import CouponRanker as _CouponRanker
+    _ranker = _CouponRanker()
+except Exception:  # ImportError or any other init failure
+    _ranker = None  # type: ignore[assignment]
+
 
 @dataclass
 class BetSelection:
@@ -167,6 +174,21 @@ class CouponGenerator:
                 model_edge=round(model_edge, 4),
             )
             sel.reasoning = self._generate_reasoning(sel, md)
+            # Augment with CouponRanker reasoning when available
+            if _ranker is not None:
+                try:
+                    ranker_reasoning = _ranker.generate_reasoning({
+                        "p_model": sel.p_model,
+                        "odds": sel.bk_odds,
+                        "ev": sel.ev_pct,
+                        "surface": sel.surface,
+                        "recent_form": sel.form_last5,
+                        "h2h": sel.h2h_summary,
+                    })
+                    if ranker_reasoning:
+                        sel.reasoning = sel.reasoning + " | " + ranker_reasoning
+                except Exception:
+                    pass  # keep existing reasoning on failure
             selections.append(sel)
 
         # Sort EV desc, take top max_selections

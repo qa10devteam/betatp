@@ -1,0 +1,19 @@
+{
+  "name": "betatp.io — AI Value Betting",
+  "short_name": "betatp",
+  "description": "Codzienne typy ATP z LightGBM v14. Kelly Criterion. Edge 15%+.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#c2ff3d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='32' fill='%230a0a0f'/><text y='130' x='96' font-size='110' text-anchor='middle'>🎾</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["sports", "finance"],
+  "lang": "pl"
+}
