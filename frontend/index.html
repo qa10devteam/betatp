@@ -285,20 +285,41 @@ body::after {
   -webkit-mask-composite: xor; mask-composite: exclude;
 }
 .equity-canvas {
-  width: 100%; height: 160px; display: block;
+  width: 100%; height: 170px; display: block;
 }
 .equity-stat {
   position: absolute; top: 10px; right: 12px;
   display: flex; flex-direction: column; align-items: flex-end;
 }
 .equity-stat-num {
-  font-family: var(--m); font-size: 20px; font-weight: 700;
+  font-family: var(--m); font-size: 22px; font-weight: 700;
   color: var(--lime); letter-spacing: -.02em; line-height: 1;
 }
 .equity-stat-lbl {
-  font-family: var(--m); font-size: 8px; font-weight: 500;
+  font-family: var(--m); font-size: 8px; font-weight: 600;
   color: var(--t3); letter-spacing: .12em; text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 3px;
+}
+/* Axis labels overlaid on canvas */
+.equity-axis {
+  position: absolute; bottom: 8px; left: 10px;
+  display: flex; align-items: flex-end; gap: 0;
+  width: calc(100% - 20px); pointer-events: none;
+}
+.equity-axis-lbl {
+  font-family: var(--m); font-size: 8px; color: rgba(255,255,255,.2);
+  letter-spacing: .04em;
+}
+.equity-axis-spacer { flex: 1; }
+.equity-timeframe {
+  position: absolute; bottom: 8px; left: 12px;
+  font-family: var(--m); font-size: 8px; color: rgba(255,255,255,.2);
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.equity-n {
+  position: absolute; top: 12px; left: 12px;
+  font-family: var(--m); font-size: 8px; font-weight: 600;
+  color: rgba(255,255,255,.3); letter-spacing: .1em; text-transform: uppercase;
 }
 
 /* STAT PILLS */
@@ -312,11 +333,11 @@ body::after {
 .hs-pill {
   position: relative;
   display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px;
+  padding: 10px 12px;
   background: rgba(255,255,255,.028);
   border-radius: var(--r-s);
-  flex: 1; min-width: 90px;
   transition: border-color var(--t-fast), transform var(--t-fast);
+  min-width: 0;
 }
 .hs-pill:hover { transform: translateY(-2px); }
 .hs-pill::before {
@@ -326,17 +347,18 @@ body::after {
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
 }
-.hs-text { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.hs-text { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .hs-num {
   font-family: var(--m); font-size: 18px; font-weight: 700;
   color: var(--lime); letter-spacing: -.02em; line-height: 1;
 }
 .hs-lbl {
   font-family: var(--m); font-size: 8px; font-weight: 600;
-  color: var(--t3); letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(240,240,255,.4); letter-spacing: .08em; text-transform: uppercase;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .hs-spark {
-  width: 72px; height: 32px; display: block; flex-shrink: 0;
+  width: 56px; height: 30px; display: block; flex-shrink: 0;
   border-radius: 4px; background: rgba(194,255,61,.04);
 }
 
@@ -1160,11 +1182,13 @@ body::after {
 
     <!-- EQUITY CURVE CANVAS -->
     <div class="equity-wrap" id="equity-wrap">
-      <canvas class="equity-canvas" id="equity-canvas" height="160" aria-label="Krzywa ROI backtest"></canvas>
+      <canvas class="equity-canvas" id="equity-canvas" height="170" aria-label="Krzywa ROI backtest"></canvas>
+      <div class="equity-n">57 zakładów · 2022–2026</div>
       <div class="equity-stat">
         <div class="equity-stat-num">+58.7%</div>
-        <div class="equity-stat-lbl">ROI backtest</div>
+        <div class="equity-stat-lbl">Kelly ROI</div>
       </div>
+      <div class="equity-timeframe">bankroll (%)</div>
     </div>
 
     <!-- STAT PILLS z sparklines -->
@@ -1547,7 +1571,7 @@ function drawEquityCurve(canvas, targetROI) {
   targetROI = targetROI || 58.7;
   const dpr = window.devicePixelRatio || 1;
   const W = canvas.offsetWidth || canvas.parentElement.offsetWidth || 340;
-  const H = canvas.getAttribute('height') ? parseInt(canvas.getAttribute('height')) : 160;
+  const H = canvas.getAttribute('height') ? parseInt(canvas.getAttribute('height')) : 170;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
@@ -1555,7 +1579,7 @@ function drawEquityCurve(canvas, targetROI) {
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  // Generuj punkt backtestu (57 zakładów, ROI +58.7%)
+  // Generuj punkt backtestu
   const N = 58;
   const pts = [0];
   let equity = 0;
@@ -1568,28 +1592,54 @@ function drawEquityCurve(canvas, targetROI) {
   }
   pts[N - 1] = targetROI;
 
-  const minV = Math.min(...pts);
-  const maxV = Math.max(...pts);
+  const minV = Math.min(...pts, -5);
+  const maxV = Math.max(...pts, targetROI + 5);
   const range = maxV - minV || 1;
-  const pad = { t: 18, r: 8, b: 14, l: 8 };
+  const pad = { t: 20, r: 12, b: 24, l: 36 };
   const iW = W - pad.l - pad.r;
   const iH = H - pad.t - pad.b;
 
   const toX = i => pad.l + (i / (N - 1)) * iW;
   const toY = v => pad.t + (1 - (v - minV) / range) * iH;
 
-  // Animate draw
+  // Y-axis gridlines
+  const yTicks = [0, 20, 40, 60];
+  yTicks.forEach(v => {
+    const y = toY(v);
+    if (y < pad.t || y > H - pad.b) return;
+    ctx.beginPath();
+    ctx.moveTo(pad.l, y);
+    ctx.lineTo(W - pad.r, y);
+    ctx.strokeStyle = v === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.font = `500 8px JetBrains Mono, monospace`;
+    ctx.fillText((v > 0 ? '+' : '') + v + '%', 2, y + 3);
+  });
+
   let progress = 0;
-  const speed = 0.015;
+  const speed = 0.016;
 
   function frame() {
-    ctx.clearRect(0, 0, W, H);
+    // Redraw clear (avoid accumulation)
+    ctx.clearRect(pad.l, 0, W - pad.l, H);
+    // Redraw gridlines (were cleared)
+    yTicks.forEach(v => {
+      const y = toY(v);
+      if (y < pad.t || y > H - pad.b) return;
+      ctx.beginPath();
+      ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y);
+      ctx.strokeStyle = v === 0 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)';
+      ctx.lineWidth = 1; ctx.stroke();
+    });
+
     progress = Math.min(1, progress + speed);
     const drawN = Math.floor(progress * (N - 1)) + 1;
 
     // Fill gradient
     const grad = ctx.createLinearGradient(0, pad.t, 0, H);
-    grad.addColorStop(0, 'rgba(194,255,61,0.18)');
+    grad.addColorStop(0, 'rgba(194,255,61,0.2)');
     grad.addColorStop(1, 'rgba(194,255,61,0)');
     ctx.beginPath();
     ctx.moveTo(toX(0), toY(pts[0]));
@@ -1612,21 +1662,22 @@ function drawEquityCurve(canvas, targetROI) {
       const cx = (px + toX(i)) / 2;
       ctx.quadraticCurveTo(cx, py, toX(i), toY(pts[i]));
     }
-    ctx.strokeStyle = 'rgba(194,255,61,0.85)';
-    ctx.lineWidth = 1.8;
+    ctx.strokeStyle = 'rgba(194,255,61,0.9)';
+    ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Leading dot
+    // Leading dot + glow
     if (drawN > 1) {
       const lx = toX(drawN - 1), ly = toY(pts[drawN - 1]);
-      ctx.beginPath();
-      ctx.arc(lx, ly, 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#c2ff3d';
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(lx, ly, 7, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(194,255,61,0.2)';
-      ctx.fill();
+      // Outer glow
+      const radGrad = ctx.createRadialGradient(lx, ly, 0, lx, ly, 10);
+      radGrad.addColorStop(0, 'rgba(194,255,61,0.4)');
+      radGrad.addColorStop(1, 'rgba(194,255,61,0)');
+      ctx.beginPath(); ctx.arc(lx, ly, 10, 0, Math.PI * 2);
+      ctx.fillStyle = radGrad; ctx.fill();
+      // Dot
+      ctx.beginPath(); ctx.arc(lx, ly, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#c2ff3d'; ctx.fill();
     }
 
     if (progress < 1) requestAnimationFrame(frame);
