@@ -1,0 +1,720 @@
+<!-- FRAGMENT: NAV-CARDS -->
+<!-- Klasy: .nav-cards, .ncard, .nc-daily, .nc-system, .ncard-glare, .nc-live-badge, .ncard-body, .ncard-title, .ncard-desc, .ncard-stat, .trust-strip, .trust-pill, .sp-ticker (redesigned) -->
+
+<style>
+/* ─── Design Tokens ─────────────────────────────────────────── */
+:root {
+  --bg:    #030306;
+  --s0:    #050509;
+  --s1:    #09090f;
+  --s2:    #0e0e18;
+  --bd1:   rgba(255,255,255,.055);
+  --bd2:   rgba(255,255,255,.1);
+  --t1:    #f5f5ff;
+  --t2:    rgba(245,245,255,.52);
+  --t3:    rgba(245,245,255,.2);
+  --lime:  #c2ff3d;
+  --lime3: rgba(194,255,61,.08);
+  --lime4: rgba(194,255,61,.15);
+  --cyan:  #00f2e8;
+  --gold:  #ffd700;
+  --f:     'Cabinet Grotesk', sans-serif;
+  --m:     'JetBrains Mono', monospace;
+  --r:     14px;
+  --r-s:   8px;
+  --r-l:   20px;
+  --r-full:9999px;
+}
+
+/* ─── Reset / Base ───────────────────────────────────────────── */
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body, #cards-preview {
+  background: var(--bg);
+  color: var(--t1);
+  font-family: var(--f);
+  min-height: 100vh;
+  padding: 32px 24px;
+}
+
+/* ─── Ticker ─────────────────────────────────────────────────── */
+.sp-ticker {
+  width: 100%;
+  overflow: hidden;
+  background: var(--s1);
+  border-bottom: 1px solid var(--bd1);
+  padding: 8px 0;
+  margin-bottom: 24px;
+}
+
+.sp-ticker-inner {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker-scroll 28s linear infinite;
+  font-family: var(--m);
+  font-size: 11px;
+  color: var(--t2);
+  letter-spacing: .02em;
+}
+
+.sp-ticker-inner span {
+  padding: 0 32px;
+}
+
+.sp-ticker-inner .sep {
+  color: var(--t3);
+  padding: 0 4px;
+}
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ─── Nav Cards Container ────────────────────────────────────── */
+.nav-cards {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ─── Base Card ──────────────────────────────────────────────── */
+.ncard {
+  position: relative;
+  background: rgba(255,255,255,.028);
+  border-radius: var(--r);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.ncard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+}
+
+/* Border-gradient trick */
+.ncard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r);
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(194,255,61,.28)   0%,
+    rgba(255,255,255,.06) 50%,
+    rgba(0,242,232,.1)   100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Glare overlay */
+.ncard-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255,255,255,.07) 0%,
+    transparent 65%
+  );
+  z-index: 2;
+}
+
+.ncard:hover .ncard-glare {
+  opacity: 1;
+}
+
+/* Card body */
+.ncard-body {
+  position: relative;
+  z-index: 3;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+/* ─── Badges ─────────────────────────────────────────────────── */
+.nc-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--lime3);
+  border: 1px solid rgba(194,255,61,.22);
+  border-radius: var(--r-full);
+  padding: 3px 10px 3px 8px;
+  font-family: var(--m);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--lime);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.nc-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 6px var(--lime);
+  animation: pulse-lime 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-lime {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--lime); }
+  50%       { opacity: .45; box-shadow: 0 0 12px var(--lime); }
+}
+
+.nc-system-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,242,232,.08);
+  border: 1px solid rgba(0,242,232,.22);
+  border-radius: var(--r-full);
+  padding: 3px 10px;
+  font-family: var(--m);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--cyan);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+/* ─── Card Typography ─────────────────────────────────────────── */
+.ncard-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--t1);
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+
+.nc-system .ncard-title {
+  font-size: 16px;
+}
+
+.ncard-desc {
+  font-family: var(--m);
+  font-size: 10px;
+  color: var(--t3);
+  letter-spacing: .04em;
+}
+
+/* ─── Mini Equity Canvas ──────────────────────────────────────── */
+.nc-equity-wrap {
+  width: 100%;
+  position: relative;
+  border-radius: var(--r-s);
+  overflow: hidden;
+  background: rgba(255,255,255,.02);
+  border: 1px solid var(--bd1);
+}
+
+canvas.nc-equity {
+  display: block;
+  width: 100%;
+  height: 64px;
+}
+
+/* ─── Stats Row ───────────────────────────────────────────────── */
+.ncard-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ncard-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ncard-stat-val {
+  font-family: var(--m);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--lime);
+  letter-spacing: .01em;
+}
+
+.ncard-stat-val.cyan {
+  color: var(--cyan);
+}
+
+.ncard-stat-lbl {
+  font-family: var(--m);
+  font-size: 8px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+/* ─── CTA Buttons ─────────────────────────────────────────────── */
+.ncard-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--r-full);
+  padding: 9px 20px;
+  font-family: var(--f);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  cursor: pointer;
+  border: none;
+  transition: filter .15s ease, transform .12s ease;
+  align-self: flex-start;
+  text-decoration: none;
+  margin-top: auto;
+}
+
+.ncard-cta:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.ncard-cta:active {
+  transform: translateY(0);
+}
+
+.ncard-cta.lime {
+  background: var(--lime);
+  color: #010104;
+}
+
+.ncard-cta.outline-cyan {
+  background: transparent;
+  color: var(--cyan);
+  border: 1.5px solid rgba(0,242,232,.45);
+}
+
+.ncard-cta.outline-cyan:hover {
+  background: rgba(0,242,232,.07);
+}
+
+.cta-arrow {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* ─── Daily Kupon Card specifics ──────────────────────────────── */
+.nc-daily {
+  /* accent: lime top-edge glow */
+  box-shadow: 0 -2px 18px rgba(194,255,61,.06) inset;
+}
+
+.nc-daily::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(194,255,61,.55) 40%,
+    rgba(194,255,61,.55) 60%,
+    transparent 100%
+  );
+  border-radius: 0 0 2px 2px;
+  z-index: 4;
+}
+
+/* ─── System Builder Card specifics ───────────────────────────── */
+.nc-system {
+  box-shadow: 0 -2px 18px rgba(0,242,232,.05) inset;
+}
+
+.nc-system::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0,242,232,.45) 40%,
+    rgba(0,242,232,.45) 60%,
+    transparent 100%
+  );
+  border-radius: 0 0 2px 2px;
+  z-index: 4;
+}
+
+.nc-system .ncard-body {
+  justify-content: space-between;
+}
+
+/* Kelly progress bar */
+.nc-kelly-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(0,242,232,.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.nc-kelly-fill {
+  height: 100%;
+  width: 9.8%;
+  background: linear-gradient(90deg, rgba(0,242,232,.4), var(--cyan));
+  border-radius: 2px;
+  animation: kelly-expand .9s .4s cubic-bezier(.22,1,.36,1) both;
+  transform-origin: left;
+}
+
+@keyframes kelly-expand {
+  from { width: 0; }
+  to   { width: 9.8%; }
+}
+
+/* ─── Trust Strip ─────────────────────────────────────────────── */
+.trust-strip {
+  max-width: 860px;
+  margin: 14px auto 0;
+  border: 1px solid var(--bd1);
+  border-radius: var(--r);
+  background: rgba(255,255,255,.012);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trust-label {
+  font-family: var(--m);
+  font-size: 9px;
+  color: var(--t3);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.trust-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.trust-pill {
+  font-family: var(--m);
+  font-size: 9px;
+  color: var(--t3);
+  letter-spacing: .06em;
+  border: 1px solid var(--bd1);
+  border-radius: var(--r-full);
+  padding: 3px 10px;
+  background: rgba(255,255,255,.02);
+  white-space: nowrap;
+  transition: border-color .15s, color .15s;
+}
+
+.trust-pill:hover {
+  border-color: var(--bd2);
+  color: var(--t2);
+}
+
+.trust-sep {
+  font-family: var(--m);
+  font-size: 9px;
+  color: var(--t3);
+  letter-spacing: .04em;
+}
+
+.trust-meta {
+  font-family: var(--m);
+  font-size: 9px;
+  color: var(--t3);
+  letter-spacing: .03em;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .nav-cards {
+    grid-template-columns: 1fr;
+  }
+  .trust-meta {
+    margin-left: 0;
+  }
+}
+</style>
+
+<div id="cards-preview">
+
+  <!-- Ticker -->
+  <div class="sp-ticker" aria-label="Live stats ticker">
+    <div class="sp-ticker-inner" id="tickerInner">
+      <span>Fritz +25.7%<span class="sep"> · </span>+58.7% ROI backtest<span class="sep"> · </span>3 picks dzis<span class="sep"> · </span>Model v14 live<span class="sep"> · </span>Edge avg 17.3%<span class="sep"> · </span>Najlepszy pick: Alcaraz vs Rune<span class="sep"> · </span></span>
+      <span>Fritz +25.7%<span class="sep"> · </span>+58.7% ROI backtest<span class="sep"> · </span>3 picks dzis<span class="sep"> · </span>Model v14 live<span class="sep"> · </span>Edge avg 17.3%<span class="sep"> · </span>Najlepszy pick: Alcaraz vs Rune<span class="sep"> · </span></span>
+    </div>
+  </div>
+
+  <!-- Nav Cards -->
+  <div class="nav-cards">
+
+    <!-- Daily Kupon (2/3) -->
+    <div class="ncard nc-daily" id="cardDaily">
+      <div class="ncard-glare"></div>
+      <div class="ncard-body">
+
+        <div class="nc-live-badge">
+          <span class="nc-live-dot"></span>
+          LIVE DZIS
+        </div>
+
+        <div>
+          <div class="ncard-title">Daily Kupon</div>
+          <div class="ncard-desc" style="margin-top:4px;">Model v14 · 3 picks · edge >= 15%</div>
+        </div>
+
+        <div class="nc-equity-wrap">
+          <canvas class="nc-equity" id="equityCanvas" aria-label="Equity curve wykres"></canvas>
+        </div>
+
+        <div class="ncard-stats">
+          <div class="ncard-stat">
+            <span class="ncard-stat-val">+58.7%</span>
+            <span class="ncard-stat-lbl">ROI</span>
+          </div>
+          <div class="ncard-stat">
+            <span class="ncard-stat-val">59.6%</span>
+            <span class="ncard-stat-lbl">Win Rate</span>
+          </div>
+          <div class="ncard-stat">
+            <span class="ncard-stat-val">57</span>
+            <span class="ncard-stat-lbl">Bets</span>
+          </div>
+        </div>
+
+        <a href="#kupon" class="ncard-cta lime">
+          Generuj Kupon
+          <span class="cta-arrow">&#8594;</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- System Builder (1/3) -->
+    <div class="ncard nc-system" id="cardSystem">
+      <div class="ncard-glare"></div>
+      <div class="ncard-body">
+
+        <div class="nc-system-badge">SYSTEM</div>
+
+        <div>
+          <div class="ncard-title">Graj Systemem</div>
+          <div class="ncard-desc" style="margin-top:4px;">Kelly live · Akumulator</div>
+        </div>
+
+        <div class="ncard-stat">
+          <span class="ncard-stat-val cyan">Kelly avg 9.8%</span>
+          <span class="ncard-stat-lbl">bankroll allocation</span>
+          <div class="nc-kelly-bar" role="progressbar" aria-valuenow="9.8" aria-valuemin="0" aria-valuemax="100">
+            <div class="nc-kelly-fill"></div>
+          </div>
+        </div>
+
+        <a href="#system" class="ncard-cta outline-cyan">
+          Start
+          <span class="cta-arrow">&#8594;</span>
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Trust Strip -->
+  <div class="trust-strip" aria-label="Zweryfikowane zrodla danych">
+    <span class="trust-label">Dane zweryfikowane:</span>
+    <div class="trust-pills">
+      <span class="trust-pill">ATP Official</span>
+      <span class="trust-pill">Pinnacle Consensus</span>
+      <span class="trust-pill">The Odds API</span>
+    </div>
+    <span class="trust-sep"> · </span>
+    <span class="trust-meta">Live odds · 78 022 meczow · Model v14</span>
+  </div>
+
+</div>
+
+<script>
+/* ─── Mini Equity Curve ──────────────────────────────────────── */
+(function drawMiniEquity() {
+  const canvas = document.getElementById('equityCanvas');
+  if (!canvas) return;
+
+  const dpr = window.devicePixelRatio || 1;
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width  = rect.width  * dpr;
+    canvas.height = 64          * dpr;
+    canvas.style.width  = rect.width  + 'px';
+    canvas.style.height = '64px';
+  }
+
+  // Simulated equity data points (+ROI progression)
+  const basePoints = [
+    0, 2.1, 1.4, 4.8, 3.2, 7.5, 6.1, 9.3, 8.0, 12.4,
+    10.7, 14.2, 13.5, 18.9, 17.1, 22.3, 20.5, 26.8, 24.2, 30.1,
+    28.7, 34.4, 32.1, 38.7, 36.2, 42.5, 40.1, 47.3, 44.8, 51.6,
+    49.2, 54.9, 52.4, 57.3, 55.1, 58.7
+  ];
+
+  let progress = 0; // 0..1 for animation
+  let animFrame;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function draw(t) {
+    resize();
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const visibleCount = Math.max(2, Math.round(t * basePoints.length));
+    const pts = basePoints.slice(0, visibleCount);
+
+    const minV = Math.min(...pts) - 2;
+    const maxV = Math.max(...pts) + 2;
+    const range = maxV - minV || 1;
+
+    const padX = 6 * dpr;
+    const padY = 8 * dpr;
+    const drawW = W - padX * 2;
+    const drawH = H - padY * 2;
+
+    function px(i) { return padX + (i / (basePoints.length - 1)) * drawW; }
+    function py(v) { return padY + drawH - ((v - minV) / range) * drawH; }
+
+    // Area fill
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0,   'rgba(194,255,61,.22)');
+    grad.addColorStop(.6,  'rgba(194,255,61,.06)');
+    grad.addColorStop(1,   'rgba(194,255,61,.0)');
+
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(pts[0]));
+    for (let i = 1; i < pts.length; i++) {
+      const x0 = px(i - 1), y0 = py(pts[i - 1]);
+      const x1 = px(i),     y1 = py(pts[i]);
+      ctx.bezierCurveTo(
+        x0 + (x1 - x0) * .5, y0,
+        x0 + (x1 - x0) * .5, y1,
+        x1, y1
+      );
+    }
+    ctx.lineTo(px(pts.length - 1), H);
+    ctx.lineTo(px(0), H);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(px(0), py(pts[0]));
+    for (let i = 1; i < pts.length; i++) {
+      const x0 = px(i - 1), y0 = py(pts[i - 1]);
+      const x1 = px(i),     y1 = py(pts[i]);
+      ctx.bezierCurveTo(
+        x0 + (x1 - x0) * .5, y0,
+        x0 + (x1 - x0) * .5, y1,
+        x1, y1
+      );
+    }
+    ctx.strokeStyle = 'rgba(194,255,61,.75)';
+    ctx.lineWidth = 1.5 * dpr;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    // End dot
+    const lastX = px(pts.length - 1);
+    const lastY = py(pts[pts.length - 1]);
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 3 * dpr, 0, Math.PI * 2);
+    ctx.fillStyle = '#c2ff3d';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 5 * dpr, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(194,255,61,.25)';
+    ctx.fill();
+  }
+
+  // Animate draw-in
+  const startTime = performance.now();
+  const duration  = 1100;
+
+  function animate(now) {
+    progress = Math.min((now - startTime) / duration, 1);
+    draw(easeOut(progress));
+    if (progress < 1) {
+      animFrame = requestAnimationFrame(animate);
+    }
+  }
+
+  requestAnimationFrame(animate);
+  window.addEventListener('resize', () => { if (progress >= 1) draw(1); });
+})();
+
+/* ─── Glare Effect (cursor tracking) ─────────────────────────── */
+(function initGlare() {
+  const cards = document.querySelectorAll('.ncard');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width  * 100).toFixed(1);
+      const y = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
+      card.style.setProperty('--mx', x + '%');
+      card.style.setProperty('--my', y + '%');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.removeProperty('--mx');
+      card.style.removeProperty('--my');
+    });
+  });
+})();
+
+/* ─── Ticker duplicate for seamless loop ─────────────────────── */
+(function fixTicker() {
+  // Already duplicated in HTML; nothing to do.
+  // Pause on hover
+  const ticker = document.querySelector('.sp-ticker');
+  const inner  = document.getElementById('tickerInner');
+  if (!ticker || !inner) return;
+  ticker.addEventListener('mouseenter', () => {
+    inner.style.animationPlayState = 'paused';
+  });
+  ticker.addEventListener('mouseleave', () => {
+    inner.style.animationPlayState = 'running';
+  });
+})();
+</script>

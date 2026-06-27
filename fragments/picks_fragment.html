@@ -1,0 +1,1452 @@
+<!-- FRAGMENT: PICKS -->
+<!-- Klasy: .pcard, .pc-top, .pc-odds-big, .pc-bars-wrap, .pb-row, .pb-fill, .pb-edge, .pc-reason, .prf, .prf-dot, .pc-kelly-strip, overlay phases CSS, .slot-scan-line, #csummary redesign -->
+
+<style>
+/* =========================================================
+   DESIGN TOKENS
+   ========================================================= */
+:root {
+  --bg:#030306; --s0:#050509; --s1:#09090f; --s2:#0e0e18;
+  --bd1:rgba(255,255,255,.055); --bd2:rgba(255,255,255,.1);
+  --t1:#f5f5ff; --t2:rgba(245,245,255,.52); --t3:rgba(245,245,255,.2);
+  --lime:#c2ff3d; --lime2:#7cb800; --lime3:rgba(194,255,61,.08); --lime4:rgba(194,255,61,.15);
+  --gold:#ffd700; --cyan:#00f2e8; --pink:#d32ce6; --blue:#4b69ff;
+  --f:'Cabinet Grotesk',sans-serif; --m:'JetBrains Mono',monospace;
+  --r:14px; --r-s:8px; --r-l:20px; --r-full:9999px;
+}
+
+/* =========================================================
+   PICK CARDS
+   ========================================================= */
+.pcard {
+  background: var(--s1);
+  border: 1px solid var(--bd1);
+  border-radius: var(--r);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: border-color .3s, box-shadow .3s;
+  font-family: var(--f);
+  color: var(--t1);
+}
+
+/* Rarity variants */
+.pcard[data-rarity="jackpot"] {
+  border-color: transparent;
+  box-shadow: 0 0 24px rgba(255,215,0,.18);
+}
+.pcard[data-rarity="jackpot"]::before {
+  content:'';
+  position:absolute; inset:-1px;
+  border-radius: calc(var(--r) + 1px);
+  background: conic-gradient(from var(--rangle,0deg),#ffd700,#d32ce6,#4b69ff,#00f2e8,#c2ff3d,#ffd700);
+  z-index: 0;
+  animation: rainbow-border 3s linear infinite;
+}
+.pcard[data-rarity="jackpot"]::after {
+  content:'';
+  position:absolute; inset:1px;
+  border-radius: calc(var(--r) - 1px);
+  background: var(--s1);
+  z-index: 1;
+}
+.pcard[data-rarity="jackpot"] > * { position: relative; z-index: 2; }
+
+.pcard[data-rarity="high"] {
+  border-color: rgba(211,44,230,.4);
+  box-shadow: 0 0 20px rgba(211,44,230,.15);
+}
+.pcard[data-rarity="value"] {
+  border-color: rgba(75,105,255,.4);
+  box-shadow: 0 0 16px rgba(75,105,255,.12);
+}
+.pcard[data-rarity="common"] {
+  border-color: var(--bd1);
+}
+
+@keyframes rainbow-border {
+  to { --rangle: 360deg; }
+}
+@property --rangle {
+  syntax: '<angle>'; inherits: true; initial-value: 0deg;
+}
+
+/* ---- pc-header: badges row ---- */
+.pc-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 0;
+}
+
+.pc-badge {
+  font-family: var(--m);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  line-height: 1;
+}
+.pc-badge-jackpot {
+  background: rgba(255,215,0,.15);
+  border: 1px solid rgba(255,215,0,.4);
+  color: var(--gold);
+}
+.pc-badge-high {
+  background: rgba(211,44,230,.12);
+  border: 1px solid rgba(211,44,230,.35);
+  color: var(--pink);
+}
+.pc-badge-value {
+  background: rgba(75,105,255,.12);
+  border: 1px solid rgba(75,105,255,.35);
+  color: var(--blue);
+}
+.pc-badge-common {
+  background: var(--lime3);
+  border: 1px solid rgba(194,255,61,.2);
+  color: var(--lime);
+}
+.pc-badge-mkt {
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--bd1);
+  color: var(--t2);
+  margin-left: auto;
+}
+
+/* ---- pc-top: player info ---- */
+.pc-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 10px 16px 14px;
+  gap: 12px;
+}
+
+.pc-player-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.pc-player {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--t1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pc-opp {
+  font-size: 11px;
+  color: var(--t2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pc-opp span {
+  color: var(--t3);
+  margin-right: 4px;
+}
+
+.pc-odds-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.pc-odds-label {
+  font-family: var(--m);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--t3);
+  text-transform: uppercase;
+}
+.pc-odds-big {
+  font-family: var(--m);
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+}
+.pcard[data-rarity="jackpot"] .pc-odds-big { color: var(--gold); }
+.pcard[data-rarity="high"]    .pc-odds-big { color: var(--pink); }
+.pcard[data-rarity="value"]   .pc-odds-big { color: var(--blue); }
+.pcard[data-rarity="common"]  .pc-odds-big { color: var(--lime); }
+
+/* ---- divider ---- */
+.pc-divider {
+  height: 1px;
+  background: var(--bd1);
+  margin: 0 16px;
+}
+
+/* ---- pc-bars-wrap: model vs market ---- */
+.pc-bars-wrap {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.pc-bars-title {
+  font-family: var(--m);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--t3);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.pb-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pb-label {
+  font-family: var(--m);
+  font-size: 10px;
+  color: var(--t2);
+  width: 70px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.pb-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,.06);
+  border-radius: var(--r-full);
+  overflow: hidden;
+  position: relative;
+}
+.pb-fill {
+  height: 100%;
+  border-radius: var(--r-full);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform .6s cubic-bezier(.22,1,.36,1);
+}
+.pb-fill-model  { background: linear-gradient(90deg, var(--lime2), var(--lime)); }
+.pb-fill-market { background: linear-gradient(90deg, rgba(75,105,255,.6), var(--blue)); }
+
+.pb-pct {
+  font-family: var(--m);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--t2);
+  width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.pb-edge {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 2px 0 0;
+}
+.pb-edge-label {
+  font-family: var(--m);
+  font-size: 9px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.pb-edge-val {
+  font-family: var(--m);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--lime);
+}
+.pb-edge-arrow {
+  font-size: 12px;
+  color: var(--lime);
+  animation: edge-pulse 2s ease-in-out infinite;
+}
+@keyframes edge-pulse {
+  0%,100% { opacity:1; transform: translateY(0); }
+  50%      { opacity:.5; transform: translateY(-2px); }
+}
+
+/* ---- pc-reason: reasoning list ---- */
+.pc-reason {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.pc-reason-title {
+  font-size: 10px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-family: var(--m);
+  margin-bottom: 3px;
+}
+.prf {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--t2);
+  line-height: 1.4;
+}
+.prf-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.prf-dot-pos { background: var(--lime); box-shadow: 0 0 6px var(--lime); }
+.prf-dot-neg { background: var(--pink); box-shadow: 0 0 6px rgba(211,44,230,.6); }
+.prf-dot-neu { background: var(--t3); }
+
+/* ---- pc-kelly-strip ---- */
+.pc-kelly-strip {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, rgba(194,255,61,.08) 0%, rgba(194,255,61,.03) 100%);
+  border-top: 1px solid rgba(194,255,61,.12);
+}
+.pc-kelly-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pc-kelly-pct {
+  font-family: var(--m);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--lime);
+}
+.pc-kelly-label {
+  font-family: var(--m);
+  font-size: 9px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.pc-kelly-pln {
+  font-family: var(--m);
+  font-size: 12px;
+  color: var(--t2);
+}
+
+/* =========================================================
+   OVERLAY CEREMONY
+   ========================================================= */
+#overlay-ceremony {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(3,3,6,.96);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+#overlay-ceremony.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ---- Phase backdrop overlay for countdown ---- */
+#oc-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  opacity: 0;
+  transition: opacity .4s;
+  pointer-events: none;
+}
+#oc-backdrop.show { opacity: 1; }
+
+/* ---- Phase 1: Terminal Scan ---- */
+#oc-terminal {
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  width: min(520px, 90vw);
+  gap: 0;
+}
+#oc-terminal.active { display: flex; }
+
+.ot-header {
+  font-family: var(--m);
+  font-size: 11px;
+  color: var(--lime);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  opacity: .7;
+}
+.ot-progress-wrap {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,.06);
+  border-radius: var(--r-full);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.ot-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lime2), var(--lime));
+  border-radius: var(--r-full);
+  width: 0%;
+  transition: width .3s ease;
+  box-shadow: 0 0 10px rgba(194,255,61,.4);
+}
+.ot-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-height: 140px;
+}
+.ot-line {
+  font-family: var(--m);
+  font-size: 13px;
+  color: var(--t2);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .2s, transform .2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ot-line.show { opacity: 1; transform: translateY(0); }
+.ot-line-tag {
+  color: var(--lime);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.ot-line-ok { color: var(--lime); }
+.ot-cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: var(--lime);
+  opacity: 1;
+  animation: blink-cursor .7s step-end infinite;
+  margin-left: 2px;
+  vertical-align: middle;
+}
+@keyframes blink-cursor {
+  0%,100% { opacity:1; } 50% { opacity:0; }
+}
+
+/* ---- Phase 2: Found Count ---- */
+#oc-found {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+#oc-found.active { display: flex; }
+
+.of-label {
+  font-family: var(--m);
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--t3);
+}
+.of-count {
+  font-family: var(--m);
+  font-size: 88px;
+  font-weight: 900;
+  color: var(--lime);
+  line-height: 1;
+  position: relative;
+  text-shadow: 0 0 40px rgba(194,255,61,.4);
+}
+.of-sub {
+  font-family: var(--f);
+  font-size: 15px;
+  color: var(--t2);
+  letter-spacing: .04em;
+}
+
+/* Burst particles */
+.burst-particle {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: burst-anim var(--dur,.8s) ease-out forwards;
+}
+@keyframes burst-anim {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx,30px), var(--ty,-60px)) scale(0); opacity: 0; }
+}
+
+/* ---- Phase 3: Countdown ---- */
+#oc-countdown {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#oc-countdown.active { display: flex; }
+
+.ocd-num {
+  font-family: var(--m);
+  font-size: 120px;
+  font-weight: 900;
+  color: var(--t1);
+  line-height: 1;
+  animation: cd-pulse 1s ease-in-out;
+}
+@keyframes cd-pulse {
+  0%   { transform: scale(1.15); opacity: 0; }
+  20%  { transform: scale(1.0);  opacity: 1; }
+  80%  { transform: scale(1.0);  opacity: 1; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+.ocd-num.go {
+  color: var(--lime);
+  text-shadow: 0 0 40px rgba(194,255,61,.5);
+  animation: cd-go .9s ease-in-out;
+}
+@keyframes cd-go {
+  0%   { transform: scale(1.3); opacity: 0; }
+  25%  { transform: scale(1.0); opacity: 1; }
+  75%  { transform: scale(1.0); opacity: 1; }
+  100% { transform: scale(.85); opacity: 0; }
+}
+
+/* ---- Phase 4: Slot Machine ---- */
+#oc-slots {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+#oc-slots.active { display: flex; }
+
+.slots-title {
+  font-family: var(--m);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--t3);
+}
+.slots-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.slot-reel {
+  width: 180px;
+  height: 120px;
+  background: var(--s2);
+  border: 1px solid var(--bd2);
+  border-radius: var(--r);
+  overflow: hidden;
+  position: relative;
+  transition: border-color .3s, box-shadow .3s;
+}
+.slot-reel.locked-jackpot { border-color: var(--gold);  box-shadow: 0 0 20px rgba(255,215,0,.25); }
+.slot-reel.locked-high    { border-color: var(--pink);  box-shadow: 0 0 20px rgba(211,44,230,.2); }
+.slot-reel.locked-value   { border-color: var(--blue);  box-shadow: 0 0 20px rgba(75,105,255,.18); }
+.slot-reel.locked-common  { border-color: var(--lime);  box-shadow: 0 0 10px rgba(194,255,61,.1); }
+
+.slot-inner {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  transition: top .12s linear;
+}
+.slot-item {
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 0 12px;
+  text-align: center;
+}
+.slot-item-player {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--t1);
+  line-height: 1.2;
+}
+.slot-item-odds {
+  font-family: var(--m);
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--lime);
+}
+
+/* TV scan line */
+.slot-scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(194,255,61,.6), transparent);
+  pointer-events: none;
+  z-index: 10;
+  animation: scan-travel 1.2s linear infinite;
+  opacity: 0;
+}
+.slot-reel.spinning .slot-scan-line { opacity: 1; }
+@keyframes scan-travel {
+  0%   { top: 0%; }
+  100% { top: 100%; }
+}
+
+/* ---- Phase 5: Flip Reveal ---- */
+#oc-reveal {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+#oc-reveal.active { display: flex; }
+
+.reveal-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* 3D flip card */
+.flip-card {
+  width: 200px;
+  height: 130px;
+  perspective: 800px;
+  cursor: pointer;
+}
+.flip-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .6s cubic-bezier(.4,0,.2,1);
+}
+.flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+.flip-front, .flip-back {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r);
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.flip-front {
+  background: var(--s2);
+  border: 1px solid var(--bd2);
+}
+.flip-front-icon {
+  font-size: 24px;
+  opacity: .4;
+}
+.flip-front-label {
+  font-family: var(--m);
+  font-size: 10px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.flip-back {
+  background: var(--s1);
+  transform: rotateY(180deg);
+}
+.flip-back-player {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--t1);
+  text-align: center;
+  padding: 0 10px;
+  line-height: 1.3;
+}
+.flip-back-odds {
+  font-family: var(--m);
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--lime);
+}
+
+/* =========================================================
+   COUPON SUMMARY
+   ========================================================= */
+#csummary {
+  position: relative;
+  background: var(--s1);
+  border: 1px solid var(--bd2);
+  border-radius: var(--r-l);
+  overflow: hidden;
+  padding: 24px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: var(--f);
+}
+#csummary-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: .15;
+  pointer-events: none;
+}
+#csummary > * { position: relative; z-index: 1; }
+
+.cs-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cs-total-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cs-total-label {
+  font-family: var(--m);
+  font-size: 9px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+.cs-total-odds {
+  font-family: var(--m);
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--t1);
+  line-height: 1;
+}
+.cs-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.cs-ev-badge {
+  background: rgba(194,255,61,.12);
+  border: 1px solid rgba(194,255,61,.3);
+  border-radius: var(--r-full);
+  padding: 4px 12px;
+  font-family: var(--m);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--lime);
+}
+
+.cs-kelly-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, rgba(194,255,61,.07), rgba(194,255,61,.02));
+  border: 1px solid rgba(194,255,61,.1);
+  border-radius: var(--r-s);
+  padding: 10px 14px;
+}
+.cs-kelly-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cs-kelly-pct {
+  font-family: var(--m);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--lime);
+}
+.cs-kelly-sep {
+  color: var(--t3);
+}
+.cs-kelly-pln {
+  font-family: var(--m);
+  font-size: 13px;
+  color: var(--t2);
+}
+.cs-kelly-label {
+  font-family: var(--m);
+  font-size: 9px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.cs-btn-copy {
+  background: var(--lime3);
+  border: 1px solid rgba(194,255,61,.25);
+  border-radius: var(--r-s);
+  color: var(--lime);
+  font-family: var(--f);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .1s;
+  letter-spacing: .03em;
+  width: 100%;
+}
+.cs-btn-copy:hover {
+  background: var(--lime4);
+  border-color: rgba(194,255,61,.45);
+}
+.cs-btn-copy:active { transform: scale(.98); }
+
+/* =========================================================
+   PAGE LAYOUT (demo only)
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  min-height: 100vh;
+  font-family: var(--f);
+  color: var(--t1);
+}
+#picks-preview {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.section-label {
+  font-family: var(--m);
+  font-size: 10px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  margin-bottom: 4px;
+}
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.demo-btn {
+  background: var(--s2);
+  border: 1px solid var(--bd2);
+  border-radius: var(--r-s);
+  color: var(--t2);
+  font-family: var(--m);
+  font-size: 11px;
+  padding: 8px 18px;
+  cursor: pointer;
+  letter-spacing: .06em;
+  transition: border-color .2s, color .2s;
+}
+.demo-btn:hover { border-color: var(--lime); color: var(--lime); }
+</style>
+
+<div id="picks-preview">
+
+  <!-- SECTION: PICK CARDS -->
+  <div>
+    <div class="section-label">Pick Cards v2</div>
+    <div class="cards-grid" id="cards-grid"></div>
+  </div>
+
+  <!-- SECTION: COUPON SUMMARY -->
+  <div>
+    <div class="section-label">Coupon Summary</div>
+    <div id="csummary">
+      <canvas id="csummary-canvas"></canvas>
+      <div class="cs-header">
+        <div class="cs-total-block">
+          <div class="cs-total-label">Total Odds</div>
+          <div class="cs-total-odds" id="cs-odds">14.94x</div>
+        </div>
+        <div class="cs-badges">
+          <div class="cs-ev-badge">EV +2.41</div>
+        </div>
+      </div>
+      <div class="cs-kelly-strip">
+        <div class="cs-kelly-info">
+          <div class="cs-kelly-pct">12.3%</div>
+          <div class="cs-kelly-sep">·</div>
+          <div class="cs-kelly-pln">123 PLN na 1000</div>
+        </div>
+        <div class="cs-kelly-label">Kelly</div>
+      </div>
+      <button class="cs-btn-copy" onclick="copyCoupon(this)">Kopiuj Kupon</button>
+    </div>
+  </div>
+
+  <!-- SECTION: OVERLAY TRIGGER -->
+  <div>
+    <div class="section-label">Overlay Ceremony</div>
+    <button class="demo-btn" onclick="startCeremony()">Uruchom ceremonie generowania</button>
+  </div>
+
+</div>
+
+<!-- OVERLAY CEREMONY -->
+<div id="overlay-ceremony">
+  <div id="oc-backdrop"></div>
+
+  <!-- Phase 1: Terminal Scan -->
+  <div id="oc-terminal">
+    <div class="ot-header">ATEP_SCAN v2.6.1</div>
+    <div class="ot-progress-wrap">
+      <div class="ot-progress-fill" id="ot-progress"></div>
+    </div>
+    <div class="ot-lines" id="ot-lines"></div>
+  </div>
+
+  <!-- Phase 2: Found Count -->
+  <div id="oc-found">
+    <div class="of-label">Znaleziono</div>
+    <div class="of-count" id="of-count-num">0</div>
+    <div class="of-sub">Wimbledon 2026 · value picks</div>
+  </div>
+
+  <!-- Phase 3: Countdown -->
+  <div id="oc-countdown">
+    <div class="ocd-num" id="ocd-num">3</div>
+  </div>
+
+  <!-- Phase 4: Slot Machine -->
+  <div id="oc-slots">
+    <div class="slots-title">Losowanie typow</div>
+    <div class="slots-row" id="slots-row"></div>
+  </div>
+
+  <!-- Phase 5: Flip Reveal -->
+  <div id="oc-reveal">
+    <div class="section-label" style="color:var(--t3)">Twoje typy na dzis</div>
+    <div class="reveal-grid" id="reveal-grid"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   SAMPLE DATA
+   ========================================================= */
+const PICKS = [
+  {
+    rarity: 'jackpot',
+    player: 'Taylor Fritz',
+    opp: 'Alexander Bublik',
+    market: 'Wimbledon R16',
+    odds: '2.90',
+    modelP: 47,
+    marketP: 35,
+    edge: '+25.7',
+    reasons: [
+      { type: 'pos', text: 'Grass W/R 54.2% vs 38.1%' },
+      { type: 'pos', text: 'H2H Fritz 2-0 na trawie' },
+      { type: 'neg', text: 'Bublik nieregularny serw' },
+    ],
+    kelly: '15.5%',
+    kellyPln: '155 PLN/1k',
+  },
+  {
+    rarity: 'high',
+    player: 'Jannik Sinner',
+    opp: 'Felix Auger-Aliassime',
+    market: 'Wimbledon QF',
+    odds: '1.55',
+    modelP: 68,
+    marketP: 58,
+    edge: '+17.2',
+    reasons: [
+      { type: 'pos', text: 'Return rating #1 na trawie' },
+      { type: 'pos', text: 'FAA 3 mecze w 5 dni' },
+      { type: 'neu', text: 'Brak danych H2H trawa' },
+    ],
+    kelly: '11.2%',
+    kellyPln: '112 PLN/1k',
+  },
+  {
+    rarity: 'value',
+    player: 'Carlos Alcaraz',
+    opp: 'Daniil Medvedev',
+    market: 'Wimbledon SF',
+    odds: '1.80',
+    modelP: 59,
+    marketP: 50,
+    edge: '+18.0',
+    reasons: [
+      { type: 'pos', text: 'Obrona tytulu Wimbledon' },
+      { type: 'pos', text: 'Medvedev -WR na trawie 34%' },
+      { type: 'neg', text: 'Alcaraz zmeczenie po QF' },
+    ],
+    kelly: '9.4%',
+    kellyPln: '94 PLN/1k',
+  },
+  {
+    rarity: 'common',
+    player: 'Novak Djokovic',
+    opp: 'Holger Rune',
+    market: 'Wimbledon R32',
+    odds: '1.28',
+    modelP: 79,
+    marketP: 72,
+    edge: '+9.7',
+    reasons: [
+      { type: 'pos', text: 'Wimbledon 7x champion' },
+      { type: 'pos', text: 'Rune 0-2 vs Djokovic' },
+    ],
+    kelly: '5.1%',
+    kellyPln: '51 PLN/1k',
+  },
+];
+
+const RARITY_LABEL = {
+  jackpot: 'JACKPOT',
+  high:    'HIGH EV',
+  value:   'VALUE',
+  common:  'SOLID',
+};
+
+/* =========================================================
+   BUILD PICK CARDS
+   ========================================================= */
+function buildCard(pick) {
+  const rarityCls = `pc-badge-${pick.rarity}`;
+  const reasonsHtml = pick.reasons.map(r => `
+    <div class="prf">
+      <div class="prf-dot prf-dot-${r.type === 'pos' ? 'pos' : r.type === 'neg' ? 'neg' : 'neu'}"></div>
+      <span>${r.text}</span>
+    </div>
+  `).join('');
+
+  const card = document.createElement('div');
+  card.className = 'pcard';
+  card.dataset.rarity = pick.rarity;
+  card.innerHTML = `
+    <div class="pc-header">
+      <div class="pc-badge ${rarityCls}">${RARITY_LABEL[pick.rarity]}</div>
+      <div class="pc-badge pc-badge-mkt">${pick.market}</div>
+    </div>
+    <div class="pc-top">
+      <div class="pc-player-block">
+        <div class="pc-player">${pick.player}</div>
+        <div class="pc-opp"><span>vs</span>${pick.opp}</div>
+      </div>
+      <div class="pc-odds-block">
+        <div class="pc-odds-label">Odds</div>
+        <div class="pc-odds-big">${pick.odds}</div>
+      </div>
+    </div>
+    <div class="pc-divider"></div>
+    <div class="pc-bars-wrap">
+      <div class="pc-bars-title">Model vs Market</div>
+      <div class="pb-row">
+        <div class="pb-label">Model P</div>
+        <div class="pb-track"><div class="pb-fill pb-fill-model" data-pct="${pick.modelP}"></div></div>
+        <div class="pb-pct">${pick.modelP}%</div>
+      </div>
+      <div class="pb-row">
+        <div class="pb-label">Market P</div>
+        <div class="pb-track"><div class="pb-fill pb-fill-market" data-pct="${pick.marketP}"></div></div>
+        <div class="pb-pct">${pick.marketP}%</div>
+      </div>
+      <div class="pb-edge">
+        <div class="pb-edge-label">Edge</div>
+        &nbsp;
+        <div class="pb-edge-val">${pick.edge}%</div>
+        <div class="pb-edge-arrow">&#8593;</div>
+      </div>
+    </div>
+    <div class="pc-divider"></div>
+    <div class="pc-reason">
+      <div class="pc-reason-title">Dlaczego model typuje:</div>
+      ${reasonsHtml}
+    </div>
+    <div class="pc-divider"></div>
+    <div class="pc-kelly-strip">
+      <div class="pc-kelly-left">
+        <div class="pc-kelly-pct">${pick.kelly}</div>
+        <div class="pc-kelly-label">Kelly</div>
+      </div>
+      <div class="pc-kelly-pln">${pick.kellyPln}</div>
+    </div>
+  `;
+  return card;
+}
+
+function initCards() {
+  const grid = document.getElementById('cards-grid');
+  PICKS.forEach(pick => grid.appendChild(buildCard(pick)));
+  animateBars();
+}
+
+function animateBars() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.pb-fill').forEach(el => {
+      const pct = parseFloat(el.dataset.pct) / 100;
+      el.style.transform = `scaleX(${pct})`;
+    });
+  });
+}
+
+/* =========================================================
+   COUPON SUMMARY - Equity Curve Canvas
+   ========================================================= */
+function drawEquityCurve() {
+  const canvas = document.getElementById('csummary-canvas');
+  if (!canvas) return;
+  const parent = canvas.parentElement;
+  canvas.width = parent.offsetWidth;
+  canvas.height = parent.offsetHeight;
+
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Generate synthetic equity curve
+  const points = [];
+  let y = H * 0.7;
+  const step = W / 40;
+  for (let i = 0; i <= 40; i++) {
+    y += (Math.random() - 0.38) * (H * 0.08);
+    y = Math.max(H * 0.2, Math.min(H * 0.9, y));
+    points.push({ x: i * step, y });
+  }
+
+  // Draw filled area
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(194,255,61,.35)');
+  grad.addColorStop(1, 'rgba(194,255,61,0)');
+
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  points.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(W, H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Draw line
+  ctx.beginPath();
+  points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = 'rgba(194,255,61,.5)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+function copyCoupon(btn) {
+  const txt = PICKS.map(p => `${p.player} - ${p.odds}`).join('\n');
+  navigator.clipboard.writeText(txt).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Skopiowano!';
+    btn.style.color = 'var(--lime)';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+  }).catch(() => {
+    btn.textContent = 'Brak uprawnien';
+    setTimeout(() => { btn.textContent = 'Kopiuj Kupon'; }, 1500);
+  });
+}
+
+/* =========================================================
+   OVERLAY CEREMONY ENGINE
+   ========================================================= */
+const phases = {
+  terminal:  document.getElementById('oc-terminal'),
+  found:     document.getElementById('oc-found'),
+  countdown: document.getElementById('oc-countdown'),
+  slots:     document.getElementById('oc-slots'),
+  reveal:    document.getElementById('oc-reveal'),
+};
+
+function showPhase(name) {
+  Object.entries(phases).forEach(([k, el]) => {
+    el.classList.toggle('active', k === name);
+  });
+}
+
+function hideAll() {
+  Object.values(phases).forEach(el => el.classList.remove('active'));
+}
+
+/* ---- Phase 1: Terminal Scan ---- */
+const TERMINAL_LINES = [
+  { tag: 'ATEP_SCAN:', text: '847 matches loaded' },
+  { tag: 'ATEP_SCAN:', text: 'Wimbledon 2026 filtered' },
+  { tag: 'ATEP_SCAN:', text: 'edge >= 0.15 threshold' },
+  { tag: 'ATEP_SCAN:', text: 'kelly > 0.05 filter applied' },
+  { tag: 'ATEP_SCAN:', text: 'model v4.1 inference complete', ok: true },
+  { tag: 'ATEP_SCAN:', text: `${PICKS.length} value picks found`, ok: true },
+];
+
+async function runTerminalScan() {
+  const linesEl = document.getElementById('ot-lines');
+  const progressEl = document.getElementById('ot-progress');
+  linesEl.innerHTML = '';
+  progressEl.style.width = '0%';
+
+  for (let i = 0; i < TERMINAL_LINES.length; i++) {
+    await delay(180);
+    const line = TERMINAL_LINES[i];
+    const div = document.createElement('div');
+    div.className = 'ot-line';
+    div.innerHTML = `<span class="ot-line-tag">${line.tag}</span><span class="${line.ok ? 'ot-line-ok' : ''}">${line.text}${line.ok ? ' <span style="color:var(--lime)">&#10003;</span>' : ''}</span>`;
+    linesEl.appendChild(div);
+    requestAnimationFrame(() => div.classList.add('show'));
+    progressEl.style.width = `${Math.round(((i + 1) / TERMINAL_LINES.length) * 100)}%`;
+  }
+
+  // Blinking cursor
+  const cursor = document.createElement('div');
+  cursor.className = 'ot-line show';
+  cursor.innerHTML = '<span class="ot-cursor"></span>';
+  linesEl.appendChild(cursor);
+
+  await delay(700);
+}
+
+/* ---- Phase 2: Found Count ---- */
+async function runFoundCount() {
+  const numEl = document.getElementById('of-count-num');
+  numEl.textContent = '0';
+  numEl.style.opacity = 0;
+
+  await delay(200);
+
+  // Count up
+  for (let i = 0; i <= PICKS.length; i++) {
+    numEl.style.opacity = 1;
+    numEl.textContent = i;
+
+    // Burst particles
+    if (i > 0) spawnBurst(numEl, i);
+    await delay(i === PICKS.length ? 300 : 120);
+  }
+
+  await delay(900);
+}
+
+function spawnBurst(el, count) {
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const colors = ['var(--lime)', 'var(--gold)', 'var(--cyan)', 'var(--pink)', 'var(--blue)'];
+  const n = 8 + count * 2;
+
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('div');
+    p.className = 'burst-particle';
+    const angle = (i / n) * Math.PI * 2;
+    const dist = 40 + Math.random() * 60;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist - 20;
+    p.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      background:${colors[i % colors.length]};
+      --tx:${tx}px; --ty:${ty}px;
+      --dur:${.5 + Math.random() * .4}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1000);
+  }
+}
+
+/* ---- Phase 3: Countdown ---- */
+async function runCountdown() {
+  document.getElementById('oc-backdrop').classList.add('show');
+  const numEl = document.getElementById('ocd-num');
+
+  for (const n of [3, 2, 1]) {
+    numEl.classList.remove('go');
+    numEl.textContent = n;
+    numEl.style.animation = 'none';
+    void numEl.offsetWidth;
+    numEl.style.animation = '';
+    await delay(950);
+  }
+
+  numEl.textContent = 'GO';
+  numEl.classList.add('go');
+  await delay(850);
+  document.getElementById('oc-backdrop').classList.remove('show');
+}
+
+/* ---- Phase 4: Slot Machine ---- */
+function buildSlotReel(picks) {
+  const reel = document.createElement('div');
+  reel.className = 'slot-reel spinning';
+  reel.dataset.rarity = 'common';
+
+  const scanLine = document.createElement('div');
+  scanLine.className = 'slot-scan-line';
+  reel.appendChild(scanLine);
+
+  const inner = document.createElement('div');
+  inner.className = 'slot-inner';
+
+  // Shuffle filler items + real picks at end
+  const shuffled = [...picks].sort(() => Math.random() - .5);
+  const items = [...shuffled, ...shuffled, ...shuffled, picks[Math.floor(Math.random() * picks.length)]];
+  items.forEach(pick => {
+    const item = document.createElement('div');
+    item.className = 'slot-item';
+    item.innerHTML = `
+      <div class="slot-item-player">${pick.player}</div>
+      <div class="slot-item-odds" style="color:var(--${pick.rarity === 'jackpot' ? 'gold' : pick.rarity === 'high' ? 'pink' : pick.rarity === 'value' ? 'blue' : 'lime'})">${pick.odds}</div>
+    `;
+    inner.appendChild(item);
+  });
+
+  reel.appendChild(inner);
+  return { reel, inner, scanLine, items };
+}
+
+async function runSlots() {
+  const row = document.getElementById('slots-row');
+  row.innerHTML = '';
+
+  const reels = PICKS.map(pick => {
+    const { reel, inner, scanLine } = buildSlotReel(PICKS);
+    row.appendChild(reel);
+
+    let pos = 0;
+    const ITEM_H = 120;
+    const totalItems = inner.children.length;
+    const spinInterval = setInterval(() => {
+      pos = (pos + 1) % totalItems;
+      inner.style.top = `-${pos * ITEM_H}px`;
+    }, 80);
+
+    return { reel, inner, spinInterval, pick, totalItems, ITEM_H };
+  });
+
+  // Lock reels one by one
+  for (let i = 0; i < reels.length; i++) {
+    await delay(600 + i * 400);
+    const r = reels[i];
+
+    clearInterval(r.spinInterval);
+
+    // Snap to last item
+    const finalIdx = r.totalItems - 1;
+    r.inner.style.transition = 'top .25s cubic-bezier(.22,1,.36,1)';
+    r.inner.style.top = `-${finalIdx * r.ITEM_H}px`;
+
+    // Update reel to show correct player
+    const lastItem = r.inner.children[finalIdx];
+    lastItem.querySelector('.slot-item-player').textContent = r.pick.player;
+    lastItem.querySelector('.slot-item-odds').textContent = r.pick.odds;
+
+    // Lock visual
+    r.reel.classList.remove('spinning');
+    r.reel.classList.add(`locked-${r.pick.rarity}`);
+  }
+
+  await delay(800);
+}
+
+/* ---- Phase 5: Flip Reveal ---- */
+async function runReveal() {
+  const grid = document.getElementById('reveal-grid');
+  grid.innerHTML = '';
+
+  PICKS.forEach(pick => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'flip-card';
+
+    const inner = document.createElement('div');
+    inner.className = 'flip-card-inner';
+
+    const rarityColor = pick.rarity === 'jackpot' ? 'var(--gold)'
+      : pick.rarity === 'high' ? 'var(--pink)'
+      : pick.rarity === 'value' ? 'var(--blue)'
+      : 'var(--lime)';
+
+    inner.innerHTML = `
+      <div class="flip-front">
+        <div class="flip-front-icon">?</div>
+        <div class="flip-front-label">Typ ${PICKS.indexOf(pick) + 1}</div>
+      </div>
+      <div class="flip-back" style="border:1px solid ${rarityColor}40; box-shadow:0 0 20px ${rarityColor}18">
+        <div class="flip-back-player">${pick.player}</div>
+        <div class="flip-back-odds" style="color:${rarityColor}">${pick.odds}</div>
+      </div>
+    `;
+    wrapper.appendChild(inner);
+    grid.appendChild(wrapper);
+  });
+
+  // Staggered flips
+  const cards = grid.querySelectorAll('.flip-card');
+  for (let i = 0; i < cards.length; i++) {
+    await delay(300);
+    cards[i].classList.add('flipped');
+  }
+
+  await delay(1500);
+
+  // Close overlay
+  const overlay = document.getElementById('overlay-ceremony');
+  overlay.style.opacity = '0';
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    overlay.style.opacity = '';
+    hideAll();
+    // Re-animate bars on main cards
+    animateBars();
+  }, 400);
+}
+
+/* =========================================================
+   CEREMONY ORCHESTRATION
+   ========================================================= */
+async function startCeremony() {
+  const overlay = document.getElementById('overlay-ceremony');
+  overlay.classList.add('active');
+  hideAll();
+
+  // Phase 1
+  showPhase('terminal');
+  await runTerminalScan();
+
+  // Phase 2
+  showPhase('found');
+  await runFoundCount();
+
+  // Phase 3
+  showPhase('countdown');
+  await runCountdown();
+
+  // Phase 4
+  showPhase('slots');
+  await runSlots();
+
+  // Phase 5
+  showPhase('reveal');
+  await runReveal();
+}
+
+/* =========================================================
+   UTILITIES
+   ========================================================= */
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  initCards();
+  drawEquityCurve();
+  window.addEventListener('resize', drawEquityCurve);
+});
+</script>

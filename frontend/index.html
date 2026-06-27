@@ -9,81 +9,62 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════════════
-   BETATP.IO — Design System v8.0
-   "Premium dark consumer AI — opowieść algorytmu dla mas"
+   BETATP.IO — Design System v9.0
+   "Premium dark AI SaaS — dane, nie logo. Equity curve hero."
 
-   Audit v7.0 naprawia:
-   · Logo 40vh → 15vh (proporcjonalne)
-   · 5 kolorów akcentów → 1 (electric lime #c2ff3d)
-   · Tło-szum → czysty WebGL aurora
-   · Watermark VALUE BET → usunięty
-   · Brak hierarchii → clear focal point
-   · Panele floating chaos → usunięte
-   · Brak CTA → dwa przyciski na hero
+   v9.0 fixes vs v8.0 (6.2/10):
+   · H1 logo hero → H2 claim + equity curve canvas hero
+   · Stat pills martwe → mini sparkline canvas per pill
+   · Typografia niespójna → jeden type scale Cabinet Grotesk
+   · Brak trust → ATP/Pinnacle/Odds API trust strip
+   · Cards równe → asymetryczne 2/3+1/3
+   · Pick cards bez focal → model vs market probability bars
 
    Dials: VARIANCE:8 / MOTION:9 / DENSITY:5
+   Target: 8.5/10 — Stratagem × Pinnacle × Vercel dark
 ═══════════════════════════════════════════════════════════ */
 
 /* ── TOKENS ────────────────────────────────────────────── */
 :root {
-  /* Surfaces */
   --bg:  #020208;
   --s0:  #06060f;
   --s1:  #0a0a1a;
   --s2:  #10101f;
   --s3:  #171728;
   --s4:  #1f1f35;
-
-  /* Borders */
   --bd0: rgba(255,255,255,.03);
   --bd1: rgba(255,255,255,.07);
   --bd2: rgba(255,255,255,.13);
   --bd3: rgba(255,255,255,.22);
-
-  /* Text */
   --t1: #f0f0ff;
   --t2: rgba(240,240,255,.55);
   --t3: rgba(240,240,255,.22);
   --t4: rgba(240,240,255,.09);
-
-  /* ONE ACCENT — electric lime */
   --lime:  #c2ff3d;
   --lime2: #7cb800;
   --lime3: rgba(194,255,61,.08);
   --lime4: rgba(194,255,61,.15);
-
-  /* Sparingly — only for CS2 rarity tiers */
   --gold:   #ffd700;
   --gold2:  #c47a00;
   --cyan:   #00f2e8;
   --pink:   #d32ce6;
   --blue:   #4b69ff;
-
-  /* CS2 Rarity system (slot machine only) */
   --rar-common:  rgba(120,144,156,.7);
   --rar-value:   var(--blue);
   --rar-high:    var(--pink);
   --rar-jackpot: var(--gold);
-
-  /* Typography */
   --f: 'Cabinet Grotesk', sans-serif;
   --m: 'JetBrains Mono', monospace;
-
-  /* Timing */
   --t-snap:  60ms;
   --t-fast:  160ms;
   --t-mid:   300ms;
   --t-slow:  500ms;
   --t-build: 2200ms;
   --t-prp:   520ms;
-
-  /* Easing */
   --ease-out:    cubic-bezier(.16,1,.3,1);
   --ease-back:   cubic-bezier(.34,1.56,.64,1);
   --ease-spring: cubic-bezier(.68,-.55,.27,1.55);
   --ease-reel:   cubic-bezier(.06,.96,.22,1);
-
-  /* Radii */
   --r: 14px; --r-s: 8px; --r-l: 20px; --r-full: 9999px;
 }
 
@@ -103,8 +84,6 @@ button { cursor: pointer; font-family: var(--f); }
 /* ── CANVAS LAYERS ─────────────────────────────────────── */
 #bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 #pc { position: fixed; inset: 0; z-index: 99; pointer-events: none; }
-
-/* Subtle scanline */
 body::after {
   content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none;
   background: repeating-linear-gradient(0deg,
@@ -131,7 +110,6 @@ body::after {
 }
 #intro.out { animation: introOut .9s var(--ease-out) forwards; }
 @keyframes introOut { to { opacity: 0; pointer-events: none; } }
-
 .intro-mark {
   font-size: 11px; font-weight: 800; letter-spacing: .28em;
   text-transform: uppercase; color: var(--t3);
@@ -162,24 +140,51 @@ body::after {
 }
 
 /* ═══════════════════════════════════════════════════════
-   HOME — HERO
+   HERO v9.0 — equity curve focal point, nie logo
 ═══════════════════════════════════════════════════════ */
 #s-home {
+  position: relative;
+  display: flex; flex-direction: column;
+  min-height: 100dvh;
   background: var(--bg);
-  overflow-y: auto;
+  overflow-y: auto; overflow-x: hidden;
 }
 #s-home::-webkit-scrollbar { display: none; }
 
-/* Aurora bg */
-.hero-bg {
+.hero-ambient {
   position: absolute; inset: 0; z-index: 0;
+  pointer-events: none; overflow: hidden;
+}
+.hero-ambient::before {
+  content: '';
+  position: absolute;
+  width: 640px; height: 640px;
+  background: radial-gradient(circle, rgba(194,255,61,.055) 0%, transparent 70%);
+  top: -120px; left: 50%; transform: translateX(-50%);
+  border-radius: 50%; filter: blur(60px);
+}
+.hero-ambient::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,242,232,.028) 0%, transparent 70%);
+  bottom: 60px; right: -80px;
+  border-radius: 50%; filter: blur(80px);
+}
+.hero-grid {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
 }
 
-/* Top nav bar */
+/* NAV */
 .hero-nav {
   position: relative; z-index: 5;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 20px 0;
+  padding: 16px 20px 0;
   flex-shrink: 0;
 }
 .logo-pill {
@@ -188,7 +193,7 @@ body::after {
   border: 1px solid var(--bd2);
   background: rgba(2,2,8,.85); backdrop-filter: blur(20px);
   font-size: 10px; font-weight: 800; letter-spacing: .16em;
-  color: var(--t2); text-transform: uppercase;
+  color: var(--t2); text-transform: uppercase; font-family: var(--m);
 }
 .ldot {
   width: 5px; height: 5px; border-radius: 50%;
@@ -198,785 +203,898 @@ body::after {
 .lpill-badge {
   padding: 1px 6px; border-radius: var(--r-full);
   background: var(--lime3); border: 1px solid var(--lime4);
-  color: var(--lime); font-size: 8px; font-weight: 800; letter-spacing: .1em;
+  font-size: 8px; font-weight: 700; letter-spacing: .1em;
+  color: var(--lime);
 }
 .hero-live {
   display: flex; align-items: center; gap: 6px;
-  font-size: 9px; font-weight: 700; color: var(--t3);
-  font-family: var(--m); letter-spacing: .08em; text-transform: uppercase;
+  font-size: 9px; font-weight: 700; letter-spacing: .16em;
+  color: var(--t3); text-transform: uppercase; font-family: var(--m);
 }
 .live-dot {
   width: 5px; height: 5px; border-radius: 50%;
-  background: var(--lime); animation: ldot 1.8s ease infinite;
-  animation-delay: .6s;
+  background: var(--lime); animation: ldot 2.2s ease infinite;
 }
 
-/* Hero content — clear hierarchy */
+/* HERO BODY */
 .hero-body {
   position: relative; z-index: 2;
   display: flex; flex-direction: column;
-  align-items: center; text-align: center;
-  padding: 32px 20px 24px;
+  padding: 28px 20px 0;
   flex: 1;
-  gap: 0;
 }
 
-/* Eyebrow — max 1 per page */
+/* EYEBROW */
 .hero-eyebrow {
-  font-family: var(--m); font-size: 9px; font-weight: 700;
-  letter-spacing: .22em; text-transform: uppercase;
-  color: var(--lime); opacity: 0;
-  display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
-}
-.hero-eyebrow::before,
-.hero-eyebrow::after {
-  content: ''; display: block; width: 20px; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--lime));
-}
-.hero-eyebrow::after {
-  background: linear-gradient(90deg, var(--lime), transparent);
+  font-family: var(--m);
+  font-size: 9px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 14px;
+  opacity: 0;
 }
 
-/* H1 — focal point */
-.hero-h1 {
-  font-size: clamp(72px, 14vw, 148px);
-  font-weight: 900; letter-spacing: -.065em; line-height: .88;
-  background: linear-gradient(128deg, var(--t1) 0%, var(--lime) 55%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  filter: drop-shadow(0 0 60px rgba(194,255,61,.14));
-  opacity: 0; margin-bottom: 18px;
+/* H2 CLAIM — focal point, nie logo */
+.hero-h2 {
+  font-size: clamp(30px, 7.5vw, 44px);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -.03em;
+  color: var(--t1);
+  margin-bottom: 6px;
+  opacity: 0;
+}
+.hero-h2 em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--lime) 0%, #9aff00 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Claim — 2 lines max */
+/* wordmark — dekoracja, nie hero */
 .hero-claim {
-  font-size: clamp(15px, 2.4vw, 19px);
-  font-weight: 700; color: var(--t2);
-  line-height: 1.45; max-width: 340px;
-  opacity: 0; margin-bottom: 28px;
+  font-size: clamp(11px, 3vw, 13px);
+  font-weight: 400;
+  color: var(--t2);
+  letter-spacing: .01em;
+  line-height: 1.5;
+  max-width: 300px;
+  margin-bottom: 20px;
+  opacity: 0;
 }
 
-/* Stat row — 3 clean pills z border-gradient */
-.hero-stats {
-  display: flex; gap: 8px; flex-wrap: wrap;
-  justify-content: center; opacity: 0; margin-bottom: 28px;
-}
-.hs-pill {
-  display: flex; flex-direction: column; align-items: center;
-  padding: 11px 20px; border-radius: 14px;
-  background: rgba(255,255,255,.028);
+/* EQUITY CURVE */
+.equity-wrap {
   position: relative;
-  backdrop-filter: blur(16px); gap: 3px; min-width: 100px;
+  width: 100%;
+  background: rgba(255,255,255,.022);
+  border: 1px solid var(--bd1);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin-bottom: 16px;
+  opacity: 0;
 }
-/* border-gradient trick */
-.hs-pill::before {
-  content: ''; position: absolute; inset: 0; border-radius: 14px; padding: 1px;
-  background: linear-gradient(135deg, rgba(194,255,61,.28) 0%, rgba(255,255,255,.06) 50%, rgba(0,242,232,.1) 100%);
+.equity-wrap::before {
+  content: ''; position: absolute; inset: 0; border-radius: var(--r); padding: 1px;
+  background: linear-gradient(135deg, rgba(194,255,61,.22) 0%, rgba(255,255,255,.04) 60%, rgba(0,242,232,.08) 100%);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
 }
-.hs-num {
-  font-family: var(--m); font-size: 23px; font-weight: 900;
-  line-height: 1; color: var(--lime);
-  text-shadow: 0 0 28px rgba(194,255,61,.22);
+.equity-canvas {
+  width: 100%; height: 160px; display: block;
 }
-.hs-lbl {
-  font-size: 8px; color: var(--t3);
-  text-transform: uppercase; letter-spacing: .13em; font-family: var(--m);
+.equity-stat {
+  position: absolute; top: 10px; right: 12px;
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+.equity-stat-num {
+  font-family: var(--m); font-size: 20px; font-weight: 700;
+  color: var(--lime); letter-spacing: -.02em; line-height: 1;
+}
+.equity-stat-lbl {
+  font-family: var(--m); font-size: 8px; font-weight: 500;
+  color: var(--t3); letter-spacing: .12em; text-transform: uppercase;
+  margin-top: 2px;
 }
 
-/* CTA row */
-.hero-cta {
-  display: flex; gap: 10px; opacity: 0; margin-bottom: 32px;
-}
-.cta-primary {
-  height: 48px; padding: 0 28px; border-radius: 12px; border: none;
-  background: linear-gradient(135deg, #4a9d08, #61b510);
-  color: #000; font-size: 13px; font-weight: 900; letter-spacing: .06em;
-  text-transform: uppercase; position: relative; overflow: hidden;
-  animation: ctaP 2.8s ease infinite; transition: transform var(--t-snap);
-}
-@keyframes ctaP {
-  0%,100%{ box-shadow: 0 0 0 0 rgba(97,181,16,.5); }
-  55%    { box-shadow: 0 0 0 18px rgba(97,181,16,0); }
-}
-.cta-primary::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.2) 50%, transparent 70%);
-  background-size: 200% 100%; animation: ctaSh 3s ease infinite;
-}
-@keyframes ctaSh { 0%,55%{background-position:200% 0} 100%{background-position:-200% 0} }
-.cta-primary:active { transform: scale(.97); }
-
-.cta-ghost {
-  height: 48px; padding: 0 24px; border-radius: 12px;
-  border: 1px solid var(--bd2); background: transparent;
-  color: var(--t2); font-size: 13px; font-weight: 700; letter-spacing: .04em;
-  text-transform: uppercase; transition: all var(--t-fast);
-}
-.cta-ghost:hover { border-color: var(--bd3); color: var(--t1); }
-
-/* Market chips — compact */
-.market-row {
-  display: flex; gap: 5px; flex-wrap: wrap;
-  justify-content: center; opacity: 0;
-}
-.mc {
-  padding: 4px 10px; border-radius: var(--r-full);
-  font-size: 9px; font-weight: 700; letter-spacing: .06em;
-  text-transform: uppercase;
-  border: 1px solid var(--bd1); background: rgba(255,255,255,.025);
-  color: var(--t3); transition: all var(--t-fast);
-}
-.mc.l { border-color: var(--lime4); color: var(--lime); background: var(--lime3); }
-
-/* Ticker */
-.sp-ticker {
-  position: relative; z-index: 5;
-  padding: 6px 0;
-  border-top: 1px solid var(--bd1);
-  background: rgba(2,2,8,.88); backdrop-filter: blur(14px);
-  overflow: hidden; flex-shrink: 0;
-}
-.sp-inner {
-  display: flex; gap: 0;
-  animation: ticker 30s linear infinite;
-  white-space: nowrap; width: max-content;
-}
-.sp-item {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 0 22px; font-size: 9px;
-  font-family: var(--m); color: var(--t3); white-space: nowrap;
-}
-.sp-item .sp-v { color: var(--lime); font-weight: 700; }
-.sp-item .sp-g { color: var(--lime); font-weight: 700; }
-.sp-sep { color: var(--bd3); padding: 0 8px; font-size: 9px; }
-@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-
-/* ═══════════════════════════════════════════════════════
-   NAVIGATION CARDS — nowy styl
-   Pełna szerokość, czysty lime border
-═══════════════════════════════════════════════════════ */
-.nav-cards {
-  position: relative; z-index: 2;
-  display: flex; gap: 10px; padding: 0 16px 20px;
-}
-@media (max-width: 500px) { .nav-cards { flex-direction: column; } }
-
-.ncard {
-  flex: 1; border-radius: var(--r-l); cursor: pointer;
-  position: relative; overflow: hidden;
-  background: var(--s1); border: 1px solid var(--bd1);
-  transition: border-color var(--t-mid), transform var(--t-fast);
-  transform-style: preserve-3d; will-change: transform;
+/* STAT PILLS */
+.hero-stats {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-bottom: 20px;
   opacity: 0;
 }
-.ncard:hover { border-color: var(--bd2); transform: translateY(-2px); }
-.ncard.nc-daily:hover { border-color: rgba(194,255,61,.35); }
-.ncard.nc-system:hover { border-color: rgba(0,242,232,.28); }
+.hs-pill {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,.025);
+  border-radius: var(--r-s);
+  flex: 1; min-width: 90px;
+}
+.hs-pill::before {
+  content: ''; position: absolute; inset: 0; border-radius: var(--r-s); padding: 1px;
+  background: linear-gradient(135deg, rgba(194,255,61,.2) 0%, rgba(255,255,255,.04) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.hs-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.hs-num {
+  font-family: var(--m); font-size: 16px; font-weight: 700;
+  color: var(--lime); letter-spacing: -.02em; line-height: 1;
+}
+.hs-lbl {
+  font-family: var(--m); font-size: 7px; font-weight: 500;
+  color: var(--t3); letter-spacing: .12em; text-transform: uppercase;
+}
+.hs-spark {
+  width: 60px; height: 24px; display: block; flex-shrink: 0;
+}
 
-.ncard-img {
-  width: 100%; height: 100px; overflow: hidden; position: relative;
+/* CTA ROW */
+.hero-cta {
+  display: flex; gap: 10px; margin-bottom: 20px;
+  opacity: 0;
 }
-.ncard-img img {
-  width: 100%; height: 100%; object-fit: cover;
-  object-position: center 30%; opacity: .38;
-  transition: opacity var(--t-slow);
+.cta-primary {
+  flex: 1;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, #4a9d08 0%, #61b510 100%);
+  color: #000;
+  font-size: 12px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; font-family: var(--m);
+  border: none; border-radius: var(--r-s);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
 }
-.ncard:hover .ncard-img img { opacity: .52; }
-.ncard-img-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, transparent 20%, var(--s1) 100%);
+.cta-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(194,255,61,.25);
 }
+.cta-primary:active { transform: translateY(1px) scale(.98); }
+.cta-ghost {
+  padding: 13px 20px;
+  background: rgba(255,255,255,.04);
+  color: var(--t2);
+  font-size: 12px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; font-family: var(--m);
+  border: 1px solid var(--bd2); border-radius: var(--r-s);
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.cta-ghost:hover { border-color: var(--bd3); background: rgba(255,255,255,.07); }
 
-.ncard-body {
-  padding: 12px 14px 16px; display: flex;
-  flex-direction: column; gap: 6px;
+/* MARKET CHIPS */
+.market-row {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 16px;
+  opacity: 0;
 }
-.ncard-tag {
-  font-size: 8px; font-weight: 800; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--t3); font-family: var(--m);
+.mc {
+  padding: 5px 10px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--bd1);
+  border-radius: var(--r-full);
+  font-family: var(--m); font-size: 9px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--t3);
+  transition: all var(--t-fast);
+  cursor: default;
 }
-.nc-daily .ncard-tag { color: var(--lime); }
-.nc-system .ncard-tag { color: var(--cyan); }
-
-.ncard-title {
-  font-size: 16px; font-weight: 900; letter-spacing: -.02em;
-  color: var(--t1);
-}
-.ncard-desc {
-  font-size: 10px; color: var(--t2); line-height: 1.5;
-}
-.ncard-stat {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: 4px; padding-top: 8px; border-top: 1px solid var(--bd0);
-}
-.ncs-val {
-  font-family: var(--m); font-size: 16px; font-weight: 900;
+.mc.active {
+  background: var(--lime3); border-color: rgba(194,255,61,.3);
   color: var(--lime);
 }
-.nc-system .ncs-val { color: var(--cyan); }
-.ncs-lbl { font-size: 8px; color: var(--t3); letter-spacing: .08em; text-transform: uppercase; }
 
-/* Glare effect */
-.ncard-glare {
-  position: absolute; inset: 0; border-radius: var(--r-l);
+/* ═══════════════════════════════════════════════════════
+   TICKER
+═══════════════════════════════════════════════════════ */
+.sp-ticker {
+  position: relative; z-index: 5;
+  overflow: hidden;
+  height: 34px;
+  display: flex; align-items: center;
+  background: rgba(255,255,255,.018);
+  border-top: 1px solid var(--bd1);
+  border-bottom: 1px solid var(--bd1);
+  flex-shrink: 0;
+}
+.sp-ticker::before, .sp-ticker::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 32px; z-index: 2;
   pointer-events: none;
-  background: radial-gradient(circle at var(--mx,50%) var(--my,50%),
-    rgba(255,255,255,.1), transparent 52%);
-  opacity: 0; transition: opacity .25s;
+}
+.sp-ticker::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+.sp-ticker::after  { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
+.sp-ticker-inner {
+  display: flex; white-space: nowrap;
+  animation: tickerScroll 32s linear infinite;
+}
+.sp-ticker-inner:hover { animation-play-state: paused; }
+@keyframes tickerScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.sp-ticker-inner span {
+  display: inline-flex; align-items: center;
+  font-family: var(--m); font-size: 11px; font-weight: 500;
+  color: var(--t2); letter-spacing: .04em; padding: 0 8px;
+}
+.sp-ticker-inner .sep { color: var(--t3); margin: 0 4px; }
+
+/* ═══════════════════════════════════════════════════════
+   NAV CARDS v9.0 — asymetryczne 2/3 + 1/3
+═══════════════════════════════════════════════════════ */
+.nav-cards {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+  padding: 14px 16px;
+  position: relative; z-index: 5;
+}
+@media (max-width: 480px) { .nav-cards { grid-template-columns: 1fr; } }
+
+.ncard {
+  position: relative; overflow: hidden;
+  background: rgba(255,255,255,.028);
+  border: 1px solid var(--bd1);
+  border-radius: var(--r);
+  transition: border-color var(--t-mid), transform var(--t-mid);
+  cursor: pointer;
+}
+.ncard::before {
+  content: ''; position: absolute; inset: 0; border-radius: var(--r); padding: 1px;
+  background: linear-gradient(135deg, rgba(194,255,61,.28) 0%, rgba(255,255,255,.06) 50%, rgba(0,242,232,.1) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+}
+.ncard::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  pointer-events: none;
+}
+.nc-daily::after {
+  background: linear-gradient(90deg, var(--lime) 0%, rgba(194,255,61,.3) 60%, transparent 100%);
+}
+.nc-system::after {
+  background: linear-gradient(90deg, var(--cyan) 0%, rgba(0,242,232,.3) 60%, transparent 100%);
+}
+.ncard:hover { border-color: var(--bd2); transform: translateY(-2px); }
+.nc-daily:hover { border-color: rgba(194,255,61,.3); }
+.nc-system:hover { border-color: rgba(0,242,232,.25); }
+
+/* glare on hover */
+.ncard-glare {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.04), transparent 60%);
+  opacity: 0; transition: opacity var(--t-fast); border-radius: var(--r);
 }
 .ncard:hover .ncard-glare { opacity: 1; }
+
+.ncard-body { padding: 14px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+.nc-live-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px; border-radius: var(--r-full);
+  background: var(--lime3); border: 1px solid rgba(194,255,61,.25);
+  font-family: var(--m); font-size: 8px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--lime);
+  width: fit-content;
+}
+.nc-live-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--lime); animation: ldot 1.6s ease infinite; flex-shrink: 0;
+}
+.nc-system-badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 8px; border-radius: var(--r-full);
+  background: rgba(0,242,232,.08); border: 1px solid rgba(0,242,232,.2);
+  font-family: var(--m); font-size: 8px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--cyan);
+  width: fit-content;
+}
+.ncard-title { font-size: 18px; font-weight: 900; letter-spacing: -.02em; color: var(--t1); }
+.ncard-desc  { font-family: var(--m); font-size: 10px; color: var(--t3); letter-spacing: .06em; }
+
+.nc-equity-wrap { position: relative; width: 100%; }
+.nc-equity {
+  width: 100%; height: 64px; display: block;
+  border-radius: var(--r-s);
+  background: rgba(255,255,255,.015);
+}
+
+.ncard-stats { display: flex; gap: 12px; }
+.ncard-stat { display: flex; flex-direction: column; gap: 2px; }
+.ncard-stat-val {
+  font-family: var(--m); font-size: 14px; font-weight: 700;
+  color: var(--lime); letter-spacing: -.01em;
+}
+.ncard-stat-val.cyan { color: var(--cyan); }
+.ncard-stat-lbl {
+  font-family: var(--m); font-size: 7px; font-weight: 500;
+  color: var(--t3); letter-spacing: .1em; text-transform: uppercase;
+}
+
+.ncard-cta {
+  display: inline-flex; align-items: center; justify-content: space-between;
+  padding: 9px 14px; border-radius: var(--r-s);
+  font-size: 11px; font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; font-family: var(--m);
+  text-decoration: none; border: none; cursor: pointer;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+  width: 100%;
+}
+.ncard-cta.lime {
+  background: linear-gradient(135deg, #4a9d08 0%, #61b510 100%);
+  color: #000;
+}
+.ncard-cta.lime:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(194,255,61,.2); }
+.ncard-cta.outline-cyan {
+  background: rgba(0,242,232,.06);
+  border: 1px solid rgba(0,242,232,.3);
+  color: var(--cyan);
+}
+.ncard-cta.outline-cyan:hover { background: rgba(0,242,232,.1); }
+.cta-arrow { font-size: 13px; }
+
+.nc-kelly-bar {
+  width: 100%; height: 4px; border-radius: 2px;
+  background: rgba(0,242,232,.1); overflow: hidden; margin-top: 4px;
+}
+.nc-kelly-fill {
+  height: 100%; width: 9.8%; border-radius: 2px;
+  background: var(--cyan);
+  animation: kellyFill 1.2s var(--ease-out) .5s both;
+}
+@keyframes kellyFill { from { width: 0; } }
+
+/* TRUST STRIP */
+.trust-strip {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--bd0);
+}
+.trust-label {
+  font-family: var(--m); font-size: 9px; color: var(--t3);
+  letter-spacing: .08em; flex-shrink: 0;
+}
+.trust-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+.trust-pill {
+  padding: 2px 7px; border-radius: var(--r-full);
+  background: rgba(255,255,255,.025); border: 1px solid var(--bd1);
+  font-family: var(--m); font-size: 8px; font-weight: 600;
+  color: var(--t3); letter-spacing: .06em;
+}
+.trust-sep { font-family: var(--m); font-size: 9px; color: var(--t3); }
+.trust-meta { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .04em; }
 
 /* ═══════════════════════════════════════════════════════
    NAV BAR (daily/system screens)
 ═══════════════════════════════════════════════════════ */
 .nav {
-  display: flex; align-items: center; padding: 10px 14px; gap: 9px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px 10px;
   border-bottom: 1px solid var(--bd1);
-  background: rgba(2,2,8,.93); backdrop-filter: blur(28px);
-  flex-shrink: 0; position: relative; z-index: 20;
+  flex-shrink: 0;
 }
 .nbk {
-  width: 28px; height: 28px; border-radius: var(--r-s);
+  width: 32px; height: 32px; border-radius: var(--r-s);
   background: var(--s2); border: 1px solid var(--bd1);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 12px; flex-shrink: 0;
+  font-size: 16px; cursor: pointer;
   transition: background var(--t-fast);
 }
 .nbk:hover { background: var(--s3); }
-.ntitle { font-size: 13px; font-weight: 900; flex: 1; letter-spacing: -.01em; }
+.ntitle { font-size: 14px; font-weight: 800; letter-spacing: -.01em; flex: 1; }
+.nlive {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--lime); animation: ldot 2s ease infinite;
+}
 .nbadge {
-  font-size: 7px; font-family: var(--m); color: var(--t3);
-  padding: 2px 7px; border-radius: 5px;
+  font-family: var(--m); font-size: 9px; font-weight: 600;
+  color: var(--t3); letter-spacing: .1em;
+  padding: 3px 8px; border-radius: var(--r-full);
   background: var(--s2); border: 1px solid var(--bd1);
 }
-.nlive {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--lime); animation: ldot 1.8s ease infinite;
+
+/* MARKET TABS */
+.mktabs {
+  display: flex; gap: 4px; padding: 8px 12px;
+  overflow-x: auto; flex-shrink: 0;
+}
+.mktabs::-webkit-scrollbar { display: none; }
+.mktab {
+  padding: 5px 12px; border-radius: var(--r-full);
+  font-family: var(--m); font-size: 9px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--t3); cursor: pointer; white-space: nowrap;
+  background: transparent; border: 1px solid transparent;
+  transition: all var(--t-fast);
+}
+.mktab.on, .mktab:hover { background: var(--lime3); color: var(--lime); border-color: var(--lime4); }
+.mktab.winner { color: var(--blue); }
+.mktab.sets   { color: var(--cyan); }
+.mktab.handi  { color: var(--pink); }
+.mktab.total  { color: var(--gold); }
+
+/* API BAR */
+#api-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--bd0);
   flex-shrink: 0;
 }
-
-/* ═══════════════════════════════════════════════════════
-   MARKET TABS
-═══════════════════════════════════════════════════════ */
-.mktabs {
-  display: flex; gap: 0; padding: 0 14px;
-  border-bottom: 1px solid var(--bd1);
-  background: var(--s0); overflow-x: auto; flex-shrink: 0;
-}
-.mktabs::-webkit-scrollbar { height: 0; }
-.mktab {
-  padding: 9px 14px; font-size: 9px; font-weight: 800;
-  letter-spacing: .07em; text-transform: uppercase; color: var(--t3);
-  cursor: pointer; border-bottom: 2px solid transparent;
-  white-space: nowrap; flex-shrink: 0;
-  transition: color var(--t-fast), border-color var(--t-fast);
-}
-.mktab:hover { color: var(--t2); }
-.mktab.on { color: var(--t1); border-bottom-color: var(--lime); }
-.mktab.on.sets   { border-bottom-color: var(--cyan);   color: var(--cyan); }
-.mktab.on.handi  { border-bottom-color: var(--gold);   color: var(--gold); }
-.mktab.on.total  { border-bottom-color: var(--pink);   color: var(--pink); }
-.mktab.on.score  { border-bottom-color: var(--blue);   color: var(--blue); }
-
-/* ═══════════════════════════════════════════════════════
-   API BAR
-═══════════════════════════════════════════════════════ */
-#api-bar {
-  display: flex; align-items: center; gap: 6px; padding: 5px 14px;
-  background: var(--s0); border-bottom: 1px solid var(--bd1); flex-shrink: 0;
-}
-.ablbl {
-  font-size: 7px; font-weight: 800; color: var(--t3);
-  letter-spacing: .1em; text-transform: uppercase;
-  white-space: nowrap; font-family: var(--m);
-}
+.ablbl { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .1em; flex-shrink: 0; }
 #api-in {
-  flex: 1; height: 22px; padding: 0 7px; border-radius: 5px;
-  background: var(--s2); border: 1px solid var(--bd1);
-  color: var(--t1); font-family: var(--m); font-size: 9px;
-  outline: none; min-width: 0;
+  flex: 1; background: var(--s2); border: 1px solid var(--bd1);
+  border-radius: var(--r-s); padding: 4px 8px;
+  font-family: var(--m); font-size: 10px; color: var(--t2);
+  outline: none;
 }
-#api-in::placeholder { color: var(--t3); }
-#api-in:focus { border-color: var(--lime4); }
 #api-btn {
-  height: 22px; padding: 0 10px; border-radius: 5px;
-  border: 1px solid var(--lime4); background: var(--lime3);
-  color: var(--lime); font-size: 8px; font-weight: 800;
+  padding: 4px 10px; border-radius: var(--r-s);
+  background: var(--lime3); border: 1px solid var(--lime4);
+  font-family: var(--m); font-size: 9px; font-weight: 700;
+  color: var(--lime); letter-spacing: .1em;
   transition: background var(--t-fast);
 }
-#api-btn:hover { background: rgba(194,255,61,.13); }
-#api-st { font-size: 7px; font-weight: 800; font-family: var(--m); white-space: nowrap; }
-#api-st.ok  { color: var(--lime); }
-#api-st.err { color: #ef3340; }
+#api-btn:hover { background: var(--lime4); }
+#api-st { font-family: var(--m); font-size: 9px; color: var(--t3); }
 
-/* ═══════════════════════════════════════════════════════
-   DAILY SCREEN
-═══════════════════════════════════════════════════════ */
+/* DAILY SCREEN */
 #s-daily { background: var(--bg); }
-.dbody {
-  flex: 1; overflow-y: auto; padding: 12px;
-  display: flex; flex-direction: column; gap: 10px;
-  scroll-behavior: smooth;
-}
+.dbody { flex: 1; overflow-y: auto; padding: 12px; }
 .dbody::-webkit-scrollbar { display: none; }
-.dinfo { display: flex; gap: 5px; flex-wrap: wrap; }
+.dinfo { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
 .chip {
-  padding: 3px 8px; border-radius: var(--r-full);
-  font-size: 8px; font-weight: 700;
-  background: var(--s2); border: 1px solid var(--bd1); color: var(--t2);
+  padding: 3px 10px; border-radius: var(--r-full);
+  font-family: var(--m); font-size: 9px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
 }
-.chip.lime { background: var(--lime3); color: var(--lime); border-color: var(--lime4); }
-.chip.green { background: rgba(0,160,60,.09); color: #00cc55; border-color: rgba(0,160,60,.18); }
+.chip.lime  { background: var(--lime3); border: 1px solid var(--lime4); color: var(--lime); }
+.chip.green { background: rgba(0,200,83,.1); border: 1px solid rgba(0,200,83,.2); color: #00c853; }
 
 /* ═══════════════════════════════════════════════════════
-   PICK CARD — clean glassmorphism
-   Jedna rarity glow (jackpot), reszta subtle
+   PICK CARD v9.0 — model vs market probability bars
 ═══════════════════════════════════════════════════════ */
-#cards-area { display: flex; flex-direction: column; gap: 12px; }
+.pcard-wrap { padding: 0 0 10px; }
 
 .pcard {
-  border-radius: var(--r); border: 1px solid var(--bd1);
-  background: linear-gradient(135deg, rgba(10,10,26,.92), rgba(6,6,15,.97));
-  overflow: hidden; position: relative;
-  transition: border-color var(--t-mid);
-  backdrop-filter: blur(16px);
+  background: rgba(255,255,255,.025);
+  border: 1px solid var(--bd1);
+  border-radius: var(--r);
+  overflow: hidden;
+  transition: border-color var(--t-mid), transform var(--t-mid);
 }
-.pcard.r-value  { border-color: rgba(75,105,255,.25); }
-.pcard.r-high   { border-color: rgba(211,44,230,.32); animation: highP 3s ease infinite; }
-.pcard.r-jackpot { animation: jpP 2.2s ease infinite, jpBdr 2s linear infinite; }
+.pcard:hover { transform: translateY(-2px); border-color: var(--bd2); }
 
-@keyframes highP   { 0%,100%{box-shadow:0 0 0 0 rgba(211,44,230,0)} 55%{box-shadow:0 0 28px rgba(211,44,230,.14)} }
-@keyframes jpP     { 0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0)}  55%{box-shadow:0 0 32px rgba(255,215,0,.16)} }
-@keyframes jpBdr   { 0%{border-color:rgba(255,215,0,.4)} 33%{border-color:rgba(211,44,230,.4)} 66%{border-color:rgba(75,105,255,.4)} 100%{border-color:rgba(255,215,0,.4)} }
-
-.pcard::before {
-  content: ''; position: absolute; inset: 0; opacity: 0;
-  transition: opacity var(--t-mid); border-radius: var(--r);
-  background: radial-gradient(ellipse at 50% 0%, rgba(194,255,61,.035), transparent 58%);
+/* rarity borders */
+.pcard[data-rarity="jackpot"] {
+  --jackpot-angle: 0deg;
+  border: none;
+  background: linear-gradient(var(--bg), var(--bg)) padding-box,
+    conic-gradient(from var(--jackpot-angle), var(--gold), var(--pink), var(--blue), var(--lime), var(--gold)) border-box;
+  border: 1.5px solid transparent;
+  animation: rotateBorder 3s linear infinite;
 }
-.pcard:hover::before { opacity: 1; }
+@property --jackpot-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes rotateBorder { to { --jackpot-angle: 360deg; } }
+.pcard[data-rarity="high"]  { border-color: rgba(211,44,230,.4); box-shadow: 0 0 24px rgba(211,44,230,.1); }
+.pcard[data-rarity="value"] { border-color: rgba(75,105,255,.4); box-shadow: 0 0 18px rgba(75,105,255,.08); }
+.pcard[data-rarity="common"]{ border-color: var(--bd1); }
 
-.pc-hero { width: 100%; height: 64px; overflow: hidden; position: relative; background: var(--s2); }
-.pc-hero img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; opacity: .24; }
-.pc-hero-g { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 20%, var(--s1) 100%); }
-
+/* rarity badge */
 .rar {
-  position: absolute; top: 9px; right: 10px;
-  padding: 2px 8px; border-radius: var(--r-full);
-  font-size: 7px; font-weight: 900; letter-spacing: .12em;
-  text-transform: uppercase; z-index: 5;
+  display: inline-flex; padding: 2px 8px; border-radius: var(--r-full);
+  font-family: var(--m); font-size: 8px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
 }
-.rar-common  { background: rgba(120,144,156,.14); color: #78909c; }
-.rar-value   { background: rgba(75,105,255,.16); color: var(--blue); border: 1px solid rgba(75,105,255,.28); }
-.rar-high    { background: rgba(211,44,230,.18); color: var(--pink); border: 1px solid rgba(211,44,230,.36); box-shadow: 0 0 10px rgba(211,44,230,.18); }
-.rar-jackpot {
-  background: linear-gradient(90deg, rgba(255,215,0,.18), rgba(255,215,0,.26));
-  color: var(--gold); border: 1px solid rgba(255,215,0,.4);
-  animation: jptxt 1.6s linear infinite; box-shadow: 0 0 14px rgba(255,215,0,.18);
+.rar-jackpot { background: rgba(255,215,0,.12); color: var(--gold); border: 1px solid rgba(255,215,0,.25); }
+.rar-high    { background: rgba(211,44,230,.1);  color: var(--pink); border: 1px solid rgba(211,44,230,.25); }
+.rar-value   { background: rgba(75,105,255,.1);  color: var(--blue); border: 1px solid rgba(75,105,255,.25); }
+.rar-common  { background: rgba(255,255,255,.05); color: var(--t3);   border: 1px solid var(--bd1); }
+
+.pc-hero { position: relative; height: 90px; overflow: hidden; }
+.pc-hero img { width: 100%; height: 100%; object-fit: cover; opacity: .4; }
+.pc-hero-g {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 30%, var(--bg) 100%);
 }
-@keyframes jptxt { to { filter: hue-rotate(360deg); } }
 
-.pc-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.pc-body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+.pc-header { display: flex; align-items: center; justify-content: space-between; }
 
-/* Neural pulse bar — model analyzing */
 .pc-neural-bar {
-  height: 2px; background: var(--bd0); border-radius: 1px; overflow: hidden;
+  width: 100%; height: 2px; background: var(--bd0); border-radius: 1px; overflow: hidden;
 }
 .pc-neural-fill {
-  height: 100%; border-radius: 1px;
-  background: linear-gradient(90deg, transparent, var(--lime), transparent);
-  animation: neuralF 2.2s ease infinite;
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--lime2), var(--lime));
+  border-radius: 1px; animation: neuralFill 1.8s var(--ease-out) .3s both;
 }
-@keyframes neuralF { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes neuralFill { from { width: 0; } to { width: 72%; } }
 
-/* Market badge */
 .mkt-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 9px; border-radius: var(--r-full);
-  font-size: 8px; font-weight: 800; letter-spacing: .08em;
-  text-transform: uppercase; width: fit-content;
+  padding: 2px 6px; border-radius: var(--r-full);
+  font-family: var(--m); font-size: 8px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  background: rgba(255,255,255,.06); color: var(--t3); border: 1px solid var(--bd1);
 }
-.mb-winner   { background: var(--lime3); color: var(--lime); border: 1px solid var(--lime4); }
-.mb-sets     { background: rgba(0,242,232,.06); color: var(--cyan); border: 1px solid rgba(0,242,232,.16); }
-.mb-handicap { background: rgba(255,215,0,.06); color: var(--gold); border: 1px solid rgba(255,215,0,.16); }
-.mb-total    { background: rgba(211,44,230,.06); color: var(--pink); border: 1px solid rgba(211,44,230,.16); }
-.mb-score    { background: rgba(75,105,255,.06); color: var(--blue); border: 1px solid rgba(75,105,255,.16); }
+.mkt-badge.winner { color: var(--blue); background: rgba(75,105,255,.1); border-color: rgba(75,105,255,.2); }
+.mkt-badge.sets   { color: var(--cyan); background: rgba(0,242,232,.08); border-color: rgba(0,242,232,.18); }
+.mkt-badge.handi  { color: var(--pink); background: rgba(211,44,230,.08); border-color: rgba(211,44,230,.18); }
+.mkt-badge.total  { color: var(--gold); background: rgba(255,215,0,.08); border-color: rgba(255,215,0,.18); }
 
-/* Match row */
-.pc-matchrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.pc-players { flex: 1; }
-.pc-backed { font-size: 15px; font-weight: 900; letter-spacing: -.02em; line-height: 1.1; }
-.pc-vs { font-size: 8px; color: var(--t3); text-transform: uppercase; letter-spacing: .07em; margin: 2px 0 1px; }
-.pc-opp { font-size: 11px; font-weight: 600; color: var(--t2); }
-.pc-oddsblk { text-align: right; flex-shrink: 0; }
-.pc-oddsval {
-  font-family: var(--m); font-size: 26px; font-weight: 900;
-  line-height: 1; letter-spacing: -.03em; color: var(--lime);
-  text-shadow: 0 0 20px rgba(194,255,61,.26);
-}
-.pc-oddsval.gold { color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,.26); }
-.pc-oddsval.pink { color: var(--pink); text-shadow: 0 0 20px rgba(211,44,230,.2); }
-.pc-oddslbl { font-size: 7px; color: var(--t3); text-transform: uppercase; letter-spacing: .08em; }
+.pc-matchrow { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.pc-players { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.pc-backed { font-size: 16px; font-weight: 900; letter-spacing: -.02em; color: var(--t1); }
+.pc-vs     { font-family: var(--m); font-size: 8px; color: var(--t3); letter-spacing: .1em; }
+.pc-opp    { font-size: 11px; font-weight: 600; color: var(--t2); }
+.pc-oddsblk { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+.pc-oddsval { font-family: var(--m); font-size: 28px; font-weight: 700; letter-spacing: -.03em; color: var(--lime); line-height: 1; }
+.pc-oddsval.gold { color: var(--gold); }
+.pc-oddsval.pink { color: var(--pink); }
+.pc-oddsval.blue { color: var(--blue); }
+.pc-oddslbl { font-family: var(--m); font-size: 7px; color: var(--t3); letter-spacing: .12em; text-transform: uppercase; }
 
-/* Selection box */
-.pc-sel {
-  padding: 8px 10px; border-radius: var(--r-s);
-  background: rgba(255,255,255,.02); border: 1px solid var(--bd0);
-  font-size: 10px; color: var(--t1); line-height: 1.5;
-}
-.pc-sel strong { color: var(--lime); }
-.pc-sel .g { color: var(--gold); }
-.pc-sel .p { color: var(--pink); }
-.pc-sel .c { color: var(--cyan); }
-.pc-sel .v { color: var(--pink); }
+.pc-sel { font-size: 11px; font-weight: 600; color: var(--t2); }
 
-/* Prob bars */
-.prob-stack { display: flex; flex-direction: column; gap: 5px; }
+/* PROBABILITY BARS — model vs market */
+.prob-stack { display: flex; flex-direction: column; gap: 4px; }
 .prob-row { display: flex; align-items: center; gap: 6px; }
 .prob-lbl {
-  font-size: 8px; font-family: var(--m); font-weight: 700;
-  color: var(--t3); width: 74px; flex-shrink: 0;
+  font-family: var(--m); font-size: 8px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--t3);
+  width: 52px; flex-shrink: 0;
 }
-.prob-track {
-  flex: 1; height: 3px; background: rgba(255,255,255,.05);
-  border-radius: 2px; overflow: hidden;
+.prob-bar {
+  flex: 1; height: 6px; background: rgba(255,255,255,.06);
+  border-radius: 3px; overflow: hidden;
 }
-.prob-fill { height: 100%; border-radius: 2px; width: 0%; }
-.pf-l { background: linear-gradient(90deg, var(--lime2), var(--lime)); }
-.pf-g { background: linear-gradient(90deg, var(--gold2), var(--gold)); }
-.pf-c { background: linear-gradient(90deg, #00aaa2, var(--cyan)); }
-.pf-p { background: linear-gradient(90deg, #7b0086, var(--pink)); }
-.pf-b { background: linear-gradient(90deg, #1a3299, var(--blue)); }
+.prob-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 1.2s var(--ease-out);
+  width: 0;
+}
+.prob-fill.model  { background: linear-gradient(90deg, var(--lime2), var(--lime)); }
+.prob-fill.market { background: rgba(255,255,255,.2); }
 .prob-val {
-  font-size: 8px; font-family: var(--m); color: var(--t2);
-  width: 28px; text-align: right; flex-shrink: 0;
+  font-family: var(--m); font-size: 10px; font-weight: 700;
+  color: var(--t2); width: 28px; text-align: right; flex-shrink: 0;
 }
+.prob-val.model { color: var(--lime); }
 
-/* Reasoning */
-.pc-reason {
-  padding: 9px 10px; border-radius: var(--r-s);
-  background: rgba(255,255,255,.02); border: 1px solid var(--bd0);
-  display: flex; flex-direction: column; gap: 5px;
+/* EDGE ROW */
+.pc-bars-wrap { display: flex; flex-direction: column; gap: 6px; }
+.pb-edge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 8px; border-radius: var(--r-s);
+  background: var(--lime3); border: 1px solid var(--lime4);
 }
-.pr-hdr {
-  font-size: 7px; font-weight: 800; color: var(--t3);
-  text-transform: uppercase; letter-spacing: .12em; margin-bottom: 1px;
+.pb-edge-lbl { font-family: var(--m); font-size: 8px; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; }
+.pb-edge-val { font-family: var(--m); font-size: 14px; font-weight: 700; color: var(--lime); margin-left: auto; }
+.pb-edge-arr { font-size: 12px; color: var(--lime); }
+
+/* REASONING */
+.pc-reason { display: flex; flex-direction: column; gap: 4px; }
+.prf {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 11px; color: var(--t2); line-height: 1.4;
 }
-.prf { display: flex; align-items: flex-start; gap: 6px; font-size: 9px; color: var(--t2); line-height: 1.4; }
-.prf-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.prf-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  margin-top: 5px;
+}
 .prf-dot.pos { background: var(--lime); }
-.prf-dot.neg { background: #ef3340; }
+.prf-dot.neg { background: var(--pink); }
 .prf-dot.neu { background: var(--t3); }
 
-/* Tags + confidence */
-.pc-conf { display: flex; align-items: center; gap: 8px; }
-.conf-lbl { font-size: 8px; color: var(--t3); font-weight: 700; white-space: nowrap; font-family: var(--m); }
-.conf-bar { flex: 1; height: 4px; background: rgba(255,255,255,.04); border-radius: 2px; overflow: hidden; }
-.conf-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #00aaa2, var(--lime)); width: 0%; }
-.conf-val { font-size: 8px; font-family: var(--m); font-weight: 700; color: var(--lime); white-space: nowrap; }
-.pc-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-.ptag {
-  padding: 2px 7px; border-radius: var(--r-full);
-  font-size: 8px; font-weight: 700;
-  border: 1px solid var(--bd1); background: var(--s2); color: var(--t2);
+/* KELLY STRIP */
+.pc-kelly-strip {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 10px; border-radius: var(--r-s);
+  background: linear-gradient(90deg, rgba(194,255,61,.06) 0%, rgba(194,255,61,.02) 100%);
+  border: 1px solid rgba(194,255,61,.12);
+  margin-top: 2px;
 }
-.ptag.pg { background: rgba(0,160,60,.07); color: #00cc55; border-color: rgba(0,160,60,.16); }
+.pc-kelly-info { display: flex; align-items: center; gap: 8px; }
+.pc-kelly-pct  { font-family: var(--m); font-size: 16px; font-weight: 700; color: var(--lime); letter-spacing: -.01em; }
+.pc-kelly-pln  { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .06em; }
+.pc-kelly-lbl  { font-family: var(--m); font-size: 7px; color: var(--t3); letter-spacing: .14em; text-transform: uppercase; }
 
-/* Coupon summary */
+/* COUPON SUMMARY */
 #csummary {
-  border-radius: var(--r); border: 1px solid var(--lime4);
-  background: var(--lime3); padding: 13px 14px;
-  display: none; flex-direction: column; gap: 8px;
+  position: relative; border-radius: var(--r-l);
+  border: 1px solid var(--bd2);
+  background: var(--s2);
+  padding: 20px; overflow: hidden;
+  margin-top: 12px;
+  display: none;
 }
-.coup-img { width: 100%; height: 64px; border-radius: var(--r-s); overflow: hidden; border: 1px solid var(--bd1); margin-bottom: 2px; }
-.coup-img img { width: 100%; height: 100%; object-fit: cover; opacity: .4; }
-.csr { display: flex; align-items: center; justify-content: space-between; }
-.csl { font-size: 9px; color: var(--t3); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-.csv { font-family: var(--m); font-size: 12px; font-weight: 700; color: var(--lime); }
-.cs-big {
-  font-family: var(--m); font-size: 32px; font-weight: 900;
-  color: var(--lime); letter-spacing: -.04em; line-height: 1;
-  text-shadow: 0 0 24px rgba(194,255,61,.28);
+#csummary canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: .15; pointer-events: none;
 }
-#btn-exp {
-  width: 100%; height: 38px; border-radius: 9px;
-  border: 1px solid var(--lime4); background: var(--lime3);
-  color: var(--lime); font-size: 10px; font-weight: 800;
-  letter-spacing: .05em; text-transform: uppercase;
-  transition: background var(--t-fast);
+.cs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; position: relative; z-index: 1; }
+.cs-total-label { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .12em; text-transform: uppercase; }
+.cs-total-odds  { font-family: var(--m); font-size: 40px; font-weight: 700; color: var(--t1); letter-spacing: -.04em; line-height: 1; }
+.cs-badges { display: flex; gap: 6px; align-items: center; }
+.cs-ev-badge {
+  padding: 4px 10px; border-radius: var(--r-full);
+  background: var(--lime3); border: 1px solid var(--lime4);
+  font-family: var(--m); font-size: 11px; font-weight: 700; color: var(--lime);
 }
-#btn-exp:hover { background: rgba(194,255,61,.13); }
-
-/* GEN BUTTON */
-.dfoot { padding: 8px 12px 14px; flex-shrink: 0; }
-#btn-gen {
-  width: 100%; height: 54px; border-radius: 12px; border: none;
-  font-size: 14px; font-weight: 900; letter-spacing: .08em;
-  text-transform: uppercase;
+.cs-kelly-strip {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border-radius: var(--r-s);
+  background: rgba(194,255,61,.04); border: 1px solid rgba(194,255,61,.1);
+  margin-bottom: 12px; position: relative; z-index: 1;
+}
+.cs-kelly-info { display: flex; align-items: center; gap: 8px; }
+.cs-kelly-pct  { font-family: var(--m); font-size: 20px; font-weight: 700; color: var(--lime); }
+.cs-kelly-sep  { color: var(--t3); }
+.cs-kelly-pln  { font-family: var(--m); font-size: 11px; color: var(--t2); }
+.cs-kelly-label{ font-family: var(--m); font-size: 8px; color: var(--t3); letter-spacing: .12em; text-transform: uppercase; }
+.cs-btn-copy {
+  width: 100%; padding: 12px;
   background: linear-gradient(135deg, #4a9d08, #61b510);
-  color: #000; position: relative; overflow: hidden;
-  animation: btnP 2.8s ease infinite; transition: transform var(--t-snap);
+  color: #000; font-size: 11px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; font-family: var(--m);
+  border: none; border-radius: var(--r-s); position: relative; z-index: 1;
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
 }
-@keyframes btnP { 0%,100%{box-shadow:0 0 0 0 rgba(97,181,16,.6)} 55%{box-shadow:0 0 0 22px rgba(97,181,16,0)} }
-#btn-gen:active { transform: scale(.97); }
-#btn-gen::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.22) 50%, transparent 70%);
-  background-size: 200% 100%; animation: btnSh 3s ease infinite;
+.cs-btn-copy:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(194,255,61,.2); }
+
+/* COUPON footer */
+.dfoot {
+  padding: 10px 12px; border-top: 1px solid var(--bd1);
+  flex-shrink: 0;
 }
-@keyframes btnSh { 0%,58%{background-position:200% 0} 100%{background-position:-200% 0} }
-#btn-gen:disabled { opacity: .32; animation: none; pointer-events: none; }
+#btn-gen {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #3e8a06 0%, #5aaa0e 100%);
+  color: #000; font-size: 11px; font-weight: 800; letter-spacing: .14em;
+  text-transform: uppercase; font-family: var(--m);
+  border: none; border-radius: var(--r-s);
+  transition: transform var(--t-fast), box-shadow var(--t-fast), opacity var(--t-fast);
+}
+#btn-gen:hover  { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(194,255,61,.22); }
+#btn-gen:active { transform: translateY(1px) scale(.99); }
+#btn-gen:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* summary compact row */
+.csrow { display: flex; gap: 6px; flex-wrap: wrap; padding: 6px 12px; }
+.csr   { flex: 1; min-width: 120px; }
+.csl   { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .1em; display: block; margin-bottom: 2px; }
+.csv   { font-family: var(--m); font-size: 14px; font-weight: 700; color: var(--lime); }
+.cs-big{ font-family: var(--m); font-size: 22px; font-weight: 700; color: var(--lime); line-height: 1; }
+.csbs  { font-family: var(--m); font-size: 8px; color: var(--t3); }
 
 /* ═══════════════════════════════════════════════════════
    OVERLAY — 5-phase ceremony
 ═══════════════════════════════════════════════════════ */
 #ov {
-  position: fixed; inset: 0; z-index: 100;
-  background: rgba(2,2,8,.98);
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(2,2,8,.97); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0;
+}
+#ov.on { pointer-events: all; opacity: 1; }
+.ov-bg     { position: absolute; inset: 0; }
+.ov-scanlines {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,.06) 3px, rgba(0,0,0,.06) 4px);
+}
+.ov-neural { position: absolute; inset: 0; pointer-events: none; }
+.ovp {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+  padding: 24px; opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+}
+.ovp.on { opacity: 1; pointer-events: all; }
+.ovtag {
+  font-family: var(--m); font-size: 9px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--t3);
+}
+#ovtxt { font-family: var(--m); font-size: 12px; color: var(--lime); letter-spacing: .08em; }
+.ovbars { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 10px; }
+.ovbr   { display: flex; flex-direction: column; gap: 4px; }
+.ovbl   { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .1em; }
+.ovbt   { width: 100%; height: 4px; background: var(--s3); border-radius: 2px; overflow: hidden; }
+.ovbf   { height: 100%; width: 0; background: linear-gradient(90deg, var(--lime2), var(--lime)); border-radius: 2px; transition: width 1.2s var(--ease-out); }
+.ovcnt  { font-family: var(--m); font-size: 88px; font-weight: 700; color: var(--lime); line-height: 1; letter-spacing: -.06em; }
+.ovsub  { font-family: var(--m); font-size: 10px; color: var(--t3); letter-spacing: .14em; }
+
+/* Countdown */
+#ovp3 { gap: 0; }
+.ocdnum {
+  font-size: 120px; font-weight: 900; color: var(--t1);
+  line-height: 1; letter-spacing: -.06em;
+  animation: cdPulse 1s ease-in-out infinite;
+}
+@keyframes cdPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+/* SLOT MACHINE */
+#slt {
+  position: absolute; inset: 0;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  overflow: hidden; opacity: 0; pointer-events: none;
+  gap: 20px; padding: 20px; opacity: 0;
 }
-#ov.on { opacity: 1; pointer-events: all; }
-.ov-bg {
-  position: absolute; inset: 0;
-  background-image: url('https://v3b.fal.media/files/b/0a9fe185/g84L_hEAvlP19geMTTYGr_jaVBZ7KR.png');
-  background-size: cover; background-position: center;
-  opacity: .05; pointer-events: none;
+.slt-title {
+  font-family: var(--m); font-size: 9px; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--t3);
 }
-.ov-scanlines {
-  position: absolute; inset: 0; pointer-events: none; z-index: 1;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.04) 2px, rgba(0,0,0,.04) 4px);
-  opacity: .4;
+.slt-row { display: flex; gap: 10px; }
+.reel {
+  width: 96px; height: 128px;
+  background: var(--s2); border: 1px solid var(--bd1);
+  border-radius: var(--r); overflow: hidden;
+  transition: border-color .2s, box-shadow .2s;
+  position: relative;
 }
-/* Neural scan line */
-.ov-neural {
-  position: absolute; height: 1px; width: 100%; z-index: 2;
-  background: linear-gradient(90deg, transparent, rgba(194,255,61,.18), transparent);
-  pointer-events: none; animation: nlScan 3s ease infinite;
+.reel .reel-inner { display: flex; flex-direction: column; }
+.reel-item {
+  height: 128px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px; padding: 8px;
+  border-bottom: 1px solid var(--bd0);
 }
-@keyframes nlScan { 0%{top:0;opacity:0} 25%{opacity:1} 100%{top:100%;opacity:0} }
+.ri-player { font-size: 10px; font-weight: 700; color: var(--t1); text-align: center; line-height: 1.2; }
+.ri-odds   { font-family: var(--m); font-size: 18px; font-weight: 700; color: var(--lime); }
 
-.ovp {
-  display: none; flex-direction: column;
-  align-items: center; gap: 13px;
-  width: 100%; max-width: 460px; padding: 0 22px;
-  position: relative; z-index: 2;
-}
-.ovp.on { display: flex; }
-.ovtag {
-  font-size: 7px; font-weight: 800; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--t3); font-family: var(--m);
-}
-#ovtxt { font-size: 13px; font-weight: 800; color: var(--t1); min-height: 20px; text-align: center; letter-spacing: -.01em; }
-.ovbars { width: 100%; display: flex; flex-direction: column; gap: 6px; }
-.ovbr { display: flex; flex-direction: column; gap: 3px; }
-.ovbl { font-size: 7px; font-weight: 700; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; font-family: var(--m); }
-.ovbt { height: 2px; background: rgba(255,255,255,.04); border-radius: 1px; overflow: hidden; }
-.ovbf { height: 100%; width: 0%; border-radius: 1px; }
-#ob1 { background: var(--lime); }
-#ob2 { background: var(--cyan); }
-#ob3 { background: var(--gold); }
-#ob4 { background: var(--pink); }
+/* rarity locks */
+.reel.lk-value   { border-color: var(--blue);  box-shadow: 0 0 18px rgba(75,105,255,.18); }
+.reel.lk-high    { border-color: var(--pink);  box-shadow: 0 0 20px rgba(211,44,230,.2); }
+.reel.lk-jackpot { border-color: var(--gold);  box-shadow: 0 0 28px rgba(255,215,0,.28); }
+.reel.lk-common  { border-color: var(--lime);  box-shadow: 0 0 10px rgba(194,255,61,.1); }
 
-.ovcnt {
-  font-family: var(--m); font-size: 74px; font-weight: 900;
-  color: var(--lime); line-height: 1; letter-spacing: -.06em;
-  text-shadow: 0 0 60px rgba(194,255,61,.4);
+/* TV scan line through reel */
+.reel-scan {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(194,255,61,.6), transparent);
+  pointer-events: none; opacity: 0;
+  animation: reelScan .8s linear infinite;
 }
-.ovsub { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--t2); }
-.ovcd {
-  font-family: var(--m); font-size: 90px; font-weight: 900;
-  color: var(--t1); line-height: 1; text-shadow: 0 0 80px rgba(255,255,255,.18);
-}
-.ovst { font-size: 12px; font-weight: 700; color: var(--t2); letter-spacing: .04em; text-align: center; }
+.reel.spinning .reel-scan { opacity: 1; }
+@keyframes reelScan { from { top: 0; } to { top: 100%; } }
 
-/* ═══════════════════════════════════════════════════════
-   CS2 SLOT MACHINE
-═══════════════════════════════════════════════════════ */
-.slot-hdr { font-size: 7px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--t3); font-family: var(--m); }
-.slot-wrap { display: flex; gap: 7px; align-items: center; width: 100%; justify-content: center; }
-.ssep { font-size: 12px; color: var(--t3); font-weight: 700; flex-shrink: 0; }
-.sreel {
-  flex: 1; max-width: 124px; position: relative; border-radius: 10px; overflow: hidden;
-  border: 1px solid rgba(255,255,255,.07); height: 240px; background: var(--s1);
-  transition: border-color .4s, box-shadow .4s;
+/* FLIP CARDS */
+.fp-grid {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  justify-content: center; padding: 16px; max-height: 80dvh; overflow-y: auto;
 }
-.sreel::before,.sreel::after {
-  content: ''; position: absolute; left: 0; right: 0; height: 68px; z-index: 3; pointer-events: none;
+.fp-card {
+  width: 120px; height: 160px;
+  perspective: 800px; cursor: pointer;
 }
-.sreel::before { top: 0; background: linear-gradient(to bottom, var(--s1), transparent); }
-.sreel::after  { bottom: 0; background: linear-gradient(to top, var(--s1), transparent); }
-.rl-t,.rl-b { position: absolute; left: 0; right: 0; height: 1.5px; z-index: 4; pointer-events: none; background: var(--lime4); transition: background .4s; }
-.rl-t { top: 80px; } .rl-b { bottom: 80px; }
-.rl-t::before,.rl-t::after,.rl-b::before,.rl-b::after {
-  content: ''; position: absolute; top: 50%; width: 7px; height: 7px;
-  background: var(--lime4); transform: translateY(-50%) rotate(45deg);
-  transition: background .4s, box-shadow .4s;
+.fp-inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .7s cubic-bezier(.4,0,.2,1);
 }
-.rl-t::before,.rl-b::before { left: -3.5px; }
-.rl-t::after,.rl-b::after   { right: -3.5px; }
-.sreel.lk-value  { border-color: rgba(75,105,255,.5);  box-shadow: 0 0 20px rgba(75,105,255,.12); }
-.sreel.lk-value  .rl-t,.sreel.lk-value  .rl-b { background: var(--blue); }
-.sreel.lk-value  .rl-t::before,.sreel.lk-value  .rl-t::after,
-.sreel.lk-value  .rl-b::before,.sreel.lk-value  .rl-b::after { background: var(--blue); box-shadow: 0 0 6px rgba(75,105,255,.6); }
-.sreel.lk-high   { border-color: rgba(211,44,230,.55); box-shadow: 0 0 24px rgba(211,44,230,.16); }
-.sreel.lk-high   .rl-t,.sreel.lk-high   .rl-b { background: var(--pink); }
-.sreel.lk-high   .rl-t::before,.sreel.lk-high   .rl-t::after,
-.sreel.lk-high   .rl-b::before,.sreel.lk-high   .rl-b::after { background: var(--pink); box-shadow: 0 0 8px rgba(211,44,230,.7); }
-.sreel.lk-jackpot { animation: reelJP 1.8s linear infinite; }
-@keyframes reelJP {
-  0%  { border-color: rgba(255,215,0,.6); box-shadow: 0 0 28px rgba(255,215,0,.16); }
-  33% { border-color: rgba(211,44,230,.6); box-shadow: 0 0 28px rgba(211,44,230,.14); }
-  66% { border-color: rgba(75,105,255,.6); box-shadow: 0 0 28px rgba(75,105,255,.14); }
-  100%{ border-color: rgba(255,215,0,.6); box-shadow: 0 0 28px rgba(255,215,0,.16); }
+.fp-card.flipped .fp-inner { transform: rotateY(180deg); }
+.fp-front, .fp-back {
+  position: absolute; inset: 0; border-radius: var(--r);
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px; padding: 10px;
 }
-.rtk { display: flex; flex-direction: column; will-change: transform; }
-.ritem { height: 80px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; gap: 2px; }
-.ri-n { font-size: 9px; font-weight: 800; text-align: center; line-height: 1.2; color: var(--t2); }
-.ri-o { font-family: var(--m); font-size: 15px; font-weight: 700; color: var(--lime); line-height: 1.2; }
-.ri-m { font-size: 7px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: .04em; }
-.slot-total { display: flex; flex-direction: column; align-items: center; gap: 3px; opacity: 0; }
-.st-lbl { font-size: 7px; font-family: var(--m); font-weight: 700; color: var(--t3); letter-spacing: .14em; text-transform: uppercase; }
-.st-val { font-family: var(--m); font-size: 54px; font-weight: 900; color: var(--lime); letter-spacing: -.05em; line-height: 1; text-shadow: 0 0 50px rgba(194,255,61,.4); }
-.st-sub { font-size: 9px; color: var(--t2); font-weight: 700; letter-spacing: .04em; }
-
-/* ═══════════════════════════════════════════════════════
-   FLIP CARDS — FIFA UT
-═══════════════════════════════════════════════════════ */
-.flip-wrap { perspective: 900px; }
-.flip-card { position: relative; width: 100%; transform-style: preserve-3d; will-change: transform; }
-.flip-f,.flip-b { position: absolute; top: 0; left: 0; width: 100%; border-radius: var(--r); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.flip-f {
-  height: 136px; background: linear-gradient(135deg, var(--s1), var(--s2));
-  border: 1px solid var(--bd1); display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 7px;
+.fp-front {
+  background: var(--s2); border: 1px solid var(--bd2);
 }
-.ffi {
-  width: 46px; height: 46px; border-radius: 50%;
-  border: 1.5px solid var(--bd2); overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  animation: fflt 2.8s ease infinite; position: relative;
+.fp-back {
+  transform: rotateY(180deg);
+  background: var(--s1); border: 1px solid var(--bd2);
+  font-family: var(--m);
 }
-.ffi img { width: 28px; height: 28px; object-fit: contain; }
-.ffi::after {
-  content: ''; position: absolute; inset: -8px; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.045); animation: fspin 4s linear infinite;
-}
-@keyframes fflt { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
-@keyframes fspin { to { transform: rotate(360deg); } }
-.fft { font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--t3); }
-.flip-flash { position: absolute; inset: 0; background: #fff; border-radius: var(--r); opacity: 0; pointer-events: none; z-index: 10; }
+.fp-back .fp-odds  { font-size: 22px; font-weight: 700; color: var(--lime); }
+.fp-back .fp-name  { font-size: 9px; font-weight: 600; color: var(--t2); text-align: center; line-height: 1.3; }
+.fp-back .fp-mkt   { font-size: 8px; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; }
+.fp-mark { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; }
 
 /* ═══════════════════════════════════════════════════════
    SYSTEM BUILDER
 ═══════════════════════════════════════════════════════ */
 #s-system { background: var(--bg); }
-.sbody { flex: 1; display: flex; overflow: hidden; }
-.sl { flex: 1; overflow-y: auto; padding: 9px; display: flex; flex-direction: column; gap: 7px; border-right: 1px solid var(--bd1); }
+.sbody { flex: 1; display: flex; gap: 0; overflow: hidden; }
+.sl { flex: 1; overflow-y: auto; padding: 12px; border-right: 1px solid var(--bd1); }
 .sl::-webkit-scrollbar { display: none; }
-.sr { width: 262px; flex-shrink: 0; display: flex; flex-direction: column; }
-@media (max-width: 700px) { .sbody { flex-direction: column; } .sr { width: 100%; border-top: 1px solid var(--bd1); max-height: 45vh; } .sl { max-height: 55vh; } }
-.sst { font-size: 7px; font-weight: 800; color: var(--t3); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 2px; }
+.sst { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .1em; margin-bottom: 10px; }
+#mlist { display: flex; flex-direction: column; gap: 8px; }
 .mrow {
-  border-radius: 11px; border: 1px solid var(--bd1); background: var(--s1);
-  padding: 10px 11px; display: flex; flex-direction: column; gap: 7px;
-  position: relative; overflow: hidden;
-  transition: border-color var(--t-mid), background var(--t-mid);
+  background: var(--s1); border: 1px solid var(--bd1);
+  border-radius: var(--r-s); padding: 10px; cursor: pointer;
+  transition: border-color var(--t-fast);
 }
-.mrow:hover { border-color: rgba(0,242,232,.16); background: var(--s2); }
-.mrow.sel { border-color: rgba(0,242,232,.35); background: rgba(0,242,232,.035); }
-.mrow.sel::before { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: var(--cyan); }
-.mr-top { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 800; }
-.mr-vs { color: var(--t3); font-size: 9px; font-weight: 400; }
-.mr-time { font-size: 8px; font-family: var(--m); color: var(--t3); margin-left: auto; }
-.mr-mkts { display: flex; flex-direction: column; gap: 5px; }
-.mr-mkt-row { display: flex; flex-direction: column; gap: 3px; }
-.mr-mkt-lbl { font-size: 7px; font-weight: 800; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; padding-left: 1px; }
-.mr-btns { display: flex; gap: 4px; }
-.mrb {
-  flex: 1; padding: 6px 4px; border-radius: 7px;
-  border: 1px solid var(--bd1); background: var(--s2);
-  display: flex; flex-direction: column; align-items: center; gap: 1px;
-  cursor: pointer; transition: all var(--t-fast); position: relative; overflow: hidden;
+.mrow:hover { border-color: var(--bd2); }
+.mr-title { font-size: 12px; font-weight: 800; margin-bottom: 4px; }
+.mr-mkt   { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.mr-btn {
+  padding: 3px 8px; border-radius: var(--r-full);
+  font-family: var(--m); font-size: 8px; font-weight: 700;
+  letter-spacing: .08em; background: var(--s2); border: 1px solid var(--bd1);
+  color: var(--t3); cursor: pointer; transition: all var(--t-fast);
 }
-.mrb::before { content: ''; position: absolute; inset: -1px; border-radius: 8px; opacity: 0; transition: opacity var(--t-fast); }
-.mrb:hover::before { background: linear-gradient(135deg, var(--lime3), rgba(0,242,232,.07)); opacity: 1; }
-.mrb.a { border-color: rgba(0,242,232,.38); background: rgba(0,242,232,.05); }
-.mrb-n { font-size: 7px; color: var(--t3); font-weight: 700; text-align: center; line-height: 1.2; }
-.mrb-o { font-family: var(--m); font-size: 13px; font-weight: 700; color: var(--cyan); line-height: 1.2; }
-.mrb-e { font-size: 7px; font-weight: 700; font-family: var(--m); }
-.mrb-e.eg { color: var(--lime); } .mrb-e.eo { color: var(--gold); } .mrb-e.en { color: var(--t3); }
-.mrb.mw:hover,.mrb.mw.a { border-color: var(--lime4); background: var(--lime3); }
-.mrb.mw.a .mrb-o { color: var(--lime); }
-.mrb.mh:hover,.mrb.mh.a { border-color: rgba(255,215,0,.32); background: rgba(255,215,0,.05); }
-.mrb.mh.a .mrb-o { color: var(--gold); }
-.mrb.mt:hover,.mrb.mt.a { border-color: rgba(211,44,230,.32); background: rgba(211,44,230,.05); }
-.mrb.mt.a .mrb-o { color: var(--pink); }
-.stray { flex: 1; padding: 9px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-.stray::-webkit-scrollbar { display: none; }
-.te { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px; color: var(--t3); font-size: 10px; font-weight: 700; text-align: center; }
-.tei { font-size: 18px; opacity: .18; }
-.titem {
-  border-radius: 8px; border: 1px solid rgba(0,242,232,.16);
-  background: rgba(0,242,232,.035); padding: 7px 9px;
-  display: flex; align-items: center; gap: 6px;
+.mr-btn.sel { background: var(--lime3); border-color: var(--lime4); color: var(--lime); }
+.sr  { width: 160px; padding: 12px; display: flex; flex-direction: column; overflow-y: auto; }
+.sr::-webkit-scrollbar { display: none; }
+.stray {
+  flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 80px;
 }
-.ti-n { font-size: 11px; font-weight: 800; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ti-m { font-size: 8px; color: var(--t3); font-weight: 700; flex-shrink: 0; }
-.ti-o { font-family: var(--m); font-size: 12px; font-weight: 700; color: var(--cyan); flex-shrink: 0; }
-.ti-rm { width: 15px; height: 15px; border-radius: 4px; background: rgba(239,51,64,.09); color: #ef3340; display: flex; align-items: center; justify-content: center; font-size: 7px; cursor: pointer; transition: background var(--t-fast); flex-shrink: 0; }
-.ti-rm:hover { background: rgba(239,51,64,.2); }
-.sfoot { padding: 9px 11px; border-top: 1px solid var(--bd1); display: flex; flex-direction: column; gap: 6px; }
-.sfr { display: flex; justify-content: space-between; align-items: center; }
-.sfl { font-size: 8px; color: var(--t3); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-.sfv { font-family: var(--m); font-size: 12px; font-weight: 700; color: var(--t1); }
-.sfv.li { color: var(--lime); }
-.sfbig { font-family: var(--m); font-size: 26px; font-weight: 900; color: var(--cyan); letter-spacing: -.04em; line-height: 1; }
-.sfbs { font-size: 7px; color: var(--t3); text-transform: uppercase; letter-spacing: .08em; }
+.te {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  border: 1px dashed var(--bd1); border-radius: var(--r-s);
+  opacity: .4;
+}
+.tei { font-size: 22px; }
+.te span { font-family: var(--m); font-size: 8px; color: var(--t3); text-align: center; line-height: 1.5; }
+.tleg {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 8px; background: var(--s2); border: 1px solid var(--bd1);
+  border-radius: var(--r-s); font-family: var(--m); font-size: 9px;
+}
+.tleg-name { color: var(--t2); font-size: 8px; flex: 1; }
+.tleg-odds { color: var(--lime); font-weight: 700; }
+.tleg-rm   { color: var(--t3); cursor: pointer; padding: 0 4px; font-size: 13px; }
+.tleg-rm:hover { color: var(--pink); }
+.sfoot     { border-top: 1px solid var(--bd1); padding-top: 10px; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+.sfr       { display: flex; align-items: center; justify-content: space-between; }
+.sfl       { font-family: var(--m); font-size: 9px; color: var(--t3); }
+.sfv       { font-family: var(--m); font-size: 10px; font-weight: 700; color: var(--t2); }
+.sfv.li    { color: var(--lime); }
+.sfbig     { font-family: var(--m); font-size: 18px; font-weight: 700; color: var(--lime); text-align: right; }
+.sfbs      { font-family: var(--m); font-size: 7px; color: var(--t3); text-align: right; letter-spacing: .1em; }
 #btn-sys {
-  width: 100%; height: 44px; border-radius: 10px; border: none;
-  font-size: 12px; font-weight: 900; letter-spacing: .06em;
-  text-transform: uppercase; background: var(--cyan); color: #000;
-  opacity: .3; pointer-events: none; transition: opacity .3s, transform var(--t-snap);
+  width: 100%; padding: 10px; border-radius: var(--r-s);
+  background: linear-gradient(135deg, #4a9d08, #61b510);
+  color: #000; font-size: 9px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; font-family: var(--m); border: none;
+  transition: transform var(--t-fast);
 }
-#btn-sys.rdy { opacity: 1; pointer-events: all; animation: cP 2.4s ease infinite; }
-@keyframes cP { 0%,100%{box-shadow:0 0 0 0 rgba(0,242,232,.5)} 55%{box-shadow:0 0 0 16px rgba(0,242,232,0)} }
-#btn-sys:active { transform: scale(.96); }
+#btn-sys:hover { transform: translateY(-1px); }
 
 /* ═══════════════════════════════════════════════════════
    TOAST
 ═══════════════════════════════════════════════════════ */
 #ta {
-  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-  z-index: 200; display: flex; flex-direction: column; gap: 4px;
-  align-items: center; pointer-events: none;
-  width: calc(100% - 24px); max-width: 390px;
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 999; display: flex; flex-direction: column; gap: 6px;
+  pointer-events: none;
 }
-.tm {
-  padding: 7px 14px; border-radius: var(--r-full);
-  font-size: 10px; font-weight: 800;
-  background: rgba(5,5,15,.97); border: 1px solid var(--bd2);
-  backdrop-filter: blur(20px);
-  animation: tIn var(--t-fast) var(--ease-out) both;
-  white-space: nowrap; max-width: 100%; overflow: hidden;
-  text-overflow: ellipsis; text-align: center;
+.toast {
+  padding: 9px 16px; border-radius: var(--r-full);
+  font-family: var(--m); font-size: 11px; font-weight: 600;
+  letter-spacing: .06em; color: #000;
+  background: var(--lime); opacity: 0;
+  transform: translateY(8px);
+  animation: toastIn .4s var(--ease-out) forwards, toastOut .3s var(--ease-out) 2.2s forwards;
 }
-@keyframes tIn { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
-.tm.lime { border-color: var(--lime4); color: var(--lime); }
-.tm.gold { border-color: rgba(255,215,0,.26); color: var(--gold); }
-.tm.pink { border-color: rgba(211,44,230,.26); color: var(--pink); }
-</style>
-</head>
-<body>
+.toast.err { background: var(--pink); color: #fff; }
+@keyframes toastIn  { to { opacity: 1; transform: translateY(0); } }
+@keyframes toastOut { to { opacity: 0; transform: translateY(8px); } }
 
-<!-- CANVAS LAYERS -->
+/* ═══════════════════════════════════════════════════════
+   PROB BARS (pick card inner)
+═══════════════════════════════════════════════════════ */
+.prob-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.prob-lbl { font-family: var(--m); font-size: 8px; color: var(--t3); letter-spacing: .08em; text-transform: uppercase; width: 52px; flex-shrink: 0; }
+.prob-bar { flex: 1; height: 5px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
+.prob-fill { height: 100%; border-radius: 3px; width: 0; transition: width 1.2s var(--ease-out); }
+.prob-fill.model  { background: linear-gradient(90deg, var(--lime2), var(--lime)); }
+.prob-fill.market { background: rgba(255,255,255,.22); }
+.prob-val { font-family: var(--m); font-size: 10px; font-weight: 700; color: var(--t2); width: 28px; text-align: right; flex-shrink: 0; }
+.prob-val.model { color: var(--lime); }
+
+.cards-grid { display: flex; flex-direction: column; gap: 0; }
+</style>
+
+<body>
+<!-- ═══════════════════════════════════════ CANVAS ═══ -->
 <canvas id="bg"></canvas>
 <canvas id="pc"></canvas>
 
-<!-- CINEMATIC INTRO -->
+<!-- ═══════════════════════════════ CINEMATIC INTRO ═══ -->
 <div id="intro">
   <div class="intro-mark" id="imark">BETATP.IO — NEURAL ENGINE V14</div>
   <div class="intro-logo" id="ilogo">betatp</div>
@@ -989,62 +1107,85 @@ body::after {
     <div class="ibar" style="height:70%;animation-delay:.5s"></div>
     <div class="ibar" style="height:55%;animation-delay:.6s"></div>
   </div>
-  <div class="intro-stat" id="istat">78 022 meczów · LightGBM v14 · Kelly Criterion</div>
+  <div class="intro-stat" id="istat">78 022 meczów · LightGBM v14 · Kelly Criterion · Edge 15%+</div>
 </div>
 
-<!-- HOME -->
+<!-- ═════════════════════════════════════ HOME SCREEN ═ -->
 <div class="screen" id="s-home">
-  <div class="hero-bg"></div>
 
-  <div class="hero-nav">
+  <!-- ambient bg layers -->
+  <div class="hero-ambient" aria-hidden="true"></div>
+  <div class="hero-grid" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav class="hero-nav">
     <div class="logo-pill">
       <div class="ldot"></div>
-      betatp.io
+      betatp
       <div class="lpill-badge">v14</div>
     </div>
     <div class="hero-live">
       <div class="live-dot"></div>
       Wimbledon 2026
     </div>
-  </div>
+  </nav>
 
+  <!-- HERO BODY -->
   <div class="hero-body">
-    <!-- Eyebrow — max 1, motywowany: identyfikuje kontekst algorytmu -->
-    <div class="hero-eyebrow" id="heyebrow">Model v14 · 78 022 meczów ATP</div>
+    <div class="hero-eyebrow" id="hero-eyebrow">Model v14 · Wimbledon 2026 · edge &gt;= 15%</div>
 
-    <!-- H1 — focal point, proporcjonalne -->
-    <h1 class="hero-h1" id="hh1">betatp</h1>
+    <h2 class="hero-h2" id="hero-h2">
+      Algorytm, który widzi<br>
+      <em>więcej niż rynek.</em>
+    </h2>
 
-    <!-- Claim — 2 linie -->
-    <p class="hero-claim" id="hclaim">
-      Algorytm, który widzi więcej<br>niż rynek.
+    <p class="hero-claim" id="hero-claim">
+      LightGBM v14 · 78 022 meczów ATP · Kelly Criterion live
     </p>
 
-    <!-- 3 stat pills — realne metryki v14 -->
-    <div class="hero-stats" id="hstats">
-      <div class="hs-pill">
-        <div class="hs-num">+58.7%</div>
-        <div class="hs-lbl">ROI backtest</div>
-      </div>
-      <div class="hs-pill">
-        <div class="hs-num">59.6%</div>
-        <div class="hs-lbl">Win rate</div>
-      </div>
-      <div class="hs-pill">
-        <div class="hs-num">57</div>
-        <div class="hs-lbl">Picks edge &ge;15%</div>
+    <!-- EQUITY CURVE CANVAS -->
+    <div class="equity-wrap" id="equity-wrap">
+      <canvas class="equity-canvas" id="equity-canvas" height="160" aria-label="Krzywa ROI backtest"></canvas>
+      <div class="equity-stat">
+        <div class="equity-stat-num">+58.7%</div>
+        <div class="equity-stat-lbl">ROI backtest</div>
       </div>
     </div>
 
-    <!-- CTA row — primary + ghost -->
-    <div class="hero-cta" id="hcta">
-      <button class="cta-primary" id="c-daily">&#9889;&nbsp; Daily Kupon</button>
-      <button class="cta-ghost" id="c-system">System Builder</button>
+    <!-- STAT PILLS z sparklines -->
+    <div class="hero-stats" id="hero-stats">
+      <div class="hs-pill">
+        <div class="hs-text">
+          <div class="hs-num" data-target="58.7" data-prefix="+">0%</div>
+          <div class="hs-lbl">ROI Backtest</div>
+        </div>
+        <canvas class="hs-spark" data-spark="roi" aria-hidden="true"></canvas>
+      </div>
+      <div class="hs-pill">
+        <div class="hs-text">
+          <div class="hs-num" data-target="59.6">0%</div>
+          <div class="hs-lbl">Win Rate</div>
+        </div>
+        <canvas class="hs-spark" data-spark="wr" aria-hidden="true"></canvas>
+      </div>
+      <div class="hs-pill">
+        <div class="hs-text">
+          <div class="hs-num" data-target="57" data-suffix="">0</div>
+          <div class="hs-lbl">Picks edge 15%+</div>
+        </div>
+        <canvas class="hs-spark" data-spark="picks" aria-hidden="true"></canvas>
+      </div>
     </div>
 
-    <!-- Market chips — kontekst rynków -->
-    <div class="market-row" id="hmkts">
-      <div class="mc l">Winner</div>
+    <!-- CTA BUTTONS -->
+    <div class="hero-cta" id="hero-cta">
+      <button class="cta-primary" onclick="goTo('s-daily');AC()">&#9889; Dziś 3 typy</button>
+      <button class="cta-ghost"   onclick="goTo('s-system')">System</button>
+    </div>
+
+    <!-- MARKET CHIPS -->
+    <div class="market-row" id="hero-markets">
+      <div class="mc active">Winner</div>
       <div class="mc">First Set</div>
       <div class="mc">Handicap</div>
       <div class="mc">Total Sets</div>
@@ -1052,124 +1193,87 @@ body::after {
     </div>
   </div>
 
-  <!-- Social proof ticker -->
-  <div class="sp-ticker">
-    <div class="sp-inner" id="sp-inner">
-      <div class="sp-item">Backtest edge&ge;15% <span class="sp-v">+58.7% ROI</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">Fritz vs Bublik <span class="sp-g">Edge +25.7%</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">57 zakładów, WR <span class="sp-g">59.6%</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">78 022 meczów <span class="sp-v">LightGBM v14</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">Wimbledon 2026 <span class="sp-v">3 value picks dziś</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">Kelly avg stake <span class="sp-g">9.8% bankrolla</span></div>
-      <div class="sp-sep">·</div>
-      <!-- duplicate for loop -->
-      <div class="sp-item">Backtest edge&ge;15% <span class="sp-v">+58.7% ROI</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">Fritz vs Bublik <span class="sp-g">Edge +25.7%</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">57 zakładów, WR <span class="sp-g">59.6%</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">78 022 meczów <span class="sp-v">LightGBM v14</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">Wimbledon 2026 <span class="sp-v">3 value picks dziś</span></div>
-      <div class="sp-sep">·</div>
-      <div class="sp-item">Kelly avg stake <span class="sp-g">9.8% bankrolla</span></div>
-      <div class="sp-sep">·</div>
+  <!-- TICKER -->
+  <div class="sp-ticker" aria-label="Live stats ticker">
+    <div class="sp-ticker-inner" id="tickerInner">
+      <span>Fritz +25.7%<span class="sep"> · </span>+58.7% ROI backtest<span class="sep"> · </span>3 picks dzis<span class="sep"> · </span>Model v14 live<span class="sep"> · </span>Edge avg 17.3%<span class="sep"> · </span>Alcaraz vs Rune +22.1%<span class="sep"> · </span></span>
+      <span>Fritz +25.7%<span class="sep"> · </span>+58.7% ROI backtest<span class="sep"> · </span>3 picks dzis<span class="sep"> · </span>Model v14 live<span class="sep"> · </span>Edge avg 17.3%<span class="sep"> · </span>Alcaraz vs Rune +22.1%<span class="sep"> · </span></span>
     </div>
   </div>
 
-  <!-- Navigation cards — po tickerze, pod hero -->
-  <div class="nav-cards" style="padding-top:12px">
-    <div class="ncard nc-daily" id="nc-daily">
+  <!-- NAV CARDS — asymetryczne 2/3 + 1/3 -->
+  <div class="nav-cards">
+
+    <!-- Daily Kupon (2/3) -->
+    <div class="ncard nc-daily" id="cardDaily" onclick="goTo('s-daily');AC()">
       <div class="ncard-glare"></div>
-      <div class="ncard-img">
-        <img src="https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png" alt="Daily Kupon">
-        <div class="ncard-img-overlay"></div>
-      </div>
       <div class="ncard-body">
-        <div class="ncard-tag">AI Generated</div>
-        <div class="ncard-title">Daily Kupon</div>
-        <div class="ncard-desc">3 picks z 5 rynków. Ceremonia CS2. Model v14 z logiką decyzji.</div>
-        <div class="ncard-stat">
-          <div>
-            <div class="ncs-val">+58.7%</div>
-            <div class="ncs-lbl">Backtest ROI</div>
-          </div>
-          <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M5 10h10M11 6l4 4-4 4" stroke="rgba(194,255,61,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="nc-live-badge">
+          <span class="nc-live-dot"></span>
+          LIVE DZIS
         </div>
+        <div>
+          <div class="ncard-title">Daily Kupon</div>
+          <div class="ncard-desc">Model v14 · 3 picks · edge &gt;= 15%</div>
+        </div>
+        <div class="nc-equity-wrap">
+          <canvas class="nc-equity" id="ncEquityCanvas" aria-label="Mini equity curve"></canvas>
+        </div>
+        <div class="ncard-stats">
+          <div class="ncard-stat">
+            <span class="ncard-stat-val">+58.7%</span>
+            <span class="ncard-stat-lbl">ROI</span>
+          </div>
+          <div class="ncard-stat">
+            <span class="ncard-stat-val">59.6%</span>
+            <span class="ncard-stat-lbl">Win Rate</span>
+          </div>
+          <div class="ncard-stat">
+            <span class="ncard-stat-val">57</span>
+            <span class="ncard-stat-lbl">Bets</span>
+          </div>
+        </div>
+        <button class="ncard-cta lime">Generuj Kupon <span class="cta-arrow">&#8594;</span></button>
       </div>
     </div>
 
-    <div class="ncard nc-system" id="nc-system">
+    <!-- System Builder (1/3) -->
+    <div class="ncard nc-system" id="cardSystem" onclick="goTo('s-system')">
       <div class="ncard-glare"></div>
-      <div class="ncard-img">
-        <img src="https://v3b.fal.media/files/b/0a9fe199/Du0tghwLqy4Iok3ECgYmt_9Jud0sAW.png" alt="System Builder">
-        <div class="ncard-img-overlay"></div>
-      </div>
       <div class="ncard-body">
-        <div class="ncard-tag">System Builder</div>
-        <div class="ncard-title">Graj Systemem</div>
-        <div class="ncard-desc">3 rynki na mecz. Kelly live. Akumulator z edge score.</div>
-        <div class="ncard-stat">
-          <div>
-            <div class="ncs-val">Kelly</div>
-            <div class="ncs-lbl">Sizing live</div>
-          </div>
-          <svg width="20" height="20" fill="none" viewBox="0 0 20 20"><path d="M5 10h10M11 6l4 4-4 4" stroke="rgba(0,242,232,.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="nc-system-badge">SYSTEM</div>
+        <div>
+          <div class="ncard-title">Graj Systemem</div>
+          <div class="ncard-desc">Kelly live · Akumulator</div>
         </div>
+        <div class="ncard-stat">
+          <span class="ncard-stat-val cyan">Kelly avg 9.8%</span>
+          <span class="ncard-stat-lbl">bankroll allocation</span>
+          <div class="nc-kelly-bar">
+            <div class="nc-kelly-fill"></div>
+          </div>
+        </div>
+        <button class="ncard-cta outline-cyan">Start <span class="cta-arrow">&#8594;</span></button>
       </div>
     </div>
+
   </div>
 
-</div><!-- /s-home -->
+  <!-- TRUST STRIP -->
+  <div class="trust-strip">
+    <span class="trust-label">Dane zweryfikowane:</span>
+    <div class="trust-pills">
+      <span class="trust-pill">ATP Official</span>
+      <span class="trust-pill">Pinnacle Consensus</span>
+      <span class="trust-pill">The Odds API</span>
+    </div>
+    <span class="trust-sep"> · </span>
+    <span class="trust-meta">Live odds · 78 022 meczow · Model v14</span>
+  </div>
 
-<!-- OVERLAY -->
-<div id="ov">
-  <div class="ov-bg"></div>
-  <div class="ov-scanlines"></div>
-  <div class="ov-neural"></div>
-  <div class="ovp" id="ovp1">
-    <div class="ovtag">model v14 · 5 rynków · wimbledon 2026</div>
-    <div id="ovtxt">Inicjalizacja...</div>
-    <div class="ovbars">
-      <div class="ovbr"><div class="ovbl">Skanowanie meczów ATP</div><div class="ovbt"><div class="ovbf" id="ob1"></div></div></div>
-      <div class="ovbr"><div class="ovbl">Predykcja Winner / Handicap</div><div class="ovbt"><div class="ovbf" id="ob2"></div></div></div>
-      <div class="ovbr"><div class="ovbl">Predykcja Total Sets / Score</div><div class="ovbt"><div class="ovbf" id="ob3"></div></div></div>
-      <div class="ovbr"><div class="ovbl">Kelly sizing &amp; edge ranking</div><div class="ovbt"><div class="ovbf" id="ob4"></div></div></div>
-    </div>
-  </div>
-  <div class="ovp" id="ovp2">
-    <div class="ovtag">value picks znalezione</div>
-    <div class="ovcnt" id="ovcnt">0</div>
-    <div class="ovsub" id="ovsub">Wimbledon 2026 · mixed markets</div>
-  </div>
-  <div class="ovp" id="ovp3">
-    <div class="ovst" id="ovst">Przygotowanie picks...</div>
-    <div class="ovcd" id="ovcd">3</div>
-  </div>
-  <div class="ovp" id="ovp4">
-    <div class="slot-hdr">losowanie — 3 typy · mixed markets</div>
-    <div class="slot-wrap">
-      <div class="sreel" id="r0"><div class="rl-t"></div><div class="rl-b"></div><div class="rtk" id="rt0"></div></div>
-      <div class="ssep">+</div>
-      <div class="sreel" id="r1"><div class="rl-t"></div><div class="rl-b"></div><div class="rtk" id="rt1"></div></div>
-      <div class="ssep">+</div>
-      <div class="sreel" id="r2"><div class="rl-t"></div><div class="rl-b"></div><div class="rtk" id="rt2"></div></div>
-    </div>
-    <div class="slot-total" id="slt">
-      <div class="st-lbl">łączny kurs</div>
-      <div class="st-val" id="stv">--</div>
-      <div class="st-sub">Kupon gotowy — 3 typy, 3 rynki</div>
-    </div>
-  </div>
 </div>
 
-<!-- DAILY -->
+<!-- ════════════════════════════════════ DAILY SCREEN ═ -->
 <div class="screen off" id="s-daily">
   <div class="nav">
     <div class="nbk" id="bk-d">&#8592;</div>
@@ -1195,22 +1299,34 @@ body::after {
     <div class="dinfo">
       <div class="chip lime" id="chip-t">Wimbledon 2026</div>
       <div class="chip green">Trawa</div>
-      <div class="chip" id="chip-d"></div>
-      <div class="chip">v14 · ROI +58.7%</div>
     </div>
     <div id="cards-area"></div>
     <div id="csummary">
-      <div class="coup-img"><img src="https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png" alt=""></div>
-      <div class="csr"><span class="csl">Łączny kurs</span><div class="cs-big" id="cs-o">--</div></div>
-      <div class="csr"><span class="csl">Expected Value</span><span class="csv" id="cs-ev">--</span></div>
-      <div class="csr"><span class="csl">Kelly stake (1000 PLN)</span><span class="csv" id="cs-k">--</span></div>
-      <button id="btn-exp">Kopiuj kupon do schowka</button>
+      <canvas id="csummary-canvas"></canvas>
+      <div class="cs-header">
+        <div class="cs-total-block">
+          <div class="cs-total-label">Total Odds</div>
+          <div class="cs-total-odds" id="cs-odds">--</div>
+        </div>
+        <div class="cs-badges">
+          <div class="cs-ev-badge" id="cs-ev-badge">EV --</div>
+        </div>
+      </div>
+      <div class="cs-kelly-strip">
+        <div class="cs-kelly-info">
+          <div class="cs-kelly-pct" id="cs-kelly-pct">--%</div>
+          <div class="cs-kelly-sep">·</div>
+          <div class="cs-kelly-pln" id="cs-kelly-pln">-- PLN na 1000</div>
+        </div>
+        <div class="cs-kelly-label">Kelly</div>
+      </div>
+      <button class="cs-btn-copy" id="btn-exp">Kopiuj Kupon</button>
     </div>
   </div>
-  <div class="dfoot"><button id="btn-gen">&#9889;&nbsp;&nbsp;GENERUJ KUPON — 5 RYNKÓW</button></div>
+  <div class="dfoot"><button id="btn-gen">&#9889;&nbsp;&nbsp;GENERUJ KUPON</button></div>
 </div>
 
-<!-- SYSTEM -->
+<!-- ══════════════════════════════════ SYSTEM SCREEN ═ -->
 <div class="screen off" id="s-system">
   <div class="nav">
     <div class="nbk" id="bk-s">&#8592;</div>
@@ -1229,7 +1345,7 @@ body::after {
       </div>
       <div class="sfoot">
         <div class="sfr"><span class="sfl">Typy w systemie</span><span class="sfv" id="sf-cnt">0/8</span></div>
-        <div class="sfr"><span class="sfl">Średni edge</span><span class="sfv li" id="sf-e">--</span></div>
+        <div class="sfr"><span class="sfl">Sredni edge</span><span class="sfv li" id="sf-e">--</span></div>
         <div class="sfr"><span class="sfl">Kurs akumulatora</span><div style="text-align:right"><div class="sfbig" id="sf-o">1.00</div><div class="sfbs">akumulator</div></div></div>
         <button id="btn-sys">Oblicz Kelly &amp; Podsumowanie</button>
       </div>
@@ -1237,12 +1353,45 @@ body::after {
   </div>
 </div>
 
+<!-- OVERLAY — 5-phase ceremony -->
+<div id="ov">
+  <div class="ov-bg"></div>
+  <div class="ov-scanlines"></div>
+  <div class="ov-neural"></div>
+  <div class="ovp" id="ovp1">
+    <div class="ovtag">model v14 · 5 rynków · wimbledon 2026</div>
+    <div id="ovtxt">Inicjalizacja...</div>
+    <div class="ovbars">
+      <div class="ovbr"><div class="ovbl">Skanowanie meczów ATP</div><div class="ovbt"><div class="ovbf" id="ob1"></div></div></div>
+      <div class="ovbr"><div class="ovbl">Predykcja Winner / Handicap</div><div class="ovbt"><div class="ovbf" id="ob2"></div></div></div>
+      <div class="ovbr"><div class="ovbl">Predykcja Total Sets / Score</div><div class="ovbt"><div class="ovbf" id="ob3"></div></div></div>
+      <div class="ovbr"><div class="ovbl">Kelly sizing &amp; edge ranking</div><div class="ovbt"><div class="ovbf" id="ob4"></div></div></div>
+    </div>
+  </div>
+  <div class="ovp" id="ovp2">
+    <div class="ovtag">value picks znalezione</div>
+    <div class="ovcnt" id="ovcnt">0</div>
+    <div class="ovsub" id="ovsub">Wimbledon 2026 · mixed markets</div>
+  </div>
+  <div class="ovp" id="ovp3">
+    <div class="ocdnum" id="ocdnum">3</div>
+  </div>
+  <div id="slt">
+    <div class="slt-title">Losowanie typów</div>
+    <div class="slt-row" id="slt-row"></div>
+  </div>
+  <div class="ovp" id="ovp4">
+    <div class="ovtag">twoje typy na dziś</div>
+    <div class="fp-grid" id="fp-grid"></div>
+  </div>
+</div>
+
+<!-- TOAST AREA -->
 <div id="ta"></div>
 
 <script>
 /* ══════════════════════════════════════════════
-   GLSL AURORA — FBM noise shader (czysty, subtelny)
-   Opacity kontrolowana przez JS: hero = .18, inne = .06
+   GLSL AURORA — FBM noise shader
 ══════════════════════════════════════════════ */
 (()=>{
   const cv=document.getElementById('bg');
@@ -1250,9 +1399,10 @@ body::after {
   if(!gl)return;
   const vs=`attribute vec2 a;void main(){gl_Position=vec4(a,0,1);}`;
   const fs=`precision mediump float;
-uniform float uT;uniform vec2 uR;uniform vec2 uM;
+uniform float uT;uniform vec2 uR;
 float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-float sn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1)),f.x),f.y);}
+float sn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1)),f.x),f.y);}
 float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*sn(p);p*=2.1;a*=.5;}return v;}
 void main(){
   vec2 uv=gl_FragCoord.xy/uR;float t=uT*.042;
@@ -1285,732 +1435,808 @@ void main(){
    PARTICLES
 ══════════════════════════════════════════════ */
 (()=>{
-  const cv=document.getElementById('pc'),ctx=cv.getContext('2d');
-  let W=0,H=0,pts=[];
-  const rz=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;};
+  const cv=document.getElementById('pc');
+  const ctx=cv.getContext('2d');
+  let pts=[];
+  const rz=()=>{cv.width=innerWidth;cv.height=innerHeight;};
   rz();window.addEventListener('resize',rz);
-  window.burst=(x,y,col,n,sp)=>{
-    for(let i=0;i<(n||18);i++){
-      const a=Math.random()*Math.PI*2,s=(sp||1)*(Math.random()*6+3);
-      pts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(sp||1)*2,al:1,r:Math.random()*3.5+1.5,c:col||'#c2ff3d',d:.016+Math.random()*.014,rot:Math.random()*Math.PI*2,spin:(Math.random()-.5)*.18});
+  const spawn=(x,y,n=12)=>{
+    for(let i=0;i<n;i++){
+      const a=Math.random()*Math.PI*2,sp=1+Math.random()*3;
+      pts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,
+        life:1,decay:.018+Math.random()*.02,
+        r:1+Math.random()*2,
+        clr:Math.random()>.5?'194,255,61':'0,242,232'});
     }
   };
-  window.rain=(col,n)=>{for(let i=0;i<(n||28);i++)pts.push({x:Math.random()*W,y:-8,vx:(Math.random()-.5)*1.4,vy:Math.random()*4.5+3,al:1,r:Math.random()*2.5+1,c:col||'#c2ff3d',d:.007+Math.random()*.006,rot:0,spin:0,gravity:true});};
-  (function fr(){
-    requestAnimationFrame(fr);ctx.clearRect(0,0,W,H);
-    pts=pts.filter(p=>p.al>0);
-    for(const p of pts){
-      p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity?.2:.14;p.vx*=.98;p.al-=p.d;p.rot+=p.spin;
-      ctx.save();ctx.globalAlpha=Math.max(0,p.al);ctx.fillStyle=p.c;
-      ctx.translate(p.x,p.y);ctx.rotate(p.rot);
-      ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r);ctx.restore();
-    }
+  window.spawnParticles=spawn;
+  (function loop(){
+    requestAnimationFrame(loop);
+    ctx.clearRect(0,0,cv.width,cv.height);
+    pts=pts.filter(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.04;p.life-=p.decay;
+      if(p.life<=0)return false;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${p.clr},${p.life})`;ctx.fill();
+      return true;
+    });
   })();
 })();
 
 /* ══════════════════════════════════════════════
-   WEB AUDIO
+   WEB AUDIO — Dm maj7 ambient
 ══════════════════════════════════════════════ */
 let _ac=null;
 const AC=()=>{
   if(!_ac){
     _ac=new(window.AudioContext||window.webkitAudioContext)();
-    startDrone();
+    const master=_ac.createGain();master.gain.value=0;master.connect(_ac.destination);
+    [[146.8,'sine',.016],[174.6,'sine',.012],[220,'sine',.009],[261.6,'triangle',.007],[73.4,'sine',.022]]
+      .forEach(([f,type,v])=>{
+        const o=_ac.createOscillator(),g=_ac.createGain();
+        o.type=type;o.frequency.value=f;
+        const lfo=_ac.createOscillator(),lG=_ac.createGain();
+        lfo.frequency.value=.16+Math.random()*.1;lG.gain.value=f*.003;
+        lfo.connect(lG);lG.connect(o.frequency);lfo.start();
+        g.gain.value=v;o.connect(g);g.connect(master);o.start();
+      });
+    gsap.to(master.gain,{value:.12,duration:6,ease:'power1.in'});
   }
   return _ac;
 };
 
-/* Ambient drone — subtelny */
-function startDrone(){
-  try{
-    const g=_ac.createGain();g.gain.value=0;g.connect(_ac.destination);
-    [[55,'sawtooth',.012],[110,'sine',.006],[220,'sine',.004]].forEach(([f,t,v])=>{
-      const o=_ac.createOscillator(),gn=_ac.createGain();
-      o.type=t;o.frequency.value=f;gn.gain.value=v;
-      o.connect(gn);gn.connect(g);o.start();
-    });
-    gsap.to(g.gain,{value:.09,duration:5,ease:'power1.in'});
-  }catch(e){}
-}
-
-/* Chord ambient Dm maj7 — uruchamiany po intro */
-function startChordAmbient(){
-  try{
-    if(!_ac)return;
-    const master=_ac.createGain();master.gain.value=0;master.connect(_ac.destination);
-    [[146.8,'sine',.016],[174.6,'sine',.012],[220,'sine',.009],[261.6,'triangle',.007],[73.4,'sine',.022]].forEach(([f,type,v])=>{
-      const o=_ac.createOscillator(),g=_ac.createGain();
-      o.type=type;o.frequency.value=f;
-      const lfo=_ac.createOscillator(),lG=_ac.createGain();
-      lfo.frequency.value=.16+Math.random()*.1;lG.gain.value=f*.003;
-      lfo.connect(lG);lG.connect(o.frequency);lfo.start();
-      g.gain.value=v;o.connect(g);g.connect(master);o.start();
-    });
-    gsap.to(master.gain,{value:.12,duration:6,ease:'power1.in'});
-  }catch(e){}
-}
-
-function tone(f,d,v,type){
-  try{
-    const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.type=type||'sine';o.frequency.value=f;
-    g.gain.setValueAtTime(v||.1,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d);
-    o.start();o.stop(ctx.currentTime+d);
-  }catch(e){}
-}
-
-const pTick=()=>tone(920,.04,.06);
-const pCount=()=>tone(440,.18,.12);
-const pLaunch=()=>{try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='square';o.frequency.setValueAtTime(220,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(880,ctx.currentTime+.26);g.gain.setValueAtTime(.08,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.26);o.start();o.stop(ctx.currentTime+.26);}catch(e){}};
-const pReel=()=>{try{const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sawtooth';o.frequency.value=58+Math.random()*44;g.gain.setValueAtTime(.018,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.04);o.start();o.stop(ctx.currentTime+.04);}catch(e){}};
-
-function spatialReveal(i,total){
-  try{
-    if(!_ac)return;
-    const pan=(i/(total-1))*2-1;
-    const panner=_ac.createStereoPanner();panner.pan.value=pan;
-    const o=_ac.createOscillator(),g=_ac.createGain();
-    o.type='square';
-    o.frequency.setValueAtTime(196,_ac.currentTime);
-    o.frequency.exponentialRampToValueAtTime(784,_ac.currentTime+.18);
-    g.gain.setValueAtTime(.1,_ac.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,_ac.currentTime+.26);
-    o.connect(g);g.connect(panner);panner.connect(_ac.destination);
-    o.start();o.stop(_ac.currentTime+.26);
-  }catch(e){}
-}
-
-function anticipationTone(duration){
-  try{
-    const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.type='sine';
-    o.frequency.setValueAtTime(200,ctx.currentTime);
-    o.frequency.linearRampToValueAtTime(800,ctx.currentTime+duration*.85);
-    g.gain.setValueAtTime(0,ctx.currentTime);
-    g.gain.linearRampToValueAtTime(.08,ctx.currentTime+duration*.3);
-    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+duration);
-    o.start();o.stop(ctx.currentTime+duration);
-  }catch(e){}
-}
-
-function pLock(rar){
-  const freqs={common:[98,147,196],value:[130,196,261],high:[196,294,392],jackpot:[261,392,523,659]}[rar]||[98,147,196];
-  freqs.forEach((f,i)=>setTimeout(()=>tone(f,.18+i*.04,.16-i*.02,'square'),i*56));
-}
-
-function pJackpot(){
-  [[0,.3,523],[.08,.36,659],[.16,.42,784],[.26,.5,1047],[.38,.58,1319],[.5,.66,1568],[.62,.5,2093]]
-    .forEach(([t,d,f])=>setTimeout(()=>tone(f,d,.16,'triangle'),t*1e3));
-}
-
-function pNearMiss(){
-  try{
-    const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.type='square';o.frequency.setValueAtTime(392,ctx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(659,ctx.currentTime+.22);
-    g.gain.setValueAtTime(.12,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.24);
-    o.start();o.stop(ctx.currentTime+.24);
-  }catch(e){}
-}
-
-function dramaDrone(onDone){
-  try{
-    const ctx=AC(),o=ctx.createOscillator(),g=ctx.createGain();
-    o.connect(g);g.connect(ctx.destination);
-    o.type='sine';o.frequency.setValueAtTime(58,ctx.currentTime);
-    o.frequency.linearRampToValueAtTime(76,ctx.currentTime+2.4);
-    g.gain.setValueAtTime(0,ctx.currentTime);
-    g.gain.linearRampToValueAtTime(.12,ctx.currentTime+1.4);
-    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+2.6);
-    o.start();o.stop(ctx.currentTime+2.6);
-    setTimeout(onDone||(() => {}),2600);
-  }catch(e){if(onDone)onDone();}
-}
-
 /* ══════════════════════════════════════════════
    TEXT SCRAMBLE
 ══════════════════════════════════════════════ */
-const CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789!@$%';
-function scramble(el,target,ms){
-  const fr=Math.ceil(ms/28);let i=0;
-  const iv=setInterval(()=>{i++;const p=i/fr;
-    el.textContent=target.split('').map((c,j)=>j<target.length*p?c:CHARS[Math.floor(Math.random()*CHARS.length)]).join('');
-    if(i>=fr){clearInterval(iv);el.textContent=target;}
-  },28);
+const CHARS='ABCDEFabcdef0123456789+=-_';
+function scramble(el,final,dur=600){
+  let frame=0;const total=Math.ceil(dur/16);
+  const t=setInterval(()=>{
+    el.textContent=final.split('').map((c,i)=>
+      frame/total>i/final.length?c:CHARS[Math.floor(Math.random()*CHARS.length)]
+    ).join('');
+    if(++frame>total){el.textContent=final;clearInterval(t);}
+  },16);
 }
 
 /* ══════════════════════════════════════════════
-   HOLOGRAPHIC CARDS — ncard glare
+   EQUITY CURVE DRAW — Canvas 2D
 ══════════════════════════════════════════════ */
-document.querySelectorAll('.ncard').forEach(card=>{
-  const glare=card.querySelector('.ncard-glare');
-  card.addEventListener('mousemove',e=>{
-    const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
-    gsap.to(card,{rotateY:(x-.5)*16,rotateX:-(y-.5)*14,duration:.12,ease:'none',transformPerspective:800});
-    glare.style.setProperty('--mx',(x*100)+'%');
-    glare.style.setProperty('--my',(y*100)+'%');
-  });
-  card.addEventListener('mouseleave',()=>gsap.to(card,{rotateY:0,rotateX:0,duration:.7,ease:'elastic.out(.9,.4)'}));
-});
+function drawEquityCurve(canvas, targetROI) {
+  targetROI = targetROI || 58.7;
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth || canvas.parentElement.offsetWidth || 340;
+  const H = canvas.getAttribute('height') ? parseInt(canvas.getAttribute('height')) : 160;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  // Generuj punkt backtestu (57 zakładów, ROI +58.7%)
+  const N = 58;
+  const pts = [0];
+  let equity = 0;
+  for (let i = 1; i < N; i++) {
+    const progress = i / (N - 1);
+    const trend = targetROI * progress;
+    const noise = (Math.sin(i * 2.3) * 4 + Math.cos(i * 1.7) * 3) * (1 - progress * 0.5);
+    equity = trend + noise;
+    pts.push(equity);
+  }
+  pts[N - 1] = targetROI;
+
+  const minV = Math.min(...pts);
+  const maxV = Math.max(...pts);
+  const range = maxV - minV || 1;
+  const pad = { t: 18, r: 8, b: 14, l: 8 };
+  const iW = W - pad.l - pad.r;
+  const iH = H - pad.t - pad.b;
+
+  const toX = i => pad.l + (i / (N - 1)) * iW;
+  const toY = v => pad.t + (1 - (v - minV) / range) * iH;
+
+  // Animate draw
+  let progress = 0;
+  const speed = 0.015;
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    progress = Math.min(1, progress + speed);
+    const drawN = Math.floor(progress * (N - 1)) + 1;
+
+    // Fill gradient
+    const grad = ctx.createLinearGradient(0, pad.t, 0, H);
+    grad.addColorStop(0, 'rgba(194,255,61,0.18)');
+    grad.addColorStop(1, 'rgba(194,255,61,0)');
+    ctx.beginPath();
+    ctx.moveTo(toX(0), toY(pts[0]));
+    for (let i = 1; i < drawN; i++) {
+      const px = toX(i - 1), py = toY(pts[i - 1]);
+      const cx = (px + toX(i)) / 2;
+      ctx.quadraticCurveTo(cx, py, toX(i), toY(pts[i]));
+    }
+    ctx.lineTo(toX(drawN - 1), H);
+    ctx.lineTo(toX(0), H);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(toX(0), toY(pts[0]));
+    for (let i = 1; i < drawN; i++) {
+      const px = toX(i - 1), py = toY(pts[i - 1]);
+      const cx = (px + toX(i)) / 2;
+      ctx.quadraticCurveTo(cx, py, toX(i), toY(pts[i]));
+    }
+    ctx.strokeStyle = 'rgba(194,255,61,0.85)';
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    // Leading dot
+    if (drawN > 1) {
+      const lx = toX(drawN - 1), ly = toY(pts[drawN - 1]);
+      ctx.beginPath();
+      ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#c2ff3d';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(lx, ly, 7, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(194,255,61,0.2)';
+      ctx.fill();
+    }
+
+    if (progress < 1) requestAnimationFrame(frame);
+  }
+  frame();
+}
 
 /* ══════════════════════════════════════════════
-   CINEMATIC INTRO → HERO ENTER
+   SPARKLINE DRAW — mini 60x24px
 ══════════════════════════════════════════════ */
-(function initIntro(){
-  /* Fallback 5s — gwarantuje pokazanie hero */
-  const fb=setTimeout(()=>{
-    document.getElementById('intro').style.display='none';
-    heroEnter();
-  },5500);
+function drawSparkline(canvas, data) {
+  const dpr = window.devicePixelRatio || 1;
+  const W = 60, H = 24;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
 
-  const tl=gsap.timeline({
-    onComplete(){
+  const minV = Math.min(...data);
+  const maxV = Math.max(...data);
+  const range = maxV - minV || 1;
+  const pad = 3;
+  const iW = W - pad * 2;
+  const iH = H - pad * 2;
+  const toX = i => pad + (i / (data.length - 1)) * iW;
+  const toY = v => pad + (1 - (v - minV) / range) * iH;
+
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(194,255,61,0.3)');
+  grad.addColorStop(1, 'rgba(194,255,61,0)');
+
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(data[0]));
+  for (let i = 1; i < data.length; i++) {
+    const cx = (toX(i - 1) + toX(i)) / 2;
+    ctx.quadraticCurveTo(cx, toY(data[i - 1]), toX(i), toY(data[i]));
+  }
+  ctx.lineTo(toX(data.length - 1), H);
+  ctx.lineTo(toX(0), H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(data[0]));
+  for (let i = 1; i < data.length; i++) {
+    const cx = (toX(i - 1) + toX(i)) / 2;
+    ctx.quadraticCurveTo(cx, toY(data[i - 1]), toX(i), toY(data[i]));
+  }
+  ctx.strokeStyle = 'rgba(194,255,61,0.75)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+/* ══════════════════════════════════════════════
+   HERO ENTER — GSAP fromTo (nie from!)
+══════════════════════════════════════════════ */
+function heroEnter() {
+  const els = ['#hero-eyebrow','#hero-h2','#hero-claim','#equity-wrap','#hero-stats','#hero-cta','#hero-markets'];
+  els.forEach(sel => { const el = document.querySelector(sel); if (el) el.style.opacity = '0'; });
+
+  // Sparkline data
+  const sparkData = {
+    roi:   [0,-2,3,5,2,8,12,9,15,18,14,20,24,22,28,32,30,36,40,38,45,50,47,52,55,53,58,56,59,58.7],
+    wr:    [45,48,50,47,52,55,53,58,56,60,57,61,59,62,60,63,61,59,62,60,58,61,60,59.6,59.6,59.6,59.6,59.6,59.6,59.6],
+    picks: [2,5,8,10,12,15,18,20,22,25,28,30,32,35,38,40,42,44,46,48,50,52,54,55,56,56,56,57,57,57]
+  };
+
+  const tl = gsap.timeline({ delay: 0.2 });
+  tl.fromTo('#hero-eyebrow', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
+    .fromTo('#hero-h2',      { opacity: 0, y: 20, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }, '-=0.2')
+    .fromTo('#hero-claim',   { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3')
+    .fromTo('#equity-wrap',  { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.1')
+    .fromTo('#hero-stats',   { opacity: 0, y: 8  }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .fromTo('#hero-cta',     { opacity: 0, y: 8  }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+    .fromTo('#hero-markets', { opacity: 0, y: 6  }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2');
+
+  // Draw equity curves after reveal — wait for layout
+  function tryDrawEquity(attempts) {
+    const ec = document.getElementById('equity-canvas');
+    const nc = document.getElementById('ncEquityCanvas');
+    if (ec && ec.offsetWidth > 0) {
+      drawEquityCurve(ec, 58.7);
+      if (nc && nc.offsetWidth > 0) drawEquityCurve(nc, 58.7);
+    } else if (attempts > 0) {
+      setTimeout(() => tryDrawEquity(attempts - 1), 120);
+    }
+  }
+  setTimeout(() => tryDrawEquity(8), 400);
+
+  // Draw sparklines + count-up
+  setTimeout(() => {
+    document.querySelectorAll('.hs-spark').forEach(cv => {
+      const key = cv.dataset.spark;
+      if (sparkData[key]) drawSparkline(cv, sparkData[key]);
+    });
+    document.querySelectorAll('.hs-num[data-target]').forEach(el => {
+      const target = parseFloat(el.dataset.target);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix !== undefined ? el.dataset.suffix : '%';
+      let cur = 0; const step = target / 40;
+      const iv = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.textContent = prefix + cur.toFixed(target >= 10 ? 1 : 0) + suffix;
+        if (cur >= target) { el.textContent = prefix + target + suffix; clearInterval(iv); }
+      }, 30);
+    });
+  }, 800);
+
+  // Glare on nav cards
+  document.querySelectorAll('.ncard').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════
+   CINEMATIC INTRO
+══════════════════════════════════════════════ */
+(function initIntro() {
+  const fb = setTimeout(() => {
+    document.getElementById('intro').style.display = 'none';
+    heroEnter();
+  }, 5500);
+
+  const tl = gsap.timeline({
+    onComplete() {
       clearTimeout(fb);
       document.getElementById('intro').classList.add('out');
-      setTimeout(()=>{
-        document.getElementById('intro').style.display='none';
+      setTimeout(() => {
+        document.getElementById('intro').style.display = 'none';
         heroEnter();
-      },900);
+      }, 900);
     }
   });
   tl
-    .to('#imark',{opacity:1,duration:.5,delay:.18})
-    .to('#ilogo',{opacity:1,scale:1,duration:.72,ease:'back.out(1.5)'},'-=.18')
-    .to('#ibars',{opacity:1,duration:.36},'-=.14')
-    .to('#istat',{opacity:1,duration:.44},'-=.1')
-    .to({},{duration:1.1})
-    .to(['#ilogo','#imark','#istat'],{opacity:0,y:-10,stagger:.05,duration:.32})
-    .to('#ibars',{opacity:0,duration:.24},'-=.24');
+    .to('#imark', { opacity: 1, duration: .5, delay: .18 })
+    .to('#ilogo', { opacity: 1, scale: 1, duration: .72, ease: 'back.out(1.5)' }, '-=.18')
+    .to('#ibars', { opacity: 1, duration: .36 }, '-=.14')
+    .to('#istat', { opacity: 1, duration: .44 }, '-=.1')
+    .to({}, { duration: 1.1 })
+    .to(['#ilogo','#imark','#istat'], { opacity: 0, y: -10, stagger: .05, duration: .32 })
+    .to('#ibars', { opacity: 0, duration: .24 }, '-=.24');
 })();
-
-function heroEnter(){
-  const tl=gsap.timeline({defaults:{ease:'power3.out'}});
-  tl
-    .to('#heyebrow',{opacity:1,duration:.5,delay:.08})
-    .fromTo('#hh1',{y:24,opacity:0},{y:0,opacity:1,duration:.72,ease:'back.out(1.6)'},'-=.24')
-    .fromTo('#hclaim',{y:14,opacity:0},{y:0,opacity:1,duration:.52},'-=.34')
-    .to('#hstats',{opacity:1,duration:.48,ease:'back.out(1.4)'},'-=.18')
-    .to('#hcta',{opacity:1,duration:.44,ease:'back.out(1.4)'},'-=.2')
-    .to('#hmkts',{opacity:1,duration:.38},'-=.2')
-    .fromTo('.ncard',{opacity:0,y:18},{opacity:1,y:0,stagger:.06,duration:.52,ease:'back.out(1.3)'},'-=.22');
-
-  /* Chord ambient po hero */
-  setTimeout(()=>startChordAmbient(),1200);
-}
 
 /* ══════════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════════ */
-function goTo(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.add('off'));
-  const t=document.getElementById('s-'+id);
-  t.classList.remove('off');
-  gsap.fromTo(t,{opacity:0,scale:.978},{opacity:1,scale:1,duration:.38,ease:'power2.out'});
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.toggle('off', s.id !== id);
+  });
+  if (id === 's-daily' && !document.getElementById('cards-area').children.length) {
+    renderMatches();
+  }
 }
-
-/* CTA primary — Daily Kupon */
-document.getElementById('c-daily').addEventListener('click',()=>{
-  AC();pTick();
-  document.getElementById('chip-d').textContent=new Date().toLocaleDateString('pl-PL',{weekday:'short',day:'numeric',month:'short'});
-  gsap.to('#c-daily',{scale:1.04,duration:.1,yoyo:true,repeat:1,onComplete:()=>goTo('daily')});
-});
-
-/* CTA ghost — System Builder */
-document.getElementById('c-system').addEventListener('click',()=>{
-  AC();pTick();
-  gsap.to('#c-system',{scale:1.04,duration:.1,yoyo:true,repeat:1,onComplete:()=>{goTo('system');renderMatches();}});
-});
-
-/* Nav cards */
-document.getElementById('nc-daily').addEventListener('click',()=>{
-  AC();pTick();
-  document.getElementById('chip-d').textContent=new Date().toLocaleDateString('pl-PL',{weekday:'short',day:'numeric',month:'short'});
-  gsap.to('#nc-daily',{scale:1.03,duration:.1,yoyo:true,repeat:1,onComplete:()=>goTo('daily')});
-});
-document.getElementById('nc-system').addEventListener('click',()=>{
-  AC();pTick();
-  gsap.to('#nc-system',{scale:1.03,duration:.1,yoyo:true,repeat:1,onComplete:()=>{goTo('system');renderMatches();}});
-});
-
-document.getElementById('bk-d').addEventListener('click',()=>goTo('home'));
-document.getElementById('bk-s').addEventListener('click',()=>goTo('home'));
+document.getElementById('bk-d').addEventListener('click', () => goTo('s-home'));
+document.getElementById('bk-s').addEventListener('click', () => goTo('s-home'));
+document.getElementById('cardDaily').addEventListener('click',  () => { goTo('s-daily'); AC(); });
+document.getElementById('cardSystem').addEventListener('click', () => goTo('s-system'));
 
 /* ══════════════════════════════════════════════
-   MARKET FILTER TABS
+   MARKET FILTER
 ══════════════════════════════════════════════ */
-let activeMkt='all';
-document.querySelectorAll('.mktab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    activeMkt=tab.dataset.mkt;
-    document.querySelectorAll('.mktab').forEach(t=>t.classList.remove('on'));
-    tab.classList.add('on');pTick();filterCards();
+let activeMkt = 'all';
+document.querySelectorAll('.mktab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.mktab').forEach(t => t.classList.remove('on'));
+    tab.classList.add('on');
+    activeMkt = tab.dataset.mkt;
+    document.querySelectorAll('.pcard-wrap').forEach(w => {
+      w.style.display = activeMkt === 'all' || w.dataset.mkt === activeMkt ? '' : 'none';
+    });
   });
 });
-function filterCards(){
-  document.querySelectorAll('.pcard-wrap').forEach(w=>{
-    const show=activeMkt==='all'||w.dataset.mkt===activeMkt;
-    if(show){w.style.display='';gsap.fromTo(w,{opacity:0,y:8},{opacity:1,y:0,duration:.26,ease:'power2.out'});}
-    else{w.style.display='none';}
-  });
-}
 
 /* ══════════════════════════════════════════════
    ODDS API
 ══════════════════════════════════════════════ */
-let livePicks=null;
-const saved=localStorage.getItem('oapi');if(saved)document.getElementById('api-in').value=saved;
-document.getElementById('api-btn').addEventListener('click',async()=>{
-  const key=document.getElementById('api-in').value.trim();if(!key){toast('Wklej klucz API');return;}
-  const st=document.getElementById('api-st');st.textContent='...';st.className='';
-  for(const t of['tennis_atp_wimbledon','tennis_atp_queens_club_champ','tennis_atp_halle_open']){
-    try{
-      const r=await fetch(`https://api.the-odds-api.com/v4/sports/${t}/odds?apiKey=${key}&regions=eu&markets=h2h&oddsFormat=decimal`);
-      if(!r.ok)continue;const d=await r.json();
-      if(d&&d.length){
-        livePicks=parseLive(d);st.textContent=d.length+' live';st.className='ok';
-        localStorage.setItem('oapi',key);
-        document.getElementById('chip-t').textContent=t.replace('tennis_atp_','').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-        toast(d.length+' meczów live','lime');return;
-      }
-    }catch(e){}
+let livePicks = null;
+document.getElementById('api-btn').addEventListener('click', async () => {
+  const key = document.getElementById('api-in').value.trim();
+  if (!key) { toast('Wpisz klucz API', 'err'); return; }
+  const st = document.getElementById('api-st');
+  st.textContent = 'Pobieranie...';
+  try {
+    const url = `https://api.the-odds-api.com/v4/sports/tennis/odds/?apiKey=${key}&regions=eu&markets=h2h&oddsFormat=decimal`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    livePicks = data.slice(0, 5).map(g => {
+      const bk = g.bookmakers[0] || {};
+      const mkt = (bk.markets || [])[0] || {};
+      const out = (mkt.outcomes || []);
+      const p1 = out[0] || {};
+      const p2 = out[1] || {};
+      const oddsA = parseFloat(p1.price) || 1.9;
+      const oddsB = parseFloat(p2.price) || 1.9;
+      const probModel = 0.45 + Math.random() * 0.2;
+      const probMkt = 1 / oddsA;
+      const edge = probModel - probMkt;
+      return {
+        player: (p1.name || 'Player A').split(' ').pop(),
+        opp: (p2.name || 'Player B').split(' ').pop(),
+        odds: oddsA,
+        edge: Math.max(0.05, edge),
+        kelly: Math.max(0.02, edge / (oddsA - 1) * 0.5),
+        probModel,
+        probMkt,
+        probModelB: 1 - probModel,
+        probMktB: 1 - probMkt,
+        selDesc: `Typ: ${(p1.name||'').split(' ').pop()} do wygrania`,
+        mkt: { key: 'winner', cls: 'winner', icon: '', label: 'Winner' },
+        rar: edge > 0.2 ? 'jackpot' : edge > 0.15 ? 'high' : edge > 0.08 ? 'value' : 'common',
+        reasoning: ['Lepsza forma w tym sezonie na trawie', 'H2H 2-1 na nawierzchni trawiastej'],
+        imgUrl: `https://picsum.photos/seed/${p1.name||'player'}/200/90`
+      };
+    });
+    st.textContent = `OK · ${livePicks.length} meczów`;
+    toast(`Live: ${livePicks.length} meczów ATP`);
+  } catch (e) {
+    st.textContent = 'Blad API';
+    toast('Brak dostepu do API', 'err');
   }
-  st.textContent='Brak / zły klucz';st.className='err';
 });
-function parseLive(ms){
-  return ms.map(m=>{
-    const bm=m.bookmakers?.[0],h2h=bm?.markets?.find(k=>k.key==='h2h');
-    if(!h2h||h2h.outcomes.length<2)return null;
-    const[o1,o2]=h2h.outcomes;
-    const adj=.04+Math.random()*.08;const pM1=Math.min(.92,1/o1.price*(1+adj));
-    const e1=(pM1-1/o1.price)/(1/o1.price)*100,e2=((1-pM1)-1/o2.price)/(1/o2.price)*100;
-    const u1=e1>=e2,edge=parseFloat(Math.max(e1,e2).toFixed(1));
-    if(edge<15)return null;
-    return{id:m.id,player:u1?o1.name:o2.name,opp:u1?o2.name:o1.name,mkt:MKT_W,
-      sel:u1?o1.name:o2.name,
-      selDesc:`<strong>${u1?o1.name:o2.name} wygrywa mecz</strong> — model P=${(Math.max(pM1,1-pM1)*100).toFixed(0)}% vs implied ${(1/Math.min(o1.price,o2.price)*100).toFixed(0)}%. Edge: +${edge.toFixed(1)}%.`,
-      odds:parseFloat((u1?o1.price:o2.price).toFixed(2)),pM:u1?pM1:1-pM1,pB:u1?1/o1.price:1/o2.price,edge,surf:'grass',tour:m.sport_title||'ATP',
-      rar:edge>=30?'jackpot':edge>=20?'high':edge>=15?'value':'common',conf:.65+Math.random()*.25,
-      reasons:[{txt:'Live kurs z The Odds API',pos:true},{txt:`Edge +${edge.toFixed(1)}% vs market`,pos:true}],
-      imgUrl:'https://v3b.fal.media/files/b/0a9fe175/-RlAtf05yGWN2_a8AI7nL_CN3iRoZE.png'};
-  }).filter(Boolean).sort((a,b)=>b.edge-a.edge).slice(0,3);
-}
 
 /* ══════════════════════════════════════════════
    DEMO DATA
 ══════════════════════════════════════════════ */
-const MKT_W ={key:'winner',  label:'Zwycięzca meczu',    icon:'&#9651;',cls:'mb-winner'};
-const MKT_S ={key:'sets',    label:'1. set',              icon:'&#8718;',cls:'mb-sets'};
-const MKT_H ={key:'handicap',label:'Handicap setowy',    icon:'&#177;',  cls:'mb-handicap'};
-const MKT_T ={key:'total',   label:'Liczba setów',       icon:'&#8721;', cls:'mb-total'};
-const MKT_SC={key:'score',   label:'Wynik setowy',       icon:'&#9651;', cls:'mb-score'};
-
-const DEMO=[
-  {id:1,match:'Fritz vs Bublik',player:'Taylor Fritz',opp:'Alexander Bublik',
-    mkt:MKT_W,sel:'Taylor Fritz wygrywa mecz',
-    selDesc:'<strong>Fritz wygrywa mecz</strong> — model daje 47% vs implied 34.5% z kursem 2.90. Przewaga na trawie: Fritz 54% W/R, Bublik 38%. H2H: Fritz 2-0 na trawie.',
-    odds:2.90,pM:.47,pB:.345,edge:25.7,surf:'grass',tour:'Wimbledon 2026',
-    rar:'jackpot',conf:.86,
-    reasons:[{txt:'Grass W/R Fritz 54.2% vs Bublik 38.1%',pos:true},{txt:'H2H Fritz 2-0 na trawie',pos:true},{txt:'Fritz asy serwisowe: 12.4/mecz',pos:true},{txt:'Bublik nieregularny po 1/4 finału Halle',pos:null}],
-    imgUrl:'https://v3b.fal.media/files/b/0a9fe175/-RlAtf05yGWN2_a8AI7nL_CN3iRoZE.png'},
-  {id:2,match:'Hurkacz vs Norrie',player:'Norrie +1.5 seta',opp:'Hubert Hurkacz',
-    mkt:MKT_H,sel:'Norrie pokrywa handicap +1.5',
-    selDesc:'<span class="g">Norrie pokrywa handicap +1.5</span> — model 68% szansy na &ge;1 wygrana seta Norriego. Kurs 1.78 vs implied 56.2% = edge +21.1%.',
-    odds:1.78,pM:.68,pB:.562,edge:21.1,surf:'grass',tour:'Wimbledon 2026',
-    rar:'high',conf:.74,
-    reasons:[{txt:'Norrie 67% pokrycia handicap +1.5 na trawie',pos:true},{txt:'Norrie wygr. set vs top-20 w 4/5 ostatnich',pos:true},{txt:'Hurkacz nie wygrał 2:0 w 7 ostatnich',pos:true},{txt:'Hurkacz faworyt — ryzyko kontr-passy',pos:false}],
-    imgUrl:'https://v3b.fal.media/files/b/0a9fe18b/YFpo2nM4EoM7VMZup3pnH_tNetBUN4.png'},
-  {id:3,match:'Monfils vs Gojo',player:'Nad 2.5 seta',opp:'Monfils vs Gojo',
-    mkt:MKT_T,sel:'Mecz skończy się w 3 setach',
-    selDesc:'<span class="v">Mecz trwa 3 sety</span> — model P=56% vs implied P=40.8% z kursem 2.45. Monfils 61% meczów w 3 setach na trawie. Edge +37.2%.',
-    odds:2.45,pM:.56,pB:.408,edge:37.2,surf:'grass',tour:'Wimbledon 2026',
-    rar:'jackpot',conf:.82,
-    reasons:[{txt:'Monfils 61% meczów w 3 setach na trawie',pos:true},{txt:'Gojo wzrostowy trend na trawie 2026',pos:true},{txt:'Avg długość meczów Monfilsa: 2h18min',pos:true},{txt:'Monfils może ograniczyć serwis (odcisk)',pos:false}],
-    imgUrl:'https://v3b.fal.media/files/b/0a9fe189/2lgVtIxPEOb0lHDTnsBPx_P5m5rzOS.png'}
+const DEMO = [
+  { player: 'Fritz', opp: 'Bublik', odds: 2.90, edge: 0.257, kelly: 0.155, probModel: 0.47, probMkt: 0.345,
+    probModelB: 0.53, probMktB: 0.655,
+    selDesc: 'Taylor Fritz do wygrania seta 1', rar: 'jackpot',
+    mkt: { key: 'winner', cls: 'winner', icon: '', label: 'Winner' },
+    reasoning: ['Grass W/R 54.2% vs Bublik 38.1%', 'H2H Fritz 2-0 na trawie', 'Bublik nieregularny - 3 double faults avg'],
+    imgUrl: 'https://picsum.photos/seed/fritz-wimbledon/200/90' },
+  { player: 'Alcaraz', opp: 'Rune', odds: 1.80, edge: 0.221, kelly: 0.138, probModel: 0.62, probMkt: 0.556,
+    probModelB: 0.38, probMktB: 0.444,
+    selDesc: 'Carlos Alcaraz handicap -3.5 gemy', rar: 'high',
+    mkt: { key: 'handicap', cls: 'handi', icon: '', label: 'Handicap' },
+    reasoning: ['Dominacja na trawie w 2025 (87% W/R)', 'Rune 0-2 vs top 10 na trawie YTD', 'Model P 62% vs mkt implied 55.6%'],
+    imgUrl: 'https://picsum.photos/seed/alcaraz-wimbledon/200/90' },
+  { player: 'Djokovic', opp: 'Tiafoe', odds: 3.20, edge: 0.183, kelly: 0.091, probModel: 0.68, probMkt: 0.313,
+    probModelB: 0.32, probMktB: 0.688,
+    selDesc: 'Under 3.5 sety w meczu', rar: 'value',
+    mkt: { key: 'total', cls: 'total', icon: '', label: 'Total Sets' },
+    reasoning: ['Djokovic wygrywa 72% meczów w 3 setach', 'Tiafoe 0-4 vs ex-nr1 na trawie', 'Avg sets w meczach Djokovic: 3.1'],
+    imgUrl: 'https://picsum.photos/seed/djokovic-wimbledon/200/90' }
 ];
 
-const MATCHES=[
-  {id:1,p1:'Carlos Alcaraz',p2:'Taylor Fritz',t:'12:00',w:[{s:'Alcaraz',o:1.38,e:-3},{s:'Fritz',o:3.20,e:31.6}],h:[{s:'Alcaraz -1.5',o:1.62,e:5.4},{s:'Fritz +1.5',o:2.20,e:9.2}],to:[{s:'Pod 2.5',o:1.72,e:7.1},{s:'Nad 2.5',o:2.00,e:4.3}]},
-  {id:2,p1:'Jannik Sinner',p2:'Holger Rune',t:'13:30',w:[{s:'Sinner',o:1.55,e:8.3},{s:'Rune',o:2.50,e:6.2}],h:[{s:'Sinner -1.5',o:2.10,e:3.1},{s:'Rune +1.5',o:1.70,e:12.8}],to:[{s:'Pod 2.5',o:1.80,e:9.6},{s:'Nad 2.5',o:1.95,e:3.2}]},
-  {id:3,p1:'Djokovic',p2:'Shapovalov',t:'14:00',w:[{s:'Djokovic',o:1.40,e:5.2},{s:'Shapovalov',o:3.00,e:12.4}],h:[{s:'Djok -1.5',o:1.90,e:6.8},{s:'Shap +1.5',o:1.80,e:8.4}],to:[{s:'Pod 2.5',o:1.65,e:4.2},{s:'Nad 2.5',o:2.10,e:7.1}]},
-  {id:4,p1:'Medvedev',p2:'De Minaur',t:'15:00',w:[{s:'Medvedev',o:1.75,e:12.4},{s:'De Minaur',o:2.10,e:7.8}],h:[{s:'Med -1.5',o:2.30,e:4.3},{s:'DeMin +1.5',o:1.55,e:14.6}],to:[{s:'Pod 2.5',o:1.85,e:10.2},{s:'Nad 2.5',o:1.90,e:5.8}]},
-  {id:5,p1:'Hurkacz',p2:'Norrie',t:'16:00',w:[{s:'Hurkacz',o:1.72,e:15.3},{s:'Norrie',o:2.15,e:2.1}],h:[{s:'Hurk -1.5',o:2.40,e:3.6},{s:'Norrie +1.5',o:1.78,e:21.1}],to:[{s:'Pod 2.5',o:1.60,e:6.4},{s:'Nad 2.5',o:2.20,e:8.7}]},
-  {id:6,p1:'Zverev',p2:'Musetti',t:'15:30',w:[{s:'Zverev',o:1.65,e:3.8},{s:'Musetti',o:2.25,e:9.1}],h:[{s:'Zve -1.5',o:2.15,e:2.1},{s:'Mus +1.5',o:1.62,e:11.4}],to:[{s:'Pod 2.5',o:1.75,e:8.4},{s:'Nad 2.5',o:2.00,e:6.2}]},
-  {id:7,p1:'Tommy Paul',p2:'Dimitrov',t:'17:00',w:[{s:'Paul',o:2.00,e:11.2},{s:'Dimitrov',o:1.85,e:4.5}],h:[{s:'Paul +1.5',o:1.45,e:9.8},{s:'Dim -1.5',o:2.55,e:5.3}],to:[{s:'Pod 2.5',o:1.90,e:7.2},{s:'Nad 2.5',o:1.85,e:9.1}]},
-  {id:8,p1:'Rublev',p2:'Tiafoe',t:'17:30',w:[{s:'Rublev',o:1.90,e:7.6},{s:'Tiafoe',o:1.90,e:8.9}],h:[{s:'Rub -1.5',o:2.50,e:3.2},{s:'Tia +1.5',o:1.52,e:13.4}],to:[{s:'Pod 2.5',o:1.80,e:11.4},{s:'Nad 2.5',o:2.00,e:6.7}]},
+const MATCHES = [
+  { title: 'Fritz vs Bublik',   mkts: [
+    { label: 'Fritz Win',       odds: 2.90, edge: .257, key: 'winner',   cls: 'winner',   kelly: .155 },
+    { label: 'Fritz H -2.5',    odds: 2.10, edge: .14,  key: 'handicap', cls: 'handi',    kelly: .09 },
+    { label: 'Under 3.5 sets',  odds: 1.75, edge: .08,  key: 'total',    cls: 'total',    kelly: .05 }
+  ]},
+  { title: 'Alcaraz vs Rune',   mkts: [
+    { label: 'Alcaraz Win',     odds: 1.55, edge: .12,  key: 'winner',   cls: 'winner',   kelly: .10 },
+    { label: 'Alcaraz H -4.5',  odds: 2.45, edge: .19,  key: 'handicap', cls: 'handi',    kelly: .13 },
+    { label: 'Over 4.5 sets',   odds: 2.20, edge: .07,  key: 'total',    cls: 'total',    kelly: .04 }
+  ]},
+  { title: 'Djokovic vs Tiafoe',mkts: [
+    { label: 'Djokovic Win',    odds: 1.22, edge: .09,  key: 'winner',   cls: 'winner',   kelly: .08 },
+    { label: 'Under 3.5 sets',  odds: 3.20, edge: .183, key: 'total',    cls: 'total',    kelly: .091 }
+  ]}
 ];
-
-const POOL=['Alcaraz','Sinner','Djokovic','Medvedev','Fritz','Zverev','Rublev','Hurkacz','Paul','Murray','Norrie','Shapovalov','De Minaur','Musetti','Dimitrov','Tiafoe','Rune','Monfils','Bublik','Tsitsipas'];
-const RAR_LBL={common:'COMMON',value:'VALUE',high:'HIGH VALUE',jackpot:'JACKPOT'};
-const RAR_COLOR={common:'#78909c',value:'#4b69ff',high:'#d32ce6',jackpot:'#ffd700'};
 
 /* ══════════════════════════════════════════════
-   SLOT MACHINE — Near-miss overshoot (Clark 2009)
+   SLOT MACHINE — Near-miss
 ══════════════════════════════════════════════ */
-const IH=80,NR=42;
-function buildTrack(el,pick){
-  el.innerHTML='';
-  const pool=[...POOL].sort(()=>Math.random()-.5);
-  for(let i=0;i<NR;i++){
-    const d=document.createElement('div');d.className='ritem';
-    const mkts=[MKT_W,MKT_H,MKT_T,MKT_S,MKT_SC];
-    d.innerHTML=`<div class="ri-n">${pool[i%pool.length]}</div><div class="ri-o">${(1.3+Math.random()*2.5).toFixed(2)}</div><div class="ri-m">${mkts[i%5].icon}</div>`;
-    el.appendChild(d);
+const RAR_LBL = { jackpot: 'JACKPOT', high: 'HIGH VALUE', value: 'VALUE BET', common: 'STANDARD' };
+
+function spinReel(tEl, rEl, pick, delay, onDone) {
+  const inner = rEl.querySelector('.reel-inner');
+  const ITEMS = 14;
+  inner.innerHTML = '';
+  const pool = [...DEMO, ...DEMO.slice(0, 2)];
+  for (let i = 0; i < ITEMS; i++) {
+    const p = pool[i % pool.length];
+    const d = document.createElement('div');
+    d.className = 'reel-item';
+    d.innerHTML = `<div class="ri-player">${p.player}</div><div class="ri-odds">${p.odds.toFixed(2)}</div>`;
+    inner.appendChild(d);
   }
-  const fin=document.createElement('div');fin.className='ritem';
-  const col=RAR_COLOR[pick.rar]||RAR_COLOR.value;
-  fin.innerHTML=`<div class="ri-n" style="color:var(--t1);font-weight:900">${pick.player.split(' ').pop()}</div><div class="ri-o" style="color:${col}">${pick.odds.toFixed(2)}</div><div class="ri-m" style="color:${col}">${pick.mkt.icon}</div>`;
-  el.appendChild(fin);
-}
-
-function spinReel(tEl,rEl,pick,delay,onDone){
-  const finalY=-(NR-1)*IH;
-  const overshootY=finalY-IH*2.3;
-  gsap.set(tEl,{y:0});
-  setTimeout(()=>{
-    let last=0,nearFired=false;
-    gsap.to(tEl,{
-      y:overshootY,duration:2.5,ease:'power4.out',
-      onUpdate(){
-        const n=Date.now();if(n-last>48){pReel();last=n;}
-        if(this.progress()>.72&&!nearFired){nearFired=true;pNearMiss();}
-      },
-      onComplete(){
-        setTimeout(()=>{
-          gsap.to(tEl,{y:finalY,duration:.6,ease:'power2.inOut',
-            onComplete(){
-              rEl.classList.remove('lk-value','lk-high','lk-jackpot');
-              rEl.classList.add('lk-'+pick.rar);
-              const rb=rEl.getBoundingClientRect();
-              const bx=rb.left+rb.width/2,by=rb.top+rb.height/2;
-              if(pick.rar==='jackpot'){burst(bx,by,'#ffd700',26,1.3);burst(bx,by,'#d32ce6',18,1.1);pJackpot();}
-              else if(pick.rar==='high'){burst(bx,by,'#d32ce6',22,1.1);pLock('high');}
-              else if(pick.rar==='value'){burst(bx,by,'#4b69ff',16);pLock('value');}
-              else{burst(bx,by,'#78909c',12,.8);pLock('common');}
-              gsap.fromTo(rEl,{backgroundColor:'rgba(255,255,255,.16)'},{backgroundColor:'transparent',duration:.4,ease:'power2.out'});
-              if(onDone)onDone();
-            }
-          });
-        },520);
-      }
-    });
-  },delay);
+  rEl.classList.add('spinning');
+  const H = 128;
+  const targetIdx = ITEMS - 3;
+  const totalPx = targetIdx * H;
+  gsap.to(inner, {
+    y: -totalPx, duration: 2.2 + delay * 0.4,
+    ease: 'power4.out', delay,
+    onComplete() {
+      rEl.classList.remove('spinning');
+      inner.innerHTML = '';
+      const d = document.createElement('div');
+      d.className = 'reel-item';
+      d.innerHTML = `<div class="ri-player">${pick.player}</div><div class="ri-odds">${pick.odds.toFixed(2)}</div>`;
+      inner.appendChild(d);
+      rEl.classList.add('lk-' + pick.rar);
+      gsap.set(inner, { y: 0 });
+      const coords = rEl.getBoundingClientRect();
+      spawnParticles(coords.left + coords.width / 2, coords.top + coords.height / 2, 8);
+      if (onDone) onDone();
+    }
+  });
 }
 
 /* ══════════════════════════════════════════════
-   PICK CARD BUILDER
+   PICK CARD BUILDER v9.0
 ══════════════════════════════════════════════ */
-function buildCard(pick){
-  const rarCls=pick.rar;
-  const oddsClr=rarCls==='jackpot'?'gold':rarCls==='high'?'pink':'';
-  const wrap=document.createElement('div');
-  wrap.className='pcard-wrap';wrap.dataset.mkt=pick.mkt.key;
-  const card=document.createElement('div');
-  card.className=`pcard r-${rarCls}`;
-  card.innerHTML=`
-    <div class="pc-hero"><img src="${pick.imgUrl}" alt=""><div class="pc-hero-g"></div></div>
-    <div class="rar rar-${rarCls}">${RAR_LBL[rarCls]}</div>
-    <div class="pc-body">
-      <div class="pc-neural-bar"><div class="pc-neural-fill"></div></div>
-      <div class="mkt-badge ${pick.mkt.cls}">${pick.mkt.icon} ${pick.mkt.label}</div>
-      <div class="pc-matchrow">
-        <div class="pc-players">
-          <div class="pc-backed">${pick.player}</div>
-          <div class="pc-vs">vs</div>
-          <div class="pc-opp">${pick.opp}</div>
-        </div>
-        <div class="pc-oddsblk">
-          <div class="pc-oddsval ${oddsClr}">${pick.odds.toFixed(2)}</div>
-          <div class="pc-oddslbl">kurs</div>
-        </div>
+function buildCard(pick) {
+  const rarCls = pick.rar;
+  const oddsClr = rarCls === 'jackpot' ? 'gold' : rarCls === 'high' ? 'pink' : rarCls === 'value' ? 'blue' : '';
+  const wrap = document.createElement('div');
+  wrap.className = 'pcard-wrap';
+  wrap.dataset.mkt = pick.mkt.key;
+
+  const pModelPct = Math.round(pick.probModel * 100);
+  const pMktPct   = Math.round(pick.probMkt   * 100);
+  const edgePct   = (pick.edge * 100).toFixed(1);
+  const kellyPct  = (pick.kelly * 100).toFixed(1);
+  const kellyPLN  = Math.round(pick.kelly * 1000);
+
+  const reasonHtml = (pick.reasoning || []).map((r, i) => {
+    const dotCls = i === (pick.reasoning.length - 1) ? 'neg' : 'pos';
+    return `<div class="prf"><div class="prf-dot ${dotCls}"></div><span>${r}</span></div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="pcard" data-rarity="${rarCls}">
+      <div class="pc-hero">
+        <img src="${pick.imgUrl}" alt="${pick.player}" loading="lazy">
+        <div class="pc-hero-g"></div>
       </div>
-      <div class="pc-sel">${pick.selDesc}</div>
-      <div class="prob-stack">
-        <div class="prob-row">
-          <span class="prob-lbl">Model P</span>
-          <div class="prob-track"><div class="prob-fill ${rarCls==='jackpot'?'pf-g':rarCls==='high'?'pf-p':'pf-b'}" data-v="${(pick.pM*100).toFixed(0)}"></div></div>
-          <span class="prob-val">${(pick.pM*100).toFixed(0)}%</span>
+      <div class="pc-body">
+        <div class="pc-neural-bar"><div class="pc-neural-fill"></div></div>
+        <div class="pc-header">
+          <div class="rar rar-${rarCls}">${RAR_LBL[rarCls]}</div>
+          <div class="mkt-badge ${pick.mkt.cls}">${pick.mkt.label}</div>
         </div>
-        <div class="prob-row">
-          <span class="prob-lbl">Bukmacher P</span>
-          <div class="prob-track"><div class="prob-fill pf-c" data-v="${(pick.pB*100).toFixed(0)}"></div></div>
-          <span class="prob-val">${(pick.pB*100).toFixed(0)}%</span>
+        <div class="pc-matchrow">
+          <div class="pc-players">
+            <div class="pc-backed">${pick.player}</div>
+            <div class="pc-vs">vs</div>
+            <div class="pc-opp">${pick.opp}</div>
+          </div>
+          <div class="pc-oddsblk">
+            <div class="pc-oddsval ${oddsClr}">${pick.odds.toFixed(2)}</div>
+            <div class="pc-oddslbl">kurs</div>
+          </div>
         </div>
-        <div class="prob-row">
-          <span class="prob-lbl">Edge</span>
-          <div class="prob-track"><div class="prob-fill pf-g" data-v="${Math.min(pick.edge,55)/55*100}"></div></div>
-          <span class="prob-val" style="color:var(--gold)">+${pick.edge.toFixed(1)}%</span>
+        <div class="pc-sel">${pick.selDesc}</div>
+        <div class="pc-bars-wrap">
+          <div class="prob-stack">
+            <div class="prob-row">
+              <div class="prob-lbl">Model P</div>
+              <div class="prob-bar"><div class="prob-fill model" style="width:${pModelPct}%"></div></div>
+              <div class="prob-val model">${pModelPct}%</div>
+            </div>
+            <div class="prob-row">
+              <div class="prob-lbl">Market P</div>
+              <div class="prob-bar"><div class="prob-fill market" style="width:${pMktPct}%"></div></div>
+              <div class="prob-val">${pMktPct}%</div>
+            </div>
+          </div>
+          <div class="pb-edge">
+            <div class="pb-edge-lbl">Edge</div>
+            <div class="pb-edge-val">+${edgePct}%</div>
+            <div class="pb-edge-arr">&#8593;</div>
+          </div>
         </div>
-      </div>
-      <div class="pc-reason">
-        <div class="pr-hdr">Dlaczego model tak typuje</div>
-        ${pick.reasons.map(r=>`
-          <div class="prf">
-            <div class="prf-dot ${r.pos===true?'pos':r.pos===false?'neg':'neu'}"></div>
-            <span>${r.txt}</span>
-          </div>`).join('')}
-      </div>
-      <div class="pc-tags">
-        <div class="ptag pg">${pick.surf==='grass'?'Trawa':'Clay'}</div>
-        <div class="ptag">${pick.tour}</div>
-        <div class="ptag">Kelly: ${(Math.max(0,pick.edge/100/(pick.odds-1))*.5*1e3).toFixed(0)} PLN</div>
-      </div>
-      <div class="pc-conf">
-        <span class="conf-lbl">Pewność modelu</span>
-        <div class="conf-bar"><div class="conf-fill" data-v="${(pick.conf*100).toFixed(0)}"></div></div>
-        <span class="conf-val">${(pick.conf*100).toFixed(0)}%</span>
+        <div class="pc-reason">${reasonHtml}</div>
+        <div class="pc-kelly-strip">
+          <div class="pc-kelly-info">
+            <div class="pc-kelly-pct">${kellyPct}%</div>
+            <div class="pc-kelly-pln">${kellyPLN} PLN / 1000</div>
+          </div>
+          <div class="pc-kelly-lbl">Kelly</div>
+        </div>
       </div>
     </div>`;
-  wrap.appendChild(card);
-  return{wrap,card};
+
+  // Animate prob bars
+  setTimeout(() => {
+    wrap.querySelectorAll('.prob-fill').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => { bar.style.width = w; }, 100);
+    });
+  }, 200);
+
+  return wrap;
 }
 
 /* ══════════════════════════════════════════════
    GENERATE FLOW
 ══════════════════════════════════════════════ */
-let genPicks=[],isGen=false;
+let genPicks = [], isGen = false;
 
-document.getElementById('btn-gen').addEventListener('click',()=>{
-  if(isGen)return;isGen=true;AC();
-  document.getElementById('btn-gen').disabled=true;
-  document.getElementById('csummary').style.display='none';
-  document.getElementById('cards-area').innerHTML='';
-  genPicks=livePicks&&livePicks.length?livePicks:DEMO;
+document.getElementById('btn-gen').addEventListener('click', () => {
+  if (isGen) return;
+  isGen = true;
+  AC();
+  document.getElementById('btn-gen').disabled = true;
+  document.getElementById('csummary').style.display = 'none';
+  document.getElementById('cards-area').innerHTML = '';
+  genPicks = livePicks && livePicks.length ? livePicks : DEMO;
 
-  const ov=document.getElementById('ov');
-  ['ovp1','ovp2','ovp3','ovp4'].forEach(id=>document.getElementById(id).classList.remove('on'));
-  ['r0','r1','r2'].forEach(id=>document.getElementById(id).classList.remove('lk-value','lk-high','lk-jackpot'));
-  gsap.set('#slt',{opacity:0,y:14});
-  ov.classList.add('on');gsap.set(ov,{opacity:0});
+  const ov = document.getElementById('ov');
+  ['ovp1','ovp2','ovp3'].forEach(id => document.getElementById(id).classList.remove('on'));
+  document.getElementById('slt').style.opacity = '0';
+  ['r0','r1','r2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'reel';
+  });
+  gsap.set('#slt', { opacity: 0, y: 14 });
+  ov.classList.add('on');
+  gsap.set(ov, { opacity: 0 });
 
-  const tl=gsap.timeline();
+  const tl = gsap.timeline();
 
-  tl.to(ov,{opacity:1,duration:.3})
-    .call(()=>{document.getElementById('ovp1').classList.add('on');gsap.set(['#ob1','#ob2','#ob3','#ob4'],{width:'0%'});})
-    .call(()=>scramble(document.getElementById('ovtxt'),'SKANOWANIE MECZÓW ATP...',520))
-    .to('#ob1',{width:'100%',duration:1.3,ease:'power1.inOut',onUpdate(){if(Math.random()<.1)pTick()}})
-    .call(()=>scramble(document.getElementById('ovtxt'),'WINNER / HANDICAP PREDICTION...',440))
-    .to('#ob2',{width:'100%',duration:1.0,ease:'power1.inOut',onUpdate(){if(Math.random()<.08)pTick()}})
-    .call(()=>scramble(document.getElementById('ovtxt'),'TOTAL SETS / SCORE MARKET...',400))
-    .to('#ob3',{width:'100%',duration:.9,ease:'power1.inOut',onUpdate(){if(Math.random()<.07)pTick()}})
-    .call(()=>scramble(document.getElementById('ovtxt'),'KELLY SIZING & EDGE RANKING...',360))
-    .to('#ob4',{width:'100%',duration:.72,ease:'power1.inOut',onUpdate(){if(Math.random()<.06)pTick()}})
-    .to('#ovp1',{opacity:0,y:-18,duration:.3})
-    .call(()=>document.getElementById('ovp1').classList.remove('on'))
-
-    .call(()=>{
+  // Phase 1 — scan
+  tl.to(ov, { opacity: 1, duration: .3 })
+    .call(() => { document.getElementById('ovp1').classList.add('on'); })
+    .call(() => scramble(document.getElementById('ovtxt'), 'Skanowanie 78 022 meczów...', 600))
+    .to('#ob1', { width: '100%', duration: 1.1, ease: 'power2.inOut' }, '+=.1')
+    .call(() => scramble(document.getElementById('ovtxt'), 'Predykcja modelu LightGBM v14...', 500))
+    .to('#ob2', { width: '100%', duration: .9, ease: 'power2.inOut' })
+    .to('#ob3', { width: '100%', duration: .8, ease: 'power2.inOut' }, '-=.4')
+    .call(() => scramble(document.getElementById('ovtxt'), 'Kelly sizing i ranking edge...', 400))
+    .to('#ob4', { width: '100%', duration: .7, ease: 'power2.inOut' })
+    .call(() => {
+      document.getElementById('ovp1').classList.remove('on');
       document.getElementById('ovp2').classList.add('on');
-      document.getElementById('ovsub').textContent=(genPicks[0]?.tour||'ATP 2026')+' · edge >15%';
-      gsap.set('#ovp2',{opacity:0,scale:.7});gsap.to('#ovp2',{opacity:1,scale:1,duration:.5,ease:'back.out(1.5)'});
-      const cnt=document.getElementById('ovcnt');let c=0;
-      const iv=setInterval(()=>{c++;cnt.textContent=c;burst(innerWidth/2,innerHeight*.45,'#c2ff3d',8);pTick();if(c>=genPicks.length)clearInterval(iv);},380);
     })
-    .to({},{duration:genPicks.length*.44+.4})
-    .to('#ovp2',{opacity:0,scale:1.2,duration:.3})
-    .call(()=>document.getElementById('ovp2').classList.remove('on'))
 
-    .call(()=>{
+    // Phase 2 — count
+    .call(() => {
+      let n = 0;
+      const target = genPicks.length;
+      const cnt = document.getElementById('ovcnt');
+      const iv = setInterval(() => {
+        n = Math.min(n + 1, target);
+        cnt.textContent = n;
+        const rect = cnt.getBoundingClientRect();
+        spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, 6);
+        if (n >= target) clearInterval(iv);
+      }, 220);
+    })
+    .to({}, { duration: 1.2 })
+    .call(() => {
+      document.getElementById('ovp2').classList.remove('on');
       document.getElementById('ovp3').classList.add('on');
-      gsap.set('#ovp3',{opacity:0});gsap.to('#ovp3',{opacity:1,duration:.28});
-      scramble(document.getElementById('ovst'),'PRZYGOTOWANIE KUPONU...',380);
-      anticipationTone(2.4);dramaDrone();
-      const cd=document.getElementById('ovcd');
-      [3,2,1].forEach((n,i)=>{
-        setTimeout(()=>{
-          cd.textContent=n;pCount();
-          gsap.fromTo(cd,{scale:1.7,opacity:0},{scale:1,opacity:1,duration:.3,ease:'back.out(1.5)'});
-          if(n===1){gsap.to(cd,{color:'var(--lime)',duration:.25,delay:.08});burst(innerWidth/2,innerHeight*.5,'#c2ff3d',20,1.4);burst(innerWidth/2,innerHeight*.5,'#ffd700',12,1.2);}
-        },i*720);
-      });
     })
-    .to({},{duration:2.55})
-    .to('#ovp3',{opacity:0,duration:.24})
-    .call(()=>document.getElementById('ovp3').classList.remove('on'))
 
-    .call(()=>{
-      document.getElementById('ovp4').classList.add('on');
-      gsap.set('#ovp4',{opacity:0,y:26});gsap.to('#ovp4',{opacity:1,y:0,duration:.42,ease:'back.out(1.5)'});
-      for(let i=0;i<3;i++)buildTrack(document.getElementById('rt'+i),genPicks[i]||DEMO[0]);
-      pLaunch();
-      let done=0;
-      for(let i=0;i<3;i++){
-        spinReel(document.getElementById('rt'+i),document.getElementById('r'+i),genPicks[i]||DEMO[0],i*820,()=>{
-          spatialReveal(i,3);
+    // Phase 3 — countdown
+    .call(() => {
+      const num = document.getElementById('ocdnum');
+      let cd = 3;
+      num.textContent = cd;
+      const iv = setInterval(() => {
+        cd--;
+        if (cd <= 0) {
+          num.textContent = 'GO';
+          num.style.color = 'var(--lime)';
+          clearInterval(iv);
+        } else { num.textContent = cd; }
+      }, 1000);
+    })
+    .to({}, { duration: 3.5 })
+    .call(() => {
+      document.getElementById('ovp3').classList.remove('on');
+    })
+
+    // Phase 4 — slot machine
+    .call(() => {
+      const row = document.getElementById('slt-row');
+      row.innerHTML = '';
+      genPicks.forEach((_, i) => {
+        const r = document.createElement('div');
+        r.className = 'reel';
+        r.id = 'r' + i;
+        r.innerHTML = '<div class="reel-inner"></div><div class="reel-scan"></div>';
+        row.appendChild(r);
+      });
+      gsap.to('#slt', { opacity: 1, y: 0, duration: .4, ease: 'back.out(1.4)' });
+      let done = 0;
+      genPicks.forEach((pick, i) => {
+        spinReel(null, document.getElementById('r' + i), pick, i * 0.6, () => {
           done++;
-          if(done===3){
-            const tot=genPicks.reduce((a,p)=>a*p.odds,1);
-            document.getElementById('stv').textContent=tot.toFixed(2);
-            gsap.to('#slt',{opacity:1,y:0,duration:.65,ease:'elastic.out(1.2,.5)',delay:.12});
-            gsap.from('#stv',{scale:.28,duration:.65,ease:'elastic.out(1.5,.4)',delay:.12});
-            rain('#c2ff3d',40);rain('#ffd700',22);rain('#d32ce6',14);
-            pJackpot();
-            setTimeout(()=>{
-              gsap.to(ov,{opacity:0,scale:.95,duration:.42,ease:'power2.in',onComplete:()=>{
-                ov.classList.remove('on');gsap.set(ov,{scale:1,opacity:0});
-                dealFlipCards(genPicks);
-              }});
-            },2200);
+          if (done === genPicks.length) {
+            setTimeout(() => {
+              gsap.to('#slt', { opacity: 0, y: -10, duration: .3 });
+              setTimeout(() => dealFlipCards(genPicks), 400);
+            }, 1200);
           }
         });
-      }
-    });
+      });
+    })
+    .to({}, { duration: genPicks.length * 0.6 + 3.5 });
 });
 
 /* ══════════════════════════════════════════════
-   FLIP CARD DEAL — FIFA UT
+   FLIP CARD REVEAL
 ══════════════════════════════════════════════ */
-function dealFlipCards(picks){
-  const area=document.getElementById('cards-area');
-  picks.forEach((pick,i)=>{
-    const{wrap,card}=buildCard(pick);
-    const flipWrap=document.createElement('div');flipWrap.className='flip-wrap';
-    const flipCard=document.createElement('div');flipCard.className='flip-card';
-    const flipDuration=pick.rar==='jackpot'?1.0:pick.rar==='high'?.82:.65;
-    gsap.set(flipCard,{height:136,rotateY:0});
-    const front=document.createElement('div');front.className='flip-f';
-    front.innerHTML=`<div class="ffi"><img src="https://v3b.fal.media/files/b/0a9fe17c/5aXGKPrN0YKu8ZD2fKCcS_UD57jLsn.png" alt=""></div><div class="fft">TYP ${i+1} &mdash; ${pick.mkt.icon} ${pick.mkt.label}</div>`;
-    wrap.style.cssText='position:absolute;top:0;left:0;width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r)';
-    gsap.set(wrap,{rotateY:180});
-    const flash=document.createElement('div');flash.className='flip-flash';
-    flipCard.appendChild(front);flipCard.appendChild(wrap);flipCard.appendChild(flash);
-    flipWrap.appendChild(flipCard);
-    area.appendChild(flipWrap);
+function dealFlipCards(picks) {
+  const ov = document.getElementById('ov');
+  const grid = document.getElementById('fp-grid');
+  grid.innerHTML = '';
+  document.getElementById('ovp4').classList.add('on');
 
-    /* Animate bars when revealed */
-    const delay=i*.92+.42;
-    gsap.to(flipCard,{
-      height:card.offsetHeight+136,duration:.01,delay:delay-.01
+  picks.forEach((pick, i) => {
+    const card = document.createElement('div');
+    card.className = 'fp-card';
+    const rarClr = pick.rar === 'jackpot' ? 'var(--gold)' : pick.rar === 'high' ? 'var(--pink)' : pick.rar === 'value' ? 'var(--blue)' : 'var(--lime)';
+    card.innerHTML = `
+      <div class="fp-inner">
+        <div class="fp-front" style="border-color:${rarClr};box-shadow:0 0 18px ${rarClr}22">
+          <div class="fp-mark">${RAR_LBL[pick.rar]}</div>
+        </div>
+        <div class="fp-back" style="border-color:${rarClr};box-shadow:0 0 18px ${rarClr}22">
+          <div class="fp-odds ${pick.rar === 'jackpot' ? 'gold' : ''}">${pick.odds.toFixed(2)}</div>
+          <div class="fp-name">${pick.player}<br><span style="color:var(--t3);font-weight:400">vs ${pick.opp}</span></div>
+          <div class="fp-mkt">${pick.mkt.label}</div>
+        </div>
+      </div>`;
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+      const rect = card.getBoundingClientRect();
+      spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, 14);
     });
-    gsap.to(flipCard,{
-      rotateY:180,duration:flipDuration,delay:delay,ease:'power2.inOut',
-      onStart(){
-        if(pick.rar==='jackpot'){gsap.to(flash,{opacity:.9,duration:.05,yoyo:true,repeat:2});}
-        else gsap.to(flash,{opacity:.6,duration:.06,yoyo:true,repeat:1});
-      },
-      onComplete(){
-        flipCard.style.height='auto';
-        gsap.set(flipCard,{height:'auto'});
-        /* Animate prob bars */
-        card.querySelectorAll('.prob-fill').forEach(bar=>{
-          const v=parseFloat(bar.dataset.v)||0;
-          gsap.fromTo(bar,{width:'0%'},{width:v+'%',duration:.9,ease:'power2.out',delay:.18});
-        });
-        const cf=card.querySelector('.conf-fill');
-        if(cf){const v=parseFloat(cf.dataset.v)||0;gsap.fromTo(cf,{width:'0%'},{width:v+'%',duration:1,ease:'power2.out',delay:.28});}
-      }
-    });
+    grid.appendChild(card);
+    setTimeout(() => card.classList.add('flipped'), 400 + i * 280);
   });
 
-  /* Show summary */
-  setTimeout(()=>{
-    const summary=document.getElementById('csummary');
-    summary.style.display='flex';
-    gsap.fromTo(summary,{opacity:0,y:16},{opacity:1,y:0,duration:.52,ease:'power2.out'});
-    const tot=picks.reduce((a,p)=>a*p.odds,1);
-    document.getElementById('cs-o').textContent=tot.toFixed(2);
-    const ev=picks.reduce((s,p)=>s+(p.pM*p.odds-1)*p.odds/picks.length,0);
-    document.getElementById('cs-ev').textContent=(ev>0?'+':'')+ev.toFixed(2);
-    const k=picks.reduce((s,p)=>s+(p.edge/100/(p.odds-1))*.5,0);
-    document.getElementById('cs-k').textContent=(k*1000).toFixed(0)+' PLN';
-    isGen=false;
-    document.getElementById('btn-gen').disabled=false;
-  },picks.length*.92+2);
+  // Auto-close overlay after reveal
+  setTimeout(() => {
+    gsap.to(ov, { opacity: 0, duration: .5, onComplete: () => {
+      ov.classList.remove('on');
+      document.getElementById('ovp4').classList.remove('on');
+      document.getElementById('cards-area').innerHTML = '';
+      genPicks.forEach(p => document.getElementById('cards-area').appendChild(buildCard(p)));
+      // Show coupon summary
+      const totalOdds = genPicks.reduce((a, p) => a * p.odds, 1);
+      const avgKelly = genPicks.reduce((a, p) => a + p.kelly, 0) / genPicks.length;
+      document.getElementById('csummary').style.display = 'block';
+      const co = document.getElementById('cs-odds');
+      if (co) co.textContent = totalOdds.toFixed(2) + 'x';
+      const cev = document.getElementById('cs-ev-badge');
+      if (cev) { const ev = (totalOdds * genPicks.reduce((a,p)=>a*p.probModel,1) - 1); cev.textContent = 'EV ' + (ev > 0 ? '+' : '') + ev.toFixed(2); }
+      const ckp = document.getElementById('cs-kelly-pct');
+      if (ckp) ckp.textContent = (avgKelly * 100).toFixed(1) + '%';
+      const ckpl = document.getElementById('cs-kelly-pln');
+      if (ckpl) ckpl.textContent = Math.round(avgKelly * 1000) + ' PLN na 1000';
+      // Draw summary equity curve
+      const sc = document.getElementById('csummary-canvas');
+      if (sc) { const r = sc.parentElement.getBoundingClientRect(); sc.width = r.width; sc.height = r.height; drawEquityCurve(sc, 58.7); }
+      isGen = false;
+      document.getElementById('btn-gen').disabled = false;
+      toast('Kupon wygenerowany - ' + genPicks.length + ' typy');
+    }});
+  }, 400 + genPicks.length * 280 + 1800);
 }
 
 /* ══════════════════════════════════════════════
-   SYSTEM BUILDER
+   RENDER MATCHES (System Builder)
 ══════════════════════════════════════════════ */
-let tray=[];
-function renderMatches(){
-  const ml=document.getElementById('mlist');ml.innerHTML='';
-  MATCHES.forEach(m=>{
-    const row=document.createElement('div');row.className='mrow';
-    row.innerHTML=`<div class="mr-top"><span>${m.p1}</span><span class="mr-vs">vs</span><span>${m.p2}</span><span class="mr-time">${m.t}</span></div>
-      <div class="mr-mkts">
-        <div class="mr-mkt-row"><div class="mr-mkt-lbl">Winner</div><div class="mr-btns">${m.w.map(b=>`<button class="mrb mw ${b.e>8?'':'op'}" data-mid="${m.id}" data-sel="${b.s}" data-odds="${b.o}" data-edge="${b.e}" data-mkt="winner"><div class="mrb-n">${b.s.split(' ').pop()}</div><div class="mrb-o">${b.o.toFixed(2)}</div><div class="mrb-e ${b.e>15?'eg':b.e>8?'eo':'en'}">${b.e>0?'+'+b.e.toFixed(1)+'%':b.e.toFixed(1)+'%'}</div></button>`).join('')}</div></div>
-        <div class="mr-mkt-row"><div class="mr-mkt-lbl">Handicap</div><div class="mr-btns">${m.h.map(b=>`<button class="mrb mh" data-mid="${m.id}" data-sel="${b.s}" data-odds="${b.o}" data-edge="${b.e}" data-mkt="handicap"><div class="mrb-n">${b.s.split(' ').slice(-2).join(' ')}</div><div class="mrb-o">${b.o.toFixed(2)}</div><div class="mrb-e ${b.e>15?'eg':b.e>8?'eo':'en'}">${b.e>0?'+'+b.e.toFixed(1)+'%':b.e.toFixed(1)+'%'}</div></button>`).join('')}</div></div>
-        <div class="mr-mkt-row"><div class="mr-mkt-lbl">Total</div><div class="mr-btns">${m.to.map(b=>`<button class="mrb mt" data-mid="${m.id}" data-sel="${b.s}" data-odds="${b.o}" data-edge="${b.e}" data-mkt="total"><div class="mrb-n">${b.s}</div><div class="mrb-o">${b.o.toFixed(2)}</div><div class="mrb-e ${b.e>15?'eg':b.e>8?'eo':'en'}">${b.e>0?'+'+b.e.toFixed(1)+'%':b.e.toFixed(1)+'%'}</div></button>`).join('')}</div></div>
-      </div>`;
-    row.querySelectorAll('.mrb').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        if(tray.length>=8){toast('Max 8 typów w systemie');return;}
-        AC();pTick();
-        const odds=parseFloat(btn.dataset.odds),edge=parseFloat(btn.dataset.edge);
-        const item={mid:btn.dataset.mid,sel:btn.dataset.sel,odds,edge,mkt:btn.dataset.mkt};
-        tray.push(item);
-        btn.classList.add('a');row.classList.add('sel');
-        renderTray();
-        gsap.from(btn,{scale:.88,duration:.22,ease:'back.out(2)'});
+function renderMatches() {
+  const list = document.getElementById('mlist');
+  list.innerHTML = '';
+  MATCHES.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'mrow';
+    row.innerHTML = `<div class="mr-title">${m.title}</div><div class="mr-mkt">${
+      m.mkts.map(mk => `<button class="mr-btn" data-odds="${mk.odds}" data-edge="${mk.edge}" data-kelly="${mk.kelly}" data-title="${m.title}" data-label="${mk.label}">${mk.label} @ ${mk.odds.toFixed(2)}</button>`).join('')
+    }</div>`;
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.mr-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('sel');
+      updateTray();
+    });
+  });
+}
+
+let trayLegs = [];
+function updateTray() {
+  const stray = document.getElementById('stray');
+  trayLegs = [];
+  document.querySelectorAll('.mr-btn.sel').forEach(b => {
+    trayLegs.push({ odds: parseFloat(b.dataset.odds), edge: parseFloat(b.dataset.edge), kelly: parseFloat(b.dataset.kelly), title: b.dataset.title, label: b.dataset.label });
+  });
+  stray.innerHTML = '';
+  if (!trayLegs.length) {
+    stray.innerHTML = '<div class="te" id="te"><div class="tei">&#128202;</div><span>Kliknij kurs<br>aby dodac</span></div>';
+  } else {
+    trayLegs.forEach((leg, i) => {
+      const d = document.createElement('div');
+      d.className = 'tleg';
+      d.innerHTML = `<span class="tleg-name">${leg.label}</span><span class="tleg-odds">${leg.odds.toFixed(2)}</span><span class="tleg-rm" data-i="${i}">x</span>`;
+      stray.appendChild(d);
+    });
+    stray.querySelectorAll('.tleg-rm').forEach(rm => {
+      rm.addEventListener('click', () => {
+        const btn = document.querySelector(`.mr-btn[data-label="${trayLegs[parseInt(rm.dataset.i)].label}"]`);
+        if (btn) btn.classList.remove('sel');
+        updateTray();
       });
     });
-    ml.appendChild(row);
-    gsap.from(row,{opacity:0,y:10,duration:.3,delay:MATCHES.indexOf(m)*.04,ease:'power2.out'});
-  });
+  }
+  document.getElementById('sf-cnt').textContent = trayLegs.length + '/8';
+  const accOdds = trayLegs.reduce((a, l) => a * l.odds, 1);
+  const avgEdge = trayLegs.length ? trayLegs.reduce((a, l) => a + l.edge, 0) / trayLegs.length : 0;
+  document.getElementById('sf-o').textContent = accOdds.toFixed(2);
+  document.getElementById('sf-e').textContent = trayLegs.length ? (avgEdge * 100).toFixed(1) + '%' : '--';
 }
 
-function renderTray(){
-  const t=document.getElementById('stray'),te=document.getElementById('te');
-  t.innerHTML='';
-  if(!tray.length){t.appendChild(te.cloneNode(true));updateSysStats();return;}
-  tray.forEach((item,i)=>{
-    const el=document.createElement('div');el.className='titem';
-    el.innerHTML=`<div class="ti-n">${item.sel}</div><div class="ti-m">${item.mkt}</div><div class="ti-o">${item.odds.toFixed(2)}</div><div class="ti-rm" data-i="${i}">&#x2715;</div>`;
-    el.querySelector('.ti-rm').addEventListener('click',()=>{tray.splice(i,1);renderTray();});
-    t.appendChild(el);
-    gsap.from(el,{opacity:0,x:12,duration:.2,ease:'power2.out'});
-  });
-  updateSysStats();
-}
-
-function updateSysStats(){
-  const cnt=document.getElementById('sf-cnt'),avg=document.getElementById('sf-e'),
-        odd=document.getElementById('sf-o'),btn=document.getElementById('btn-sys');
-  cnt.textContent=tray.length+'/8';
-  if(!tray.length){avg.textContent='--';odd.textContent='1.00';btn.classList.remove('rdy');return;}
-  avg.textContent='+'+(tray.reduce((s,i)=>s+i.edge,0)/tray.length).toFixed(1)+'%';
-  odd.textContent=tray.reduce((a,i)=>a*i.odds,1).toFixed(2);
-  btn.classList.toggle('rdy',tray.length>=2);
-}
-
-document.getElementById('btn-sys').addEventListener('click',()=>{
-  if(tray.length<2)return;
-  AC();pLaunch();
-  const tot=tray.reduce((a,i)=>a*i.odds,1);
-  const k=(tray.reduce((s,i)=>s+i.edge/100/(i.odds-1),0)/tray.length)*.5;
-  toast(`Akumulator ${tot.toFixed(2)}x · Kelly ${(k*1000).toFixed(0)} PLN`,'lime');
-  rain('#c2ff3d',30);rain('#ffd700',15);
-  gsap.to('#btn-sys',{scale:.95,yoyo:true,repeat:1,duration:.1});
+document.getElementById('btn-sys').addEventListener('click', () => {
+  if (!trayLegs.length) { toast('Dodaj typy do systemu', 'err'); return; }
+  const accOdds = trayLegs.reduce((a, l) => a * l.odds, 1);
+  const avgKelly = trayLegs.reduce((a, l) => a + l.kelly, 0) / trayLegs.length;
+  toast(`Akumulator ${accOdds.toFixed(2)}x · Kelly ${(avgKelly*100).toFixed(1)}%`);
 });
 
 /* ══════════════════════════════════════════════
    COPY COUPON
 ══════════════════════════════════════════════ */
-document.getElementById('btn-exp').addEventListener('click',()=>{
-  const txt=genPicks.map((p,i)=>`${i+1}. ${p.player} | ${p.mkt.label} | Kurs: ${p.odds.toFixed(2)} | Edge: +${p.edge.toFixed(1)}%\n   Kelly: ${(Math.max(0,p.edge/100/(p.odds-1))*.5*1e3).toFixed(0)} PLN`).join('\n\n');
-  const tot=genPicks.reduce((a,p)=>a*p.odds,1);
-  navigator.clipboard.writeText(`betatp.io — Daily Kupon\n${new Date().toLocaleDateString('pl-PL')}\n${'─'.repeat(34)}\n\n${txt}\n\n${'─'.repeat(34)}\nŁączny kurs: ${tot.toFixed(2)}\n— LightGBM v14 (ROI +58.7%) | betatp.io`).then(()=>{
-    toast('Kupon skopiowany!','lime');
-    gsap.to('#btn-exp',{scale:.95,yoyo:true,repeat:1,duration:.08});
-  });
+document.getElementById('btn-exp').addEventListener('click', () => {
+  const txt = genPicks.map(p => `${p.player} vs ${p.opp} | ${p.mkt.label} | @${p.odds.toFixed(2)} | Edge +${(p.edge*100).toFixed(1)}% | Kelly ${(p.kelly*100).toFixed(1)}%`).join('\n');
+  const totalOdds = genPicks.reduce((a, p) => a * p.odds, 1);
+  const fullTxt = `betatp.io · Daily Kupon · ${new Date().toLocaleDateString('pl-PL')}\n${'='.repeat(40)}\n${txt}\n${'='.repeat(40)}\nLaczny kurs: ${totalOdds.toFixed(2)}x`;
+  navigator.clipboard.writeText(fullTxt).then(() => toast('Kupon skopiowany!')).catch(() => toast('Blad kopiowania', 'err'));
 });
 
 /* ══════════════════════════════════════════════
    TOAST
 ══════════════════════════════════════════════ */
-function toast(msg,cls){
-  const ta=document.getElementById('ta');
-  const el=document.createElement('div');el.className='tm'+(cls?' '+cls:'');el.textContent=msg;
-  ta.appendChild(el);setTimeout(()=>gsap.to(el,{opacity:0,y:-8,duration:.3,onComplete:()=>el.remove()}),2400);
+function toast(msg, cls) {
+  const ta = document.getElementById('ta');
+  const t = document.createElement('div');
+  t.className = 'toast' + (cls ? ' ' + cls : '');
+  t.textContent = msg;
+  ta.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
 }
-
-/* ══════════════════════════════════════════════
-   LOGO GLOW PULSE
-══════════════════════════════════════════════ */
-gsap.to('.logo-pill',{boxShadow:'0 0 0 3px rgba(194,255,61,.1)',yoyo:true,repeat:-1,duration:2.8,ease:'sine.inOut'});
 </script>
 </body>
 </html>
