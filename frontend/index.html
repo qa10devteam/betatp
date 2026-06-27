@@ -243,6 +243,7 @@ body::after {
   color: var(--t1);
   margin-bottom: 8px;
   opacity: 0;
+  text-shadow: 0 2px 32px rgba(0,0,0,.8);
 }
 .hero-h2 em {
   font-style: normal;
@@ -727,7 +728,8 @@ body::after {
 .rar-value   { background: rgba(75,105,255,.1);  color: var(--blue); border: 1px solid rgba(75,105,255,.25); }
 .rar-common  { background: rgba(255,255,255,.05); color: var(--t3);   border: 1px solid var(--bd1); }
 
-.pc-hero { position: relative; height: 90px; overflow: hidden; }
+/* pick card hero image — nieco wyższy dla dramatyzmu */
+.pc-hero { position: relative; height: 100px; overflow: hidden; }
 .pc-hero img { width: 100%; height: 100%; object-fit: cover; opacity: .4; }
 .pc-hero-g {
   position: absolute; inset: 0;
@@ -773,27 +775,27 @@ body::after {
 .pc-sel { font-size: 11px; font-weight: 600; color: var(--t2); }
 
 /* PROBABILITY BARS — model vs market */
-.prob-stack { display: flex; flex-direction: column; gap: 4px; }
+.prob-stack { display: flex; flex-direction: column; gap: 6px; }
 .prob-row { display: flex; align-items: center; gap: 6px; }
 .prob-lbl {
-  font-family: var(--m); font-size: 8px; font-weight: 600;
-  letter-spacing: .08em; text-transform: uppercase; color: var(--t3);
-  width: 52px; flex-shrink: 0;
+  font-family: var(--m); font-size: 8px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: rgba(240,240,255,.45);
+  width: 50px; flex-shrink: 0;
 }
 .prob-bar {
-  flex: 1; height: 6px; background: rgba(255,255,255,.06);
-  border-radius: 3px; overflow: hidden;
+  flex: 1; height: 8px; background: rgba(255,255,255,.07);
+  border-radius: 4px; overflow: hidden;
 }
 .prob-fill {
-  height: 100%; border-radius: 3px;
+  height: 100%; border-radius: 4px;
   transition: width 1.2s var(--ease-out);
   width: 0;
 }
-.prob-fill.model  { background: linear-gradient(90deg, var(--lime2), var(--lime)); }
-.prob-fill.market { background: rgba(255,255,255,.2); }
+.prob-fill.model  { background: linear-gradient(90deg, #5cba00, var(--lime)); }
+.prob-fill.market { background: rgba(255,255,255,.28); }
 .prob-val {
-  font-family: var(--m); font-size: 10px; font-weight: 700;
-  color: var(--t2); width: 28px; text-align: right; flex-shrink: 0;
+  font-family: var(--m); font-size: 11px; font-weight: 700;
+  color: var(--t2); width: 30px; text-align: right; flex-shrink: 0;
 }
 .prob-val.model { color: var(--lime); }
 
