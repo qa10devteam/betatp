@@ -155,13 +155,19 @@ body::after {
   position: absolute; inset: 0; z-index: 0;
   pointer-events: none; overflow: hidden;
 }
+/* ── FAZA 4: Hero ambient pulsing glow ── */
 .hero-ambient::before {
   content: '';
   position: absolute;
   width: 640px; height: 640px;
-  background: radial-gradient(circle, rgba(194,255,61,.055) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(194,255,61,.07) 0%, transparent 70%);
   top: -120px; left: 50%; transform: translateX(-50%);
   border-radius: 50%; filter: blur(60px);
+  animation: ambientPulse 4s ease-in-out infinite;
+}
+@keyframes ambientPulse {
+  0%, 100% { opacity: .7; transform: translateX(-50%) scale(1); }
+  50%       { opacity: 1;  transform: translateX(-50%) scale(1.12); }
 }
 .hero-ambient::after {
   content: '';
@@ -180,6 +186,7 @@ body::after {
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
 }
 
+/* ── FAZA 16: NAV glass morphism upgrade ── */
 /* NAV */
 .hero-nav {
   position: relative; z-index: 5;
@@ -189,12 +196,16 @@ body::after {
 }
 .logo-pill {
   display: flex; align-items: center; gap: 7px;
-  padding: 5px 14px; border-radius: var(--r-full);
-  border: 1px solid var(--bd2);
-  background: rgba(2,2,8,.85); backdrop-filter: blur(20px);
+  padding: 6px 16px; border-radius: var(--r-full);
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(2,2,8,.75); backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 4px 16px rgba(0,0,0,.4);
   font-size: 10px; font-weight: 800; letter-spacing: .16em;
-  color: var(--t2); text-transform: uppercase; font-family: var(--m);
+  color: var(--t1); text-transform: uppercase; font-family: var(--m);
+  transition: border-color var(--t-fast);
 }
+.logo-pill:hover { border-color: rgba(194,255,61,.3); }
 .ldot {
   width: 5px; height: 5px; border-radius: 50%;
   background: var(--lime); animation: ldot 1.8s ease infinite;
@@ -251,6 +262,11 @@ body::after {
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* ── FAZA 1: H2 word spans (stagger target) ── */
+.h2w { display: inline-block; }
+.hero-h2 em { font-style: normal; color: var(--lime); }
+.hero-h2 .h2w-last { color: var(--lime); }
 
 /* wordmark — dekoracja, nie hero */
 .hero-claim {
@@ -363,26 +379,36 @@ body::after {
   border-radius: 4px; background: rgba(194,255,61,.04);
 }
 
-/* CTA ROW */
-.hero-cta {
-  display: flex; gap: 10px; margin-bottom: 20px;
-  opacity: 0;
-}
+/* ── FAZA 5: CTA shimmer sweep ── */
 .cta-primary {
   flex: 1;
-  padding: 13px 20px;
+  padding: 14px 20px;
   background: linear-gradient(135deg, #4a9d08 0%, #61b510 100%);
   color: #000;
   font-size: 12px; font-weight: 800; letter-spacing: .1em;
   text-transform: uppercase; font-family: var(--m);
   border: none; border-radius: var(--r-s);
+  position: relative; overflow: hidden;
   transition: transform var(--t-fast), box-shadow var(--t-fast);
 }
+.cta-primary::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: skewX(-15deg);
+  animation: shimmer 2.8s ease-in-out infinite 1.2s;
+}
+@keyframes shimmer { 0%,100%{left:-100%} 50%{left:160%} }
 .cta-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(194,255,61,.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(194,255,61,.35);
 }
 .cta-primary:active { transform: translateY(1px) scale(.98); }
+/* CTA ROW */
+.hero-cta {
+  display: flex; gap: 10px; margin-bottom: 16px;
+  opacity: 0;
+}
 .cta-ghost {
   padding: 13px 20px;
   background: rgba(255,255,255,.04);
@@ -442,6 +468,7 @@ body::after {
 /* ═══════════════════════════════════════════════════════
    LIVE STATS BAR — zastąpuje ticker z 2005 roku
 ═══════════════════════════════════════════════════════ */
+/* ── FAZA 3: Live stats bar — color-coded per type ── */
 .live-stats-bar {
   position: relative; z-index: 5;
   display: flex; align-items: center; gap: 6px;
@@ -458,17 +485,35 @@ body::after {
   background: rgba(255,255,255,.035); border: 1px solid var(--bd1);
   font-family: var(--m); font-size: 9px; font-weight: 600;
   white-space: nowrap; flex-shrink: 0;
-  transition: border-color var(--t-fast);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 .lsb-item:hover { border-color: var(--bd2); }
 .lsb-item .lsb-val { color: var(--lime); font-weight: 700; }
 .lsb-item .lsb-lbl { color: var(--t3); }
+/* ROI — lime */
+.lsb-item.roi { border-color: rgba(194,255,61,.18); background: rgba(194,255,61,.04); }
+.lsb-item.roi .lsb-val { color: var(--lime); }
+/* Win rate — cyan */
+.lsb-item.wr  { border-color: rgba(0,242,232,.18);  background: rgba(0,242,232,.04); }
+.lsb-item.wr  .lsb-val { color: var(--cyan); }
+/* edge hot — gold */
+.lsb-item.hot { border-color: rgba(255,215,0,.2);   background: rgba(255,215,0,.04); }
 .lsb-item.hot .lsb-val { color: var(--gold); }
-.lsb-item.warm .lsb-val { color: var(--cyan); }
+/* edge warm — orange */
+.lsb-item.warm { border-color: rgba(255,165,0,.2);  background: rgba(255,165,0,.04); }
+.lsb-item.warm .lsb-val { color: #ffa500; }
+/* picks — blue */
+.lsb-item.picks { border-color: rgba(75,105,255,.2); background: rgba(75,105,255,.04); }
+.lsb-item.picks .lsb-val { color: var(--blue); }
+/* avg edge — pink */
+.lsb-item.avg { border-color: rgba(211,44,230,.2);  background: rgba(211,44,230,.04); }
+.lsb-item.avg .lsb-val { color: var(--pink); }
+
 .lsb-dot {
-  width: 4px; height: 4px; border-radius: 50%;
+  width: 5px; height: 5px; border-radius: 50%;
   background: var(--lime); flex-shrink: 0;
   animation: ldot 2s ease infinite;
+  box-shadow: 0 0 6px var(--lime);
 }
 .lsb-sep { color: var(--bd2); font-size: 12px; flex-shrink: 0; }
 
@@ -655,10 +700,11 @@ body::after {
   background: var(--s2); border: 1px solid var(--bd1);
 }
 
-/* MARKET TABS */
+/* ── FAZA 11: Market tabs slide indicator ── */
 .mktabs {
   display: flex; gap: 4px; padding: 8px 12px;
   overflow-x: auto; flex-shrink: 0;
+  position: relative;
 }
 .mktabs::-webkit-scrollbar { display: none; }
 .mktab {
@@ -668,12 +714,18 @@ body::after {
   color: var(--t3); cursor: pointer; white-space: nowrap;
   background: transparent; border: 1px solid transparent;
   transition: all var(--t-fast);
+  position: relative;
 }
-.mktab.on, .mktab:hover { background: var(--lime3); color: var(--lime); border-color: var(--lime4); }
-.mktab.winner { color: var(--blue); }
-.mktab.sets   { color: var(--cyan); }
-.mktab.handi  { color: var(--pink); }
-.mktab.total  { color: var(--gold); }
+.mktab.on {
+  background: var(--lime3); color: var(--lime);
+  border-color: rgba(194,255,61,.3);
+  box-shadow: 0 0 12px rgba(194,255,61,.12);
+}
+.mktab:hover:not(.on) { color: var(--t2); border-color: var(--bd1); }
+.mktab.winner.on { background: rgba(75,105,255,.12); color: var(--blue); border-color: rgba(75,105,255,.3); box-shadow: 0 0 12px rgba(75,105,255,.1); }
+.mktab.sets.on   { background: rgba(0,242,232,.08);  color: var(--cyan); border-color: rgba(0,242,232,.25); box-shadow: 0 0 12px rgba(0,242,232,.1); }
+.mktab.handi.on  { background: rgba(211,44,230,.08); color: var(--pink); border-color: rgba(211,44,230,.25); box-shadow: 0 0 12px rgba(211,44,230,.08); }
+.mktab.total.on  { background: rgba(255,215,0,.08);  color: var(--gold); border-color: rgba(255,215,0,.25); box-shadow: 0 0 12px rgba(255,215,0,.08); }
 
 /* API BAR */
 #api-bar {
@@ -726,17 +778,17 @@ body::after {
 }
 .pcard:hover { transform: translateY(-2px); border-color: var(--bd2); }
 
-/* rarity borders */
+/* ── FAZA 10: JACKPOT rotating conic gradient border — CSS @property ── */
+@property --ja { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 .pcard[data-rarity="jackpot"] {
-  --jackpot-angle: 0deg;
   border: none;
   background: linear-gradient(var(--bg), var(--bg)) padding-box,
-    conic-gradient(from var(--jackpot-angle), var(--gold), var(--pink), var(--blue), var(--lime), var(--gold)) border-box;
+    conic-gradient(from var(--ja), var(--gold) 0%, var(--pink) 25%, var(--blue) 50%, var(--lime) 75%, var(--gold) 100%) border-box;
   border: 1.5px solid transparent;
-  animation: rotateBorder 3s linear infinite;
+  box-shadow: 0 0 32px rgba(255,215,0,.12), 0 0 64px rgba(255,215,0,.06);
+  animation: rotJa 3s linear infinite;
 }
-@property --jackpot-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-@keyframes rotateBorder { to { --jackpot-angle: 360deg; } }
+@keyframes rotJa { to { --ja: 360deg; } }
 .pcard[data-rarity="high"]  { border-color: rgba(211,44,230,.4); box-shadow: 0 0 24px rgba(211,44,230,.1); }
 .pcard[data-rarity="value"] { border-color: rgba(75,105,255,.4); box-shadow: 0 0 18px rgba(75,105,255,.08); }
 .pcard[data-rarity="common"]{ border-color: var(--bd1); }
@@ -754,6 +806,17 @@ body::after {
 
 /* pick card hero image — nieco wyższy dla dramatyzmu */
 .pc-hero { position: relative; height: 100px; overflow: hidden; }
+/* FAZA 6: gradient placeholder z inicjałami */
+.pc-hero-placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .4s;
+}
+.pc-hero-initials {
+  font-family: var(--m); font-size: 28px; font-weight: 900;
+  color: rgba(255,255,255,.6); letter-spacing: -.03em;
+  text-shadow: 0 2px 8px rgba(0,0,0,.4);
+}
 .pc-hero img { width: 100%; height: 100%; object-fit: cover; opacity: .4; }
 .pc-hero-g {
   position: absolute; inset: 0;
@@ -823,43 +886,55 @@ body::after {
 }
 .prob-val.model { color: var(--lime); }
 
-/* EDGE ROW */
+/* EDGE ROW container */
 .pc-bars-wrap { display: flex; flex-direction: column; gap: 6px; }
-.pb-edge {
-  display: flex; align-items: center; gap: 6px;
-  padding: 5px 8px; border-radius: var(--r-s);
-  background: var(--lime3); border: 1px solid var(--lime4);
-}
-.pb-edge-lbl { font-family: var(--m); font-size: 8px; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; }
-.pb-edge-val { font-family: var(--m); font-size: 14px; font-weight: 700; color: var(--lime); margin-left: auto; }
-.pb-edge-arr { font-size: 12px; color: var(--lime); }
 
 /* REASONING */
-.pc-reason { display: flex; flex-direction: column; gap: 4px; }
-.prf {
-  display: flex; align-items: flex-start; gap: 6px;
-  font-size: 11px; color: var(--t2); line-height: 1.4;
-}
-.prf-dot {
-  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
-  margin-top: 5px;
-}
+.pc-reason { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
+.prf { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; color: var(--t2); line-height: 1.4; }
+.prf-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
 .prf-dot.pos { background: var(--lime); }
 .prf-dot.neg { background: var(--pink); }
 .prf-dot.neu { background: var(--t3); }
 
-/* KELLY STRIP */
+/* ── FAZA 8: Edge badge animated fill bar ── */
+.pb-edge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: var(--r-s);
+  background: var(--lime3); border: 1px solid var(--lime4);
+  position: relative; overflow: hidden;
+}
+.pb-edge::before {
+  content: '';
+  position: absolute; inset: 0; width: 0;
+  background: rgba(194,255,61,.08);
+  border-radius: var(--r-s);
+  transition: width 1.4s var(--ease-out);
+}
+.pb-edge.animated::before { width: 100%; }
+.pb-edge-lbl { font-family: var(--m); font-size: 8px; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; position: relative; z-index: 1; }
+.pb-edge-val { font-family: var(--m); font-size: 15px; font-weight: 700; color: var(--lime); margin-left: auto; position: relative; z-index: 1; }
+.pb-edge-arr { font-size: 13px; color: var(--lime); position: relative; z-index: 1; animation: edgeArrow .8s ease-in-out infinite; }
+@keyframes edgeArrow { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+
+/* ── FAZA 9: Kelly strip animated cyan fill bar ── */
 .pc-kelly-strip {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 7px 10px; border-radius: var(--r-s);
+  padding: 8px 12px; border-radius: var(--r-s);
   background: linear-gradient(90deg, rgba(194,255,61,.06) 0%, rgba(194,255,61,.02) 100%);
   border: 1px solid rgba(194,255,61,.12);
-  margin-top: 2px;
+  margin-top: 4px; position: relative; overflow: hidden;
 }
-.pc-kelly-info { display: flex; align-items: center; gap: 8px; }
-.pc-kelly-pct  { font-family: var(--m); font-size: 16px; font-weight: 700; color: var(--lime); letter-spacing: -.01em; }
+.pc-kelly-bar-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: rgba(194,255,61,.06); width: 0;
+  transition: width 1.6s var(--ease-out);
+  border-radius: var(--r-s);
+}
+.pc-kelly-info { display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
+.pc-kelly-pct  { font-family: var(--m); font-size: 17px; font-weight: 700; color: var(--lime); letter-spacing: -.01em; }
 .pc-kelly-pln  { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .06em; }
-.pc-kelly-lbl  { font-family: var(--m); font-size: 7px; color: var(--t3); letter-spacing: .14em; text-transform: uppercase; }
+.pc-kelly-lbl  { font-family: var(--m); font-size: 7px; color: var(--t3); letter-spacing: .14em; text-transform: uppercase; position: relative; z-index: 1; }
 
 /* COUPON SUMMARY */
 #csummary {
@@ -1004,11 +1079,11 @@ body::after {
 .ri-player { font-size: 10px; font-weight: 700; color: var(--t1); text-align: center; line-height: 1.2; }
 .ri-odds   { font-family: var(--m); font-size: 18px; font-weight: 700; color: var(--lime); }
 
-/* rarity locks */
-.reel.lk-value   { border-color: var(--blue);  box-shadow: 0 0 18px rgba(75,105,255,.18); }
-.reel.lk-high    { border-color: var(--pink);  box-shadow: 0 0 20px rgba(211,44,230,.2); }
-.reel.lk-jackpot { border-color: var(--gold);  box-shadow: 0 0 28px rgba(255,215,0,.28); }
-.reel.lk-common  { border-color: var(--lime);  box-shadow: 0 0 10px rgba(194,255,61,.1); }
+/* rarity locks — FAZA 14: per-rarity neon glow */
+.reel.lk-value   { border-color: var(--blue);  box-shadow: 0 0 20px rgba(75,105,255,.45),  0 0 45px rgba(75,105,255,.2); }
+.reel.lk-high    { border-color: var(--pink);  box-shadow: 0 0 22px rgba(211,44,230,.5),   0 0 50px rgba(211,44,230,.2); }
+.reel.lk-jackpot { border-color: var(--gold);  box-shadow: 0 0 28px rgba(255,215,0,.55),   0 0 60px rgba(255,215,0,.25); }
+.reel.lk-common  { border-color: var(--lime);  box-shadow: 0 0 14px rgba(194,255,61,.35); }
 
 /* TV scan line through reel */
 .reel-scan {
@@ -1020,15 +1095,13 @@ body::after {
 .reel.spinning .reel-scan { opacity: 1; }
 @keyframes reelScan { from { top: 0; } to { top: 100%; } }
 
-/* FLIP CARDS */
+/* ── FAZA 15: Flip card JACKPOT metallic shimmer ── */
+/* Flip card base */
 .fp-grid {
   display: flex; gap: 10px; flex-wrap: wrap;
   justify-content: center; padding: 16px; max-height: 80dvh; overflow-y: auto;
 }
-.fp-card {
-  width: 120px; height: 160px;
-  perspective: 800px; cursor: pointer;
-}
+.fp-card { width: 120px; height: 160px; perspective: 800px; cursor: pointer; }
 .fp-inner {
   position: relative; width: 100%; height: 100%;
   transform-style: preserve-3d;
@@ -1044,7 +1117,16 @@ body::after {
 }
 .fp-front {
   background: var(--s2); border: 1px solid var(--bd2);
+  overflow: hidden;
 }
+.fp-front::after {
+  content: '';
+  position: absolute; top: 0; left: -120%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  transform: skewX(-20deg);
+  animation: fpShimmer 3s ease-in-out infinite;
+}
+@keyframes fpShimmer { 0%,100%{left:-120%} 60%{left:170%} }
 .fp-back {
   transform: rotateY(180deg);
   background: var(--s1); border: 1px solid var(--bd2);
@@ -1054,6 +1136,58 @@ body::after {
 .fp-back .fp-name  { font-size: 9px; font-weight: 600; color: var(--t2); text-align: center; line-height: 1.3; }
 .fp-back .fp-mkt   { font-size: 8px; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; }
 .fp-mark { font-family: var(--m); font-size: 9px; color: var(--t3); letter-spacing: .1em; text-transform: uppercase; }
+
+/* ── FAZA 18: Daily screen empty state ── */
+.empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; padding: 48px 20px;
+  text-align: center;
+}
+.es-icon {
+  font-size: 40px; opacity: .4;
+  animation: esPulse 2.4s ease-in-out infinite;
+}
+@keyframes esPulse { 0%,100%{transform:scale(1);opacity:.4} 50%{transform:scale(1.08);opacity:.6} }
+.es-title { font-size: 16px; font-weight: 800; color: var(--t2); }
+.es-sub {
+  font-family: var(--m); font-size: 10px; color: var(--t3);
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.es-btn {
+  margin-top: 8px; padding: 10px 24px; border-radius: var(--r-full);
+  background: var(--lime3); border: 1px solid var(--lime4);
+  font-family: var(--m); font-size: 10px; font-weight: 700;
+  color: var(--lime); letter-spacing: .1em; cursor: pointer;
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+.es-btn:hover { background: var(--lime4); transform: translateY(-1px); }
+
+/* ── FAZA 19: Testimonial micro strip ── */
+.hero-testi {
+  display: flex; gap: 8px; align-items: center;
+  margin-bottom: 12px; opacity: 0;
+}
+.testi-avatars {
+  display: flex;
+}
+.tav {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--bg);
+  font-size: 10px; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; flex-shrink: 0;
+  margin-left: -6px;
+}
+.tav:first-child { margin-left: 0; }
+.tav.a1 { background: linear-gradient(135deg, #2a5, #7c3); color: #000; }
+.tav.a2 { background: linear-gradient(135deg, #46f, #26d); color: #fff; }
+.tav.a3 { background: linear-gradient(135deg, #c3e, #84a); color: #fff; }
+.tav.a4 { background: linear-gradient(135deg, #fa0, #c80); color: #000; }
+.testi-text {
+  font-family: var(--m); font-size: 9px; color: var(--t3);
+  letter-spacing: .04em; line-height: 1.4;
+}
+.testi-stars { color: var(--gold); font-size: 9px; letter-spacing: -.05em; }
 
 /* ═══════════════════════════════════════════════════════
    SYSTEM BUILDER
@@ -1197,9 +1331,10 @@ body::after {
   <div class="hero-body">
     <div class="hero-eyebrow" id="hero-eyebrow">Model v14 · Wimbledon 2026 · edge &gt;= 15%</div>
 
+    <!-- H2 — faza 1: split na words dla stagger -->
     <h2 class="hero-h2" id="hero-h2">
-      Algorytm, który widzi<br>
-      <em>więcej niż rynek.</em>
+      <span class="h2w">Algorytm,</span> <span class="h2w">który</span> <span class="h2w">widzi</span><br>
+      <em><span class="h2w">więcej</span> <span class="h2w">niż</span> <span class="h2w h2w-last">rynek.</span></em>
     </h2>
 
     <p class="hero-claim" id="hero-claim">
@@ -1260,17 +1395,31 @@ body::after {
         <span class="urg-check">✓</span> Odds API
       </div>
     </div>
+
+    <!-- FAZA 19: Testimonial micro strip -->
+    <div class="hero-testi" id="hero-testi">
+      <div class="testi-avatars">
+        <div class="tav a1">M</div>
+        <div class="tav a2">K</div>
+        <div class="tav a3">P</div>
+        <div class="tav a4">A</div>
+      </div>
+      <div class="testi-text">
+        <span class="testi-stars">★★★★★</span><br>
+        <strong>4 użytkowników</strong> zarobiło dziś na typach ATP
+      </div>
+    </div>
   </div>
 
   <!-- LIVE STATS BAR — replaces outdated ticker -->
   <div class="live-stats-bar" aria-label="Live stats">
     <div class="lsb-dot"></div>
-    <div class="lsb-item">
+    <div class="lsb-item roi">
       <span class="lsb-val">+58.7%</span>
       <span class="lsb-lbl">ROI backtest</span>
     </div>
     <div class="lsb-sep">·</div>
-    <div class="lsb-item">
+    <div class="lsb-item wr">
       <span class="lsb-val">59.6%</span>
       <span class="lsb-lbl">win rate</span>
     </div>
@@ -1285,12 +1434,12 @@ body::after {
       <span class="lsb-lbl">Alcaraz edge</span>
     </div>
     <div class="lsb-sep">·</div>
-    <div class="lsb-item">
+    <div class="lsb-item picks">
       <span class="lsb-val">3</span>
       <span class="lsb-lbl">picks dzisiaj</span>
     </div>
     <div class="lsb-sep">·</div>
-    <div class="lsb-item">
+    <div class="lsb-item avg">
       <span class="lsb-val">17.3%</span>
       <span class="lsb-lbl">edge avg</span>
     </div>
@@ -1395,7 +1544,14 @@ body::after {
       <div class="chip lime" id="chip-t">Wimbledon 2026</div>
       <div class="chip green">Trawa</div>
     </div>
-    <div id="cards-area"></div>
+    <div id="cards-area">
+    <!-- FAZA 18: empty state — pokazuje się przed generowaniem -->
+    <div class="empty-state" id="empty-state">
+      <div class="es-icon">🎾</div>
+      <div class="es-title">Brak typów</div>
+      <div class="es-sub">Kliknij poniżej aby wygenerować</div>
+    </div>
+  </div>
     <div id="csummary">
       <canvas id="csummary-canvas"></canvas>
       <div class="cs-header">
@@ -1711,6 +1867,31 @@ function drawEquityCurve(canvas, targetROI) {
     }
 
     if (progress < 1) requestAnimationFrame(frame);
+    // ── FAZA 2: milestone dots na końcu animacji ──
+    else {
+      const milestones = [
+        { idx: Math.floor(10 / 57 * (N-1)), label: '#10' },
+        { idx: Math.floor(20 / 57 * (N-1)), label: '#20' },
+        { idx: Math.floor(30 / 57 * (N-1)), label: '#30' },
+        { idx: Math.floor(40 / 57 * (N-1)), label: '#40' },
+        { idx: N - 1, label: '+58.7%' },
+      ];
+      milestones.forEach(({ idx, label }) => {
+        const mx = toX(idx), my = toY(pts[idx]);
+        // glow ring
+        ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(194,255,61,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
+        // dot
+        ctx.beginPath(); ctx.arc(mx, my, 3, 0, Math.PI * 2);
+        ctx.fillStyle = idx === N - 1 ? '#c2ff3d' : 'rgba(194,255,61,0.55)'; ctx.fill();
+        // label (only for final)
+        if (idx === N - 1) {
+          ctx.fillStyle = 'rgba(194,255,61,0.9)';
+          ctx.font = 'bold 8px JetBrains Mono, monospace';
+          ctx.fillText(label, mx - 18, my - 8);
+        }
+      });
+    }
   }
   frame();
 }
@@ -1768,7 +1949,7 @@ function drawSparkline(canvas, data, W, H) {
    HERO ENTER — GSAP fromTo (nie from!)
 ══════════════════════════════════════════════ */
 function heroEnter() {
-  const els = ['#hero-eyebrow','#hero-h2','#hero-claim','#equity-wrap','#hero-stats','#hero-cta','#hero-markets'];
+  const els = ['#hero-eyebrow','#hero-h2','#hero-claim','#equity-wrap','#hero-stats','#hero-cta','#hero-markets','#hero-testi'];
   els.forEach(sel => { const el = document.querySelector(sel); if (el) el.style.opacity = '0'; });
 
   // Sparkline data
@@ -1779,15 +1960,24 @@ function heroEnter() {
   };
 
   const tl = gsap.timeline({ delay: 0.2 });
-  tl.fromTo('#hero-eyebrow', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
-    .fromTo('#hero-h2',      { opacity: 0, y: 20, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }, '-=0.2')
-    .fromTo('#hero-claim',   { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3')
-    .fromTo('#equity-wrap',  { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.1')
-    .fromTo('#hero-stats',   { opacity: 0, y: 8  }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
-    .fromTo('#hero-cta',     { opacity: 0, y: 8  }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
-    .fromTo('#hero-markets', { opacity: 0, y: 6  }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2');
 
-  // Draw equity curves after reveal — wait for layout
+  // ── FAZA 1: H2 word-by-word stagger ──
+  tl.fromTo('#hero-eyebrow', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
+    .fromTo('#hero-h2', { opacity: 0 }, { opacity: 1, duration: 0.01 }, '-=0.1')
+    .fromTo('#hero-h2 .h2w', { opacity: 0, y: 22, filter: 'blur(6px)' },
+      { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.55, ease: 'power2.out', stagger: 0.09 }, '-=0.0')
+    .fromTo('#hero-claim',   { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.1')
+    .fromTo('#equity-wrap',  { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.1')
+    // ── FAZA 17: stat pills stagger ──
+    .fromTo('#hero-stats .hs-pill',
+      { opacity: 0, y: 10, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.4)', stagger: 0.12 }, '-=0.1')
+    .fromTo('#hero-cta',     { opacity: 0, y: 8  }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.1')
+    .fromTo('#hero-markets', { opacity: 0, y: 6  }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+    // ── FAZA 19: testimonial strip ──
+    .fromTo('#hero-testi',   { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' }, '-=0.1');
+
+  // Draw equity curves after reveal
   function tryDrawEquity(attempts) {
     const ec = document.getElementById('equity-canvas');
     const nc = document.getElementById('ncEquityCanvas');
@@ -1800,11 +1990,11 @@ function heroEnter() {
   }
   setTimeout(() => tryDrawEquity(8), 400);
 
-    // Draw sparklines + count-up
+  // Draw sparklines + count-up
   setTimeout(() => {
     document.querySelectorAll('.hs-spark').forEach(cv => {
       const key = cv.dataset.spark;
-      if (sparkData[key]) drawSparkline(cv, sparkData[key], 72, 32);
+      if (sparkData[key]) drawSparkline(cv, sparkData[key], 56, 30);
     });
     document.querySelectorAll('.hs-num[data-target]').forEach(el => {
       const target = parseFloat(el.dataset.target);
@@ -2021,7 +2211,7 @@ function spinReel(tEl, rEl, pick, delay, onDone) {
 }
 
 /* ══════════════════════════════════════════════
-   PICK CARD BUILDER v9.0
+   PICK CARD BUILDER v10.0
 ══════════════════════════════════════════════ */
 function buildCard(pick) {
   const rarCls = pick.rar;
@@ -2035,16 +2225,28 @@ function buildCard(pick) {
   const edgePct   = (pick.edge * 100).toFixed(1);
   const kellyPct  = (pick.kelly * 100).toFixed(1);
   const kellyPLN  = Math.round(pick.kelly * 1000);
+  const kellyBarW = Math.min(parseFloat(kellyPct) * 4, 100); // 25% kelly = 100% bar
 
   const reasonHtml = (pick.reasoning || []).map((r, i) => {
     const dotCls = i === (pick.reasoning.length - 1) ? 'neg' : 'pos';
     return `<div class="prf"><div class="prf-dot ${dotCls}"></div><span>${r}</span></div>`;
   }).join('');
 
+  // ── FAZA 6: hero gradient placeholder z inicjałami gracza ──
+  const initials = (pick.player || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const rarColors = { jackpot: '#c8971a, #f0d060', high: '#8b1ab8, #d044e8', value: '#1a3ab8, #4060f0', common: '#2a4a2a, #4a7a4a' };
+  const gradStr = rarColors[rarCls] || rarColors.common;
+
   wrap.innerHTML = `
     <div class="pcard" data-rarity="${rarCls}">
       <div class="pc-hero">
-        <img src="${pick.imgUrl}" alt="${pick.player}" loading="lazy">
+        <div class="pc-hero-placeholder" style="background:linear-gradient(135deg, ${gradStr})">
+          <span class="pc-hero-initials">${initials}</span>
+        </div>
+        <img src="${pick.imgUrl}" alt="${pick.player}" loading="lazy"
+             onload="this.style.opacity=1; this.previousElementSibling.style.opacity=0"
+             onerror="this.style.display='none'"
+             style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s">
         <div class="pc-hero-g"></div>
       </div>
       <div class="pc-body">
@@ -2060,7 +2262,8 @@ function buildCard(pick) {
             <div class="pc-opp">${pick.opp}</div>
           </div>
           <div class="pc-oddsblk">
-            <div class="pc-oddsval ${oddsClr}">${pick.odds.toFixed(2)}</div>
+            <!-- FAZA 7: odds count-up -->
+            <div class="pc-oddsval ${oddsClr}" data-odds="${pick.odds.toFixed(2)}">1.00</div>
             <div class="pc-oddslbl">kurs</div>
           </div>
         </div>
@@ -2069,23 +2272,26 @@ function buildCard(pick) {
           <div class="prob-stack">
             <div class="prob-row">
               <div class="prob-lbl">Model P</div>
-              <div class="prob-bar"><div class="prob-fill model" style="width:${pModelPct}%"></div></div>
+              <div class="prob-bar"><div class="prob-fill model" style="width:0"></div></div>
               <div class="prob-val model">${pModelPct}%</div>
             </div>
             <div class="prob-row">
               <div class="prob-lbl">Market P</div>
-              <div class="prob-bar"><div class="prob-fill market" style="width:${pMktPct}%"></div></div>
+              <div class="prob-bar"><div class="prob-fill market" style="width:0"></div></div>
               <div class="prob-val">${pMktPct}%</div>
             </div>
           </div>
-          <div class="pb-edge">
+          <!-- FAZA 8: edge badge z animated fill -->
+          <div class="pb-edge" data-edge="${edgePct}">
             <div class="pb-edge-lbl">Edge</div>
             <div class="pb-edge-val">+${edgePct}%</div>
             <div class="pb-edge-arr">&#8593;</div>
           </div>
         </div>
         <div class="pc-reason">${reasonHtml}</div>
+        <!-- FAZA 9: kelly bar fill -->
         <div class="pc-kelly-strip">
+          <div class="pc-kelly-bar-fill" data-kelly-w="${kellyBarW}"></div>
           <div class="pc-kelly-info">
             <div class="pc-kelly-pct">${kellyPct}%</div>
             <div class="pc-kelly-pln">${kellyPLN} PLN / 1000</div>
@@ -2095,13 +2301,30 @@ function buildCard(pick) {
       </div>
     </div>`;
 
-  // Animate prob bars
+  // Animate on insert
   setTimeout(() => {
+    // prob bars
     wrap.querySelectorAll('.prob-fill').forEach(bar => {
-      const w = bar.style.width;
-      bar.style.width = '0';
-      setTimeout(() => { bar.style.width = w; }, 100);
+      const targetW = bar.classList.contains('model') ? pModelPct + '%' : pMktPct + '%';
+      setTimeout(() => { bar.style.width = targetW; }, 150);
     });
+    // FAZA 8: edge animate
+    const edgeBadge = wrap.querySelector('.pb-edge');
+    if (edgeBadge) setTimeout(() => edgeBadge.classList.add('animated'), 300);
+    // FAZA 9: kelly bar fill
+    const kellyFill = wrap.querySelector('.pc-kelly-bar-fill');
+    if (kellyFill) setTimeout(() => { kellyFill.style.width = kellyFill.dataset.kellyW + '%'; }, 400);
+    // FAZA 7: odds count-up
+    const oddsEl = wrap.querySelector('.pc-oddsval[data-odds]');
+    if (oddsEl) {
+      const target = parseFloat(oddsEl.dataset.odds);
+      let cur = 1.0; const step = (target - 1) / 25;
+      const iv = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        oddsEl.textContent = cur.toFixed(2);
+        if (cur >= target) { oddsEl.textContent = target.toFixed(2); clearInterval(iv); }
+      }, 35);
+    }
   }, 200);
 
   return wrap;
@@ -2131,6 +2354,42 @@ document.getElementById('btn-gen').addEventListener('click', () => {
   gsap.set('#slt', { opacity: 0, y: 14 });
   ov.classList.add('on');
   gsap.set(ov, { opacity: 0 });
+
+  // ── FAZA 13: Matrix rain canvas in overlay ──
+  (function startMatrixRain() {
+    let mc = document.getElementById('ov-matrix');
+    if (!mc) {
+      mc = document.createElement('canvas');
+      mc.id = 'ov-matrix';
+      mc.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;opacity:.07;pointer-events:none;z-index:0';
+      ov.insertBefore(mc, ov.firstChild);
+    }
+    mc.width = ov.offsetWidth || 390;
+    mc.height = ov.offsetHeight || 844;
+    const ctx = mc.getContext('2d');
+    const cols = Math.floor(mc.width / 14);
+    const drops = Array(cols).fill(1);
+    const chars = '0123456789ABCDEF+×=<>!#@';
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(2,2,8,.18)';
+      ctx.fillRect(0, 0, mc.width, mc.height);
+      ctx.fillStyle = '#c2ff3d';
+      ctx.font = '12px monospace';
+      drops.forEach((y, i) => {
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(ch, i * 14, y * 14);
+        if (y * 14 > mc.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      });
+    }
+    const rainInterval = setInterval(drawMatrix, 60);
+    ov.addEventListener('transitionend', () => {
+      if (!ov.classList.contains('on')) clearInterval(rainInterval);
+    }, { once: true });
+    // clean up when overlay closes
+    const origRemove = ov.classList.remove.bind(ov.classList);
+    ov._stopRain = () => clearInterval(rainInterval);
+  })();
 
   const tl = gsap.timeline();
 
@@ -2260,7 +2519,16 @@ function dealFlipCards(picks) {
       const avgKelly = genPicks.reduce((a, p) => a + p.kelly, 0) / genPicks.length;
       document.getElementById('csummary').style.display = 'block';
       const co = document.getElementById('cs-odds');
-      if (co) co.textContent = totalOdds.toFixed(2) + 'x';
+      // ── FAZA 12: animated total odds counter ──
+      if (co) {
+        const totalOddsTarget = totalOdds;
+        let cur = 1.0; const step = (totalOddsTarget - 1) / 35;
+        const iv = setInterval(() => {
+          cur = Math.min(cur + step, totalOddsTarget);
+          co.textContent = cur.toFixed(2) + 'x';
+          if (cur >= totalOddsTarget) { co.textContent = totalOddsTarget.toFixed(2) + 'x'; clearInterval(iv); }
+        }, 30);
+      }
       const cev = document.getElementById('cs-ev-badge');
       if (cev) { const ev = (totalOdds * genPicks.reduce((a,p)=>a*p.probModel,1) - 1); cev.textContent = 'EV ' + (ev > 0 ? '+' : '') + ev.toFixed(2); }
       const ckp = document.getElementById('cs-kelly-pct');
