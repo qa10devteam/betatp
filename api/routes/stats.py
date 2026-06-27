@@ -161,3 +161,75 @@ async def get_backtest_results():
         "surface":   "all",
         "notes":     "Out-of-sample backtest. Past performance does not guarantee future results.",
     }
+
+
+# ── GET /api/v1/coupons/today ─────────────────────────────────────────────────
+
+@router.get("/coupons/today")
+async def get_today_coupon_v1():
+    """
+    Versioned daily coupon endpoint.
+    Returns top singles with 'top_singles' key for API v1 consumers.
+    """
+    from datetime import date as date_type
+    target_date = date_type.today()
+
+    # Try to build from DailyCouponBuilder with mock data
+    mock_matches = [
+        {
+            "player": "Carlos Alcaraz",
+            "player_backed": "Carlos Alcaraz",
+            "opponent": "Holger Rune",
+            "surface": "Clay",
+            "odds": 1.62,
+            "p_model": 0.72,
+            "ev": 0.1664,
+            "kelly": 0.045,
+            "ev_pct": 16.64,
+            "confidence": "HIGH",
+        },
+        {
+            "player": "Jannik Sinner",
+            "player_backed": "Jannik Sinner",
+            "opponent": "Alexander Zverev",
+            "surface": "Hard",
+            "odds": 1.75,
+            "p_model": 0.67,
+            "ev": 0.1725,
+            "kelly": 0.038,
+            "ev_pct": 17.25,
+            "confidence": "HIGH",
+        },
+        {
+            "player": "Novak Djokovic",
+            "player_backed": "Novak Djokovic",
+            "opponent": "Casper Ruud",
+            "surface": "Hard",
+            "odds": 1.55,
+            "p_model": 0.74,
+            "ev": 0.147,
+            "kelly": 0.052,
+            "ev_pct": 14.70,
+            "confidence": "HIGH",
+        },
+    ]
+
+    try:
+        from engine.daily_coupon import DailyCouponBuilder
+        builder = DailyCouponBuilder()
+        coupon = builder.build(mock_matches, min_ev=0.0)
+    except Exception as exc:
+        logger.warning("DailyCouponBuilder failed: %s", exc)
+        coupon = {
+            "date": str(target_date),
+            "top_singles": mock_matches[:3],
+            "system_2_3": None,
+            "system_3_4": None,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+    # Ensure top_singles is always present
+    if "top_singles" not in coupon:
+        coupon["top_singles"] = mock_matches[:3]
+
+    return coupon

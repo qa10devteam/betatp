@@ -2,6 +2,7 @@
 value/clv_tracker.py — Closing Line Value tracker for betatp.io
 Tracks bet performance vs Pinnacle closing line as the gold standard.
 """
+import math
 from dataclasses import dataclass, field
 from datetime import datetime, date, timezone, timedelta
 from typing import Optional
@@ -250,5 +251,36 @@ class CLVTracker:
                 max_dd = dd
         return max_dd
 
+    # ------------------------------------------------------------------
+    # Aliases / extra methods required by h6 spec
+    # ------------------------------------------------------------------
 
-import math  # noqa: E402
+    def t_test_significance(self) -> dict:
+        """
+        Alias for significance_test() — returns {t_stat, p_value, significant: bool}.
+        Uses scipy.stats.ttest_1samp internally (via significance_test).
+        """
+        result = self.significance_test()
+        return {
+            "t_stat": result["t_stat"],
+            "p_value": result["p_value"],
+            "significant": result["reject_h0"],
+            "n_bets": result["n_bets"],
+            "mean_clv": result["mean_clv"],
+        }
+
+    def record_closing_by_match(
+        self,
+        match_id: str,
+        pinnacle_closing_odds: float,
+        closing_timestamp=None,
+    ) -> None:
+        """
+        Record Pinnacle closing line by match_id instead of bet_id.
+        Finds the first bet with the given match_id.
+        """
+        for b in self._bets:
+            if b.match_id == match_id:
+                self.record_closing(b.bet_id, pinnacle_closing_odds, closing_timestamp)
+                return
+        raise KeyError(f"No bet found for match {match_id}")

@@ -285,3 +285,239 @@ class LiveStateEngine:
         pa = self.POINT_MAP.get(left, 0)
         pb = self.POINT_MAP.get(right, 0)
         return pa, pb
+
+
+# ---------------------------------------------------------------------------
+# LiveEngine — high-level façade for h7 (wraps LiveStateEngine + MC fallback)
+# ---------------------------------------------------------------------------
+
+class LiveEngine:
+    """
+    High-level in-play engine for betatp.io.
+
+    Usage:
+        engine = LiveEngine(p_serve_a=0.65, p_serve_b=0.60)
+        engine.update_state("A")      # point won by player A
+        p = engine.get_win_probability()
+
+    Internally uses a LUT precomputed via LiveStateEngine (DP backward induction).
+    Falls back to MonteCarloEngine simulation if LUT lookup misses.
+    """
+
+    def __init__(
+        self,
+        p_serve_a: float = 0.65,
+        p_serve_b: float = 0.62,
+        best_of: int = 3,
+        match_id: str = "default",
+    ):
+        self.p_serve_a = p_serve_a
+        self.p_serve_b = p_serve_b
+        self.best_of = best_of
+        self.match_id = match_id
+
+        # Current match state: (sets_a, sets_b, games_a, games_b, pts_a, pts_b, server)
+        self._state: tuple = (0, 0, 0, 0, 0, 0, 0)
+
+        # LUT engine
+        self._lut_engine = LiveStateEngine()
+
+        # MC engine (fallback when LUT misses)
+        self._mc_engine = None
+
+        # Precompute LUT on startup
+        self.precompute_lut()
+
+    # ------------------------------------------------------------------
+    # LUT
+    # ------------------------------------------------------------------
+
+    def precompute_lut(self) -> None:
+        """Precompute LUT for current match parameters."""
+        try:
+            self._lut_engine.prepare_match(
+                match_id=self.match_id,
+                p_serve_a=self.p_serve_a,
+                p_serve_b=self.p_serve_b,
+                best_of=self.best_of,
+            )
+        except Exception as e:
+            import warnings
+            warnings.warn(f"LiveEngine.precompute_lut failed: {e}")
+
+    # ------------------------------------------------------------------
+    # State update (point-by-point)
+    # ------------------------------------------------------------------
+
+    # Tennis point sequence tracking constants
+    _POINT_SEQ = [0, 1, 2, 3]  # 0=0, 1=15, 2=30, 3=40
+    _DEUCE = 3
+
+    def update_state(self, point_winner: str) -> None:
+        """
+        Update internal match state after a point.
+
+        Parameters
+        ----------
+        point_winner : 'A' or 'B' (case-insensitive)
+        """
+        sa, sb, ga, gb, pa, pb, srv = self._state
+        a_wins = point_winner.upper() in ("A", "0")
+
+        # --- Point update with deuce/advantage logic ---
+        if a_wins:
+            npa, npb = pa + 1, pb
+        else:
+            npa, npb = pa, pb + 1
+
+        # Deuce handling (encode: deuce=(3,3), advA=(4,3), advB=(3,4))
+        game_won_a = game_won_b = False
+
+        if npa >= 4 and npb >= 4:
+            # Already in deuce cycle — should not normally reach here
+            diff = npa - npb
+            if diff >= 2:
+                game_won_a = True
+            elif diff <= -2:
+                game_won_b = True
+            else:
+                # Stay at (4,3) advA or (3,4) advB or reset to (3,3) deuce
+                npa, npb = min(npa, 4), min(npb, 4)
+        elif npa == 4 and npb == 3:
+            # Advantage A: if A wins next → game; if B wins → deuce (3,3)
+            game_won_a = True
+        elif npa == 3 and npb == 4:
+            # Advantage B: B wins game
+            game_won_b = True
+        elif npa >= 4:
+            game_won_a = True
+        elif npb >= 4:
+            game_won_b = True
+        elif npa == 3 and npb == 3:
+            # Deuce state — mark as (3,3) and wait
+            pass
+
+        if game_won_a:
+            ga += 1; npa, npb = 0, 0; srv = 1 - srv
+        elif game_won_b:
+            gb += 1; npa, npb = 0, 0; srv = 1 - srv
+
+        # --- Set resolution ---
+        sets_to_win = (self.best_of + 1) // 2
+        set_won_a = set_won_b = False
+
+        if ga >= 6 and ga - gb >= 2:
+            set_won_a = True
+        elif ga == 7 and gb == 6:
+            set_won_a = True
+        elif gb >= 6 and gb - ga >= 2:
+            set_won_b = True
+        elif gb == 7 and ga == 6:
+            set_won_b = True
+
+        if set_won_a:
+            sa += 1; ga, gb = 0, 0
+        elif set_won_b:
+            sb += 1; ga, gb = 0, 0
+
+        self._state = (sa, sb, ga, gb, npa, npb, srv)
+
+    # ------------------------------------------------------------------
+    # Probability query
+    # ------------------------------------------------------------------
+
+    def get_win_probability(self) -> float:
+        """
+        Return current P(A wins match) from LUT or MC fallback.
+
+        Returns
+        -------
+        float in [0, 1]
+        """
+        # Try LUT first
+        try:
+            result = self._lut_engine.update_state(self.match_id, self._state)
+            return float(result["p_win_a"])
+        except (KeyError, Exception):
+            pass
+
+        # MC fallback
+        return self._mc_fallback()
+
+    def _mc_fallback(self) -> float:
+        """Use MonteCarloEngine to estimate probability from current state."""
+        try:
+            from engine.monte_carlo import MonteCarloEngine, MatchConfig
+            if self._mc_engine is None:
+                self._mc_engine = MonteCarloEngine(n_simulations=10_000, seed=42)
+            config = MatchConfig(
+                p_serve_a=self.p_serve_a,
+                p_serve_b=self.p_serve_b,
+                best_of=self.best_of,  # type: ignore
+            )
+            return self.simulate_from_state(self._state, config=config)
+        except Exception:
+            return 0.5
+
+    def simulate_from_state(
+        self,
+        state: tuple,
+        n_simulations: int = 10_000,
+        config=None,
+    ) -> float:
+        """
+        Run MonteCarloEngine simulation from a given state.
+
+        Parameters
+        ----------
+        state : 7-tuple (sets_a, sets_b, games_a, games_b, pts_a, pts_b, server)
+        n_simulations : number of MC simulations (default 10k for speed)
+        config : optional MatchConfig; created from self params if not provided
+
+        Returns
+        -------
+        float — P(A wins match)
+        """
+        try:
+            from engine.monte_carlo import MonteCarloEngine, MatchConfig
+        except ImportError:
+            return 0.5
+
+        if config is None:
+            config = MatchConfig(
+                p_serve_a=self.p_serve_a,
+                p_serve_b=self.p_serve_b,
+                best_of=self.best_of,  # type: ignore
+            )
+
+        if self._mc_engine is None:
+            self._mc_engine = MonteCarloEngine(n_simulations=n_simulations, seed=42)
+
+        try:
+            return self._mc_engine.lookup_live(state, config)
+        except Exception:
+            # Last resort: simple serve-based simulation
+            result = self._mc_engine.simulate_match(config)
+            return result.p_win_a
+
+    # ------------------------------------------------------------------
+    # Convenience
+    # ------------------------------------------------------------------
+
+    @property
+    def state(self) -> tuple:
+        """Current match state as 7-tuple."""
+        return self._state
+
+    def reset(self) -> None:
+        """Reset match to starting state."""
+        self._state = (0, 0, 0, 0, 0, 0, 0)
+
+    def __repr__(self) -> str:
+        sa, sb, ga, gb, pa, pb, srv = self._state
+        p = self.get_win_probability()
+        return (
+            f"LiveEngine(sets={sa}-{sb} games={ga}-{gb} pts={pa}-{pb} "
+            f"srv={'A' if srv==0 else 'B'} P(A)={p:.3f})"
+        )
+

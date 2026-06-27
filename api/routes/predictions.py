@@ -232,3 +232,92 @@ async def model_info():
         "loaded_at": str(ctx.loaded_at),
         "players_tracked": len(ctx.player_names),
     }
+
+
+# ── Today's matches (mock — Wimbledon 2025 theme) ──────────────────────────────
+
+_MOCK_MATCHES_TODAY = [
+    {
+        "id": "wim2025-001",
+        "player_a": "Carlos Alcaraz",
+        "player_b": "Holger Rune",
+        "surface": "grass",
+        "tourney": "Wimbledon 2025",
+        "time": "13:00",
+        "p_win_a": 0.72,
+        "odds_a": 1.45,
+        "odds_b": 2.80,
+    },
+    {
+        "id": "wim2025-002",
+        "player_a": "Jannik Sinner",
+        "player_b": "Taylor Fritz",
+        "surface": "grass",
+        "tourney": "Wimbledon 2025",
+        "time": "15:00",
+        "p_win_a": 0.65,
+        "odds_a": 1.60,
+        "odds_b": 2.40,
+    },
+    {
+        "id": "wim2025-003",
+        "player_a": "Novak Djokovic",
+        "player_b": "Holger Rune",
+        "surface": "grass",
+        "tourney": "Wimbledon 2025",
+        "time": "17:00",
+        "p_win_a": 0.68,
+        "odds_a": 1.55,
+        "odds_b": 2.55,
+    },
+    {
+        "id": "atp500-hard-001",
+        "player_a": "Carlos Alcaraz",
+        "player_b": "Jannik Sinner",
+        "surface": "hard",
+        "tourney": "ATP 500 Washington 2025",
+        "time": "20:00",
+        "p_win_a": 0.55,
+        "odds_a": 1.90,
+        "odds_b": 1.95,
+    },
+    {
+        "id": "atp250-clay-001",
+        "player_a": "Holger Rune",
+        "player_b": "Taylor Fritz",
+        "surface": "clay",
+        "tourney": "ATP 250 Hamburg 2025",
+        "time": "12:00",
+        "p_win_a": 0.60,
+        "odds_a": 1.75,
+        "odds_b": 2.10,
+    },
+]
+
+_VALID_SURFACES = {"hard", "clay", "grass", "indoor"}
+
+
+@router.get("/matches/today")
+async def matches_today(surface: str | None = None):
+    """
+    GET /api/v1/matches/today?surface=<hard|clay|grass|indoor>
+
+    Returns today's mock ATP matches. Optionally filtered by surface.
+    Each match: {id, player_a, player_b, surface, tourney, time, p_win_a, odds_a, odds_b, date}
+    """
+    today_str = date.today().isoformat()
+
+    matches = [dict(m, date=today_str) for m in _MOCK_MATCHES_TODAY]
+
+    if surface is not None:
+        surface_lower = surface.lower()
+        if surface_lower not in _VALID_SURFACES:
+            from fastapi import HTTPException as _HTTPException
+            raise _HTTPException(
+                status_code=400,
+                detail=f"Invalid surface '{surface}'. Valid options: {sorted(_VALID_SURFACES)}",
+            )
+        matches = [m for m in matches if m["surface"] == surface_lower]
+
+    return {"date": today_str, "count": len(matches), "matches": matches}
+

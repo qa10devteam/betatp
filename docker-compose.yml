@@ -21,7 +21,7 @@ services:
       start_period: 10s
     restart: unless-stopped
 
-  # Broker wiadomosci i cache - Redis
+  # Broker wiadomosci i cache - Redis 7
   redis:
     image: redis:7-alpine
     container_name: betatp_redis
@@ -45,9 +45,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: >
-      sh -c "pip install -r requirements.txt -q &&
-             uvicorn api.main:app --host 0.0.0.0 --port 8000"
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
     environment:
@@ -57,47 +55,40 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
-      - postgres
+      - celery-worker
     restart: unless-stopped
 
-  # Worker Celery - przetwarza zadania asynchroniczne (pipeline daily, alerty)
+  # Worker Celery - przetwarza zadania async (daily pipeline, alerty, notyfikacje)
   celery-worker:
     image: python:3.11
     container_name: betatp_celery_worker
     working_dir: /app
     volumes:
       - .:/app
-    command: >
-      sh -c "pip install -r requirements.txt -q &&
-             celery -A tasks.celery_app worker -l info"
+    command: celery -A tasks.celery_app worker -l info
     environment:
       - DATABASE_URL=postgresql://betatp:***@postgres:5432/betatp
-      - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
-      - postgres
     restart: unless-stopped
 
-  # Scheduler Celery Beat - uruchamia zadania cykliczne (daily pipeline 07:00 CET)
+  # Beat scheduler Celery - wyzwalacz zadan cyklicznych (daily pipeline 07:00 CET)
   celery-beat:
     image: python:3.11
     container_name: betatp_celery_beat
     working_dir: /app
     volumes:
       - .:/app
-    command: >
-      sh -c "pip install -r requirements.txt -q &&
-             celery -A tasks.celery_app beat -l info"
+    command: celery -A tasks.celery_app beat -l info
     environment:
       - DATABASE_URL=postgresql://betatp:***@postgres:5432/betatp
-      - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
-      - postgres
+      - celery-worker
     restart: unless-stopped
 
 volumes:
