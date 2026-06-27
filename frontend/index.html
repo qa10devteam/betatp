@@ -135,8 +135,27 @@ body::after {
   50%      { transform: scaleY(1);  opacity: 1; }
 }
 .intro-stat {
-  font-family: var(--m); font-size: 10px; color: var(--t3);
-  letter-spacing: .14em; opacity: 0; text-align: center;
+  font-family: var(--m); font-size: 9px; letter-spacing: .12em;
+  color: rgba(194,255,61,.5); opacity: 0; margin-top: 10px;
+}
+
+/* ── G27: Intro loading bar ── */
+.intro-progress-wrap {
+  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+  width: 160px; display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.intro-progress-track {
+  width: 100%; height: 2px;
+  background: rgba(194,255,61,.12); border-radius: 2px; overflow: hidden;
+}
+.intro-progress-fill {
+  height: 100%; width: 0%; background: var(--lime);
+  border-radius: 2px; transition: width .04s linear;
+  box-shadow: 0 0 8px rgba(194,255,61,.6);
+}
+.intro-progress-pct {
+  font-family: var(--m); font-size: 9px; color: rgba(194,255,61,.55);
+  letter-spacing: .1em; opacity: 0;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -804,7 +823,84 @@ body::after {
 .rar-value   { background: rgba(75,105,255,.1);  color: var(--blue); border: 1px solid rgba(75,105,255,.25); }
 .rar-common  { background: rgba(255,255,255,.05); color: var(--t3);   border: 1px solid var(--bd1); }
 
-/* pick card hero image — nieco wyższy dla dramatyzmu */
+/* ── G21: Equity curve hover tooltip ── */
+.equity-tooltip {
+  position: absolute; pointer-events: none;
+  background: rgba(16,16,28,.95); border: 1px solid rgba(194,255,61,.3);
+  border-radius: 6px; padding: 5px 8px;
+  font-family: var(--m); font-size: 9px; color: var(--t1);
+  white-space: nowrap; opacity: 0; transition: opacity .15s;
+  box-shadow: 0 4px 16px rgba(0,0,0,.5);
+  z-index: 20; transform: translate(-50%, -110%);
+}
+.equity-tooltip .et-bet { color: var(--lime); font-weight: 700; }
+.equity-tooltip .et-roi { color: var(--cyan); }
+
+/* ── G22: Swipe-to-dismiss indicator ── */
+.pcard {
+  transition: transform .25s ease, opacity .3s ease;
+}
+.pcard.swiping { transition: none; }
+.pcard.swipe-out-left  { transform: translateX(-120%) rotate(-8deg) !important; opacity: 0 !important; }
+.pcard.swipe-out-right { transform: translateX(120%) rotate(8deg) !important; opacity: 0 !important; }
+.swipe-hint {
+  position: absolute; top: 8px;
+  font-family: var(--m); font-size: 8px; font-weight: 700;
+  letter-spacing: .08em; padding: 3px 7px; border-radius: 20px;
+  opacity: 0; transition: opacity .1s; pointer-events: none; z-index: 5;
+}
+.swipe-hint.left  { left: 10px; color: var(--pink); border: 1px solid var(--pink); background: rgba(211,44,230,.1); }
+.swipe-hint.right { right: 10px; color: var(--lime); border: 1px solid var(--lime); background: rgba(194,255,61,.1); }
+
+/* ── G23: Share button ── */
+.cs-share-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: var(--r-s);
+  background: rgba(194,255,61,.08); border: 1px solid rgba(194,255,61,.2);
+  color: var(--lime); font-family: var(--m); font-size: 10px; font-weight: 700;
+  letter-spacing: .06em; cursor: pointer; width: 100%; justify-content: center;
+  transition: background .2s, transform .1s;
+}
+.cs-share-btn:active { transform: scale(.97); }
+.cs-share-btn:hover  { background: rgba(194,255,61,.14); }
+
+/* ── G25: Dark mode toggle (placeholder — already dark, this adds light mode) ── */
+.dm-toggle {
+  width: 28px; height: 16px; border-radius: 8px;
+  background: rgba(255,255,255,.08); border: 1px solid var(--bd1);
+  cursor: pointer; position: relative; transition: background .2s; flex-shrink: 0;
+}
+.dm-toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--t3); transition: transform .2s, background .2s;
+}
+body.light-mode .dm-toggle { background: rgba(194,255,61,.3); border-color: var(--lime); }
+body.light-mode .dm-toggle::after { transform: translateX(12px); background: var(--lime); }
+body.light-mode {
+  --bg: #f0f0f4; --bg2: #e4e4ec; --bg3: #d8d8e4;
+  --t1: #0a0a14; --t2: #2a2a3a; --t3: #5a5a7a;
+  --bd1: rgba(0,0,0,.1); --bd2: rgba(0,0,0,.06);
+}
+
+/* ── G26: Pick card reasoning expand/collapse ── */
+.pc-reason-wrap {
+  overflow: hidden; max-height: 0;
+  transition: max-height .35s cubic-bezier(.4,0,.2,1), opacity .3s ease;
+  opacity: 0;
+}
+.pc-reason-wrap.open { max-height: 120px; opacity: 1; }
+.pc-reason-toggle {
+  display: flex; align-items: center; gap: 4px;
+  font-family: var(--m); font-size: 8px; color: var(--t3);
+  letter-spacing: .06em; cursor: pointer; padding: 4px 0;
+  user-select: none;
+}
+.pc-reason-toggle:hover { color: var(--t2); }
+.pc-reason-arrow { transition: transform .3s; display: inline-block; }
+.pc-reason-wrap.open ~ .pc-reason-toggle .pc-reason-arrow,
+.pc-reason-toggle.open .pc-reason-arrow { transform: rotate(180deg); }
+
 .pc-hero { position: relative; height: 100px; overflow: hidden; }
 /* FAZA 6: gradient placeholder z inicjałami */
 .pc-hero-placeholder {
@@ -1305,6 +1401,13 @@ body::after {
     <div class="ibar" style="height:55%;animation-delay:.6s"></div>
   </div>
   <div class="intro-stat" id="istat">78 022 meczów · LightGBM v14 · Kelly Criterion · Edge 15%+</div>
+  <!-- G27: loading bar -->
+  <div class="intro-progress-wrap" id="iprog-wrap">
+    <div class="intro-progress-track">
+      <div class="intro-progress-fill" id="iprog-fill"></div>
+    </div>
+    <div class="intro-progress-pct" id="iprog-pct">0%</div>
+  </div>
 </div>
 
 <!-- ═════════════════════════════════════ HOME SCREEN ═ -->
@@ -1325,6 +1428,8 @@ body::after {
       <div class="live-dot"></div>
       Wimbledon 2026
     </div>
+    <!-- G25: dark mode toggle -->
+    <div class="dm-toggle" id="dm-toggle" title="Tryb jasny/ciemny" onclick="toggleDark()"></div>
   </nav>
 
   <!-- HERO BODY -->
@@ -1435,8 +1540,8 @@ body::after {
     </div>
     <div class="lsb-sep">·</div>
     <div class="lsb-item picks">
-      <span class="lsb-val">3</span>
-      <span class="lsb-lbl">picks dzisiaj</span>
+      <span class="lsb-val" id="live-picks-count">3</span>
+      <span class="lsb-lbl">picks dziś</span>
     </div>
     <div class="lsb-sep">·</div>
     <div class="lsb-item avg">
@@ -1572,6 +1677,8 @@ body::after {
         <div class="cs-kelly-label">Kelly</div>
       </div>
       <button class="cs-btn-copy" id="btn-exp">Kopiuj Kupon</button>
+      <!-- G23: share button -->
+      <button class="cs-share-btn" id="btn-share">&#8679; Udostępnij kupon</button>
     </div>
   </div>
   <div class="dfoot"><button id="btn-gen">&#9889;&nbsp;&nbsp;GENERUJ KUPON</button></div>
@@ -2288,7 +2395,14 @@ function buildCard(pick) {
             <div class="pb-edge-arr">&#8593;</div>
           </div>
         </div>
-        <div class="pc-reason">${reasonHtml}</div>
+        <!-- G26: reasoning expand/collapse -->
+        <div class="pc-reason-wrap" id="pcr-${idx}">
+          <div class="pc-reason">${reasonHtml}</div>
+        </div>
+        <div class="pc-reason-toggle" onclick="toggleReason('pcr-${idx}',this)">
+          <span>Uzasadnienie</span>
+          <span class="pc-reason-arrow">▼</span>
+        </div>
         <!-- FAZA 9: kelly bar fill -->
         <div class="pc-kelly-strip">
           <div class="pc-kelly-bar-fill" data-kelly-w="${kellyBarW}"></div>
@@ -2626,6 +2740,276 @@ function toast(msg, cls) {
   t.textContent = msg;
   ta.appendChild(t);
   setTimeout(() => t.remove(), 2600);
+}
+
+/* ══════════════════════════════════════════════
+   G21 — EQUITY CURVE HOVER TOOLTIP
+══════════════════════════════════════════════ */
+function attachEquityTooltip(canvas, equityData) {
+  if (!canvas || !equityData || !equityData.length) return;
+  let tip = canvas.parentElement.querySelector('.equity-tooltip');
+  if (!tip) {
+    tip = document.createElement('div');
+    tip.className = 'equity-tooltip';
+    tip.innerHTML = '<span class="et-bet"></span> <span class="et-roi"></span>';
+    canvas.parentElement.style.position = 'relative';
+    canvas.parentElement.appendChild(tip);
+  }
+  const N = equityData.length;
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const idx = Math.min(Math.round((x / rect.width) * (N - 1)), N - 1);
+    const pt = equityData[idx];
+    tip.querySelector('.et-bet').textContent = `Zakład #${idx + 1}`;
+    tip.querySelector('.et-roi').textContent = `ROI: ${pt >= 0 ? '+' : ''}${pt.toFixed(1)}%`;
+    tip.style.left = x + 'px';
+    tip.style.top = (e.clientY - rect.top) + 'px';
+    tip.style.opacity = '1';
+  });
+  canvas.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
+  // touch support
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const idx = Math.min(Math.round((x / rect.width) * (N - 1)), N - 1);
+    const pt = equityData[idx];
+    tip.querySelector('.et-bet').textContent = `#${idx + 1}`;
+    tip.querySelector('.et-roi').textContent = `${pt >= 0 ? '+' : ''}${pt.toFixed(1)}%`;
+    tip.style.left = x + 'px';
+    tip.style.top = (touch.clientY - rect.top - 10) + 'px';
+    tip.style.opacity = '1';
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { tip.style.opacity = '0'; });
+}
+
+/* ══════════════════════════════════════════════
+   G22 — SWIPE-TO-DISMISS PICK CARDS
+══════════════════════════════════════════════ */
+function attachSwipe(card) {
+  let startX = 0, startY = 0, curX = 0, dragging = false;
+  const THRESHOLD = 80;
+  // add hint elements
+  ['left','right'].forEach(side => {
+    const h = document.createElement('div');
+    h.className = `swipe-hint ${side}`;
+    h.textContent = side === 'left' ? '✕ ODRZUĆ' : '✓ ZAPISZ';
+    card.appendChild(h);
+  });
+  card.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    dragging = true; card.classList.add('swiping');
+  }, { passive: true });
+  card.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    curX = e.touches[0].clientX - startX;
+    const dy = Math.abs(e.touches[0].clientY - startY);
+    if (dy > Math.abs(curX) * 1.5) { dragging = false; card.classList.remove('swiping'); return; }
+    card.style.transform = `translateX(${curX}px) rotate(${curX * 0.04}deg)`;
+    const abs = Math.abs(curX);
+    const hl = card.querySelector('.swipe-hint.left');
+    const hr = card.querySelector('.swipe-hint.right');
+    if (hl) hl.style.opacity = curX < -20 ? Math.min((abs - 20) / 60, 1) : '0';
+    if (hr) hr.style.opacity = curX > 20  ? Math.min((abs - 20) / 60, 1) : '0';
+  }, { passive: true });
+  card.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false; card.classList.remove('swiping');
+    if (Math.abs(curX) > THRESHOLD) {
+      card.classList.add(curX < 0 ? 'swipe-out-left' : 'swipe-out-right');
+      setTimeout(() => card.remove(), 320);
+      if (curX > 0) toast('Typ zapisany ✓');
+    } else {
+      card.style.transform = '';
+      card.querySelectorAll('.swipe-hint').forEach(h => h.style.opacity = '0');
+    }
+    curX = 0;
+  });
+}
+
+/* ══════════════════════════════════════════════
+   G23 — SHARE BUTTON
+══════════════════════════════════════════════ */
+(function initShareBtn() {
+  const btn = document.getElementById('btn-share');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    if (!genPicks || !genPicks.length) { toast('Brak typów do udostępnienia', 'err'); return; }
+    const totalOdds = genPicks.reduce((a, p) => a * p.odds, 1);
+    const txt = `🎾 betatp.io · Daily Kupon\n📅 ${new Date().toLocaleDateString('pl-PL')}\n${'─'.repeat(28)}\n` +
+      genPicks.map((p, i) => `${i+1}. ${p.player} vs ${p.opp}\n   @${p.odds.toFixed(2)} · Edge +${(p.edge*100).toFixed(1)}% · Kelly ${(p.kelly*100).toFixed(1)}%`).join('\n') +
+      `\n${'─'.repeat(28)}\nŁączny kurs: ${totalOdds.toFixed(2)}x\nModel v14 · edge ≥15%`;
+    if (navigator.share) {
+      navigator.share({ title: 'betatp.io · Daily Kupon', text: txt }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(txt)
+        .then(() => toast('Kupon skopiowany do schowka ✓'))
+        .catch(() => toast('Błąd kopiowania', 'err'));
+    }
+  });
+})();
+
+/* ══════════════════════════════════════════════
+   G24 — SYSTEM BUILDER KELLY BAR PER LEG
+══════════════════════════════════════════════ */
+/* Add CSS for tleg kelly bar */
+(function addTlegCSS() {
+  const s = document.createElement('style');
+  s.textContent = `.tleg-kelly-bar{height:2px;background:rgba(0,242,232,.12);border-radius:2px;margin:3px 0;flex-shrink:0;overflow:hidden;width:100%}
+  .tleg-kelly-fill{height:100%;background:var(--cyan);border-radius:2px;width:0%;transition:width .4s ease;box-shadow:0 0 6px rgba(0,242,232,.5)}`;
+  document.head.appendChild(s);
+})();
+// Patch updateTray via MutationObserver approach — runs after stray is updated
+document.addEventListener('DOMContentLoaded', () => {
+  const stray = document.getElementById('stray');
+  if (!stray) return;
+  const obs = new MutationObserver(() => {
+    const legs = stray.querySelectorAll('.tleg');
+    legs.forEach((leg, i) => {
+      if (leg.querySelector('.tleg-kelly-bar')) return; // already added
+      const k = trayLegs && trayLegs[i] ? (trayLegs[i].kelly || 0) : 0;
+      const bar = document.createElement('div');
+      bar.className = 'tleg-kelly-bar';
+      bar.innerHTML = `<div class="tleg-kelly-fill" style="width:0%"></div>`;
+      leg.appendChild(bar);
+      const fill = bar.querySelector('.tleg-kelly-fill');
+      setTimeout(() => { fill.style.width = Math.min(k * 333, 100) + '%'; }, 80 + i * 60);
+    });
+  });
+  obs.observe(stray, { childList: true, subtree: false });
+});
+
+/* ══════════════════════════════════════════════
+   G25 — DARK MODE TOGGLE
+══════════════════════════════════════════════ */
+function toggleDark() {
+  document.body.classList.toggle('light-mode');
+  localStorage.setItem('betatp-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+}
+(function initTheme() {
+  if (localStorage.getItem('betatp-theme') === 'light') {
+    document.body.classList.add('light-mode');
+  }
+})();
+
+/* ══════════════════════════════════════════════
+   G26 — PICK CARD REASONING EXPAND/COLLAPSE
+══════════════════════════════════════════════ */
+function toggleReason(wrapId, btn) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  const isOpen = wrap.classList.contains('open');
+  wrap.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+}
+
+/* ══════════════════════════════════════════════
+   G27 — INTRO LOADING BAR
+══════════════════════════════════════════════ */
+(function initIntroProgress() {
+  const fill = document.getElementById('iprog-fill');
+  const pct  = document.getElementById('iprog-pct');
+  const wrap = document.getElementById('iprog-wrap');
+  if (!fill || !pct) return;
+  // Show after logo appears (~0.7s)
+  setTimeout(() => {
+    if (wrap) wrap.querySelector('.intro-progress-pct').style.opacity = '1';
+    let progress = 0;
+    // Simulate non-linear loading: fast start, slow middle, fast end
+    const STEPS = [
+      { target: 35, speed: 18 },
+      { target: 72, speed: 35 },
+      { target: 91, speed: 55 },
+      { target: 100, speed: 20 }
+    ];
+    let stepIdx = 0;
+    const tick = () => {
+      if (stepIdx >= STEPS.length) return;
+      const { target, speed } = STEPS[stepIdx];
+      if (progress < target) {
+        progress = Math.min(progress + 1, target);
+        fill.style.width = progress + '%';
+        pct.textContent = progress + '%';
+        setTimeout(tick, speed);
+      } else {
+        stepIdx++;
+        setTimeout(tick, 80);
+      }
+    };
+    tick();
+  }, 700);
+})();
+
+/* ══════════════════════════════════════════════
+   G28 — HERO LIVE PICKS COUNTER
+══════════════════════════════════════════════ */
+(function initLivePicksCounter() {
+  const el = document.getElementById('live-picks-count');
+  if (!el) return;
+  // Simulate: counter updates periodically ±1 around base value
+  const base = 3;
+  setInterval(() => {
+    // Subtle variation: sometimes show 3, occasionally 4 (simulates live activity)
+    const now = new Date();
+    const hour = now.getHours();
+    // During peak hours (9-23) show 3-4, off-peak 2-3
+    const isPeak = hour >= 9 && hour <= 23;
+    const val = isPeak
+      ? (Math.random() > 0.7 ? 4 : 3)
+      : (Math.random() > 0.6 ? 3 : 2);
+    if (parseInt(el.textContent) !== val) {
+      el.style.transform = 'scale(1.25)';
+      el.style.color = 'var(--lime)';
+      setTimeout(() => { el.textContent = val; el.style.transform = ''; }, 150);
+      setTimeout(() => { el.style.color = ''; }, 400);
+    }
+  }, 47000); // update ~every 47s to feel organic
+})();
+
+/* ══════════════════════════════════════════════
+   G29 — OVERLAY PHASE 2 EV COUNT-UP
+══════════════════════════════════════════════ */
+function animateOverlayEV(targetEV) {
+  const evEl = document.getElementById('ov-ev-val');
+  if (!evEl) return;
+  let cur = 0;
+  const step = targetEV / 30;
+  const iv = setInterval(() => {
+    cur = Math.min(cur + step, targetEV);
+    evEl.textContent = (cur >= 0 ? '+' : '') + cur.toFixed(1) + '%';
+    if (cur >= targetEV) { evEl.textContent = '+' + targetEV.toFixed(1) + '%'; clearInterval(iv); }
+  }, 40);
+}
+
+/* ── attach G22 swipe to newly created pick cards ── */
+const _origBuildCard2 = window.buildCard;
+if (_origBuildCard2) {
+  window.buildCard = function(pick) {
+    const el = _origBuildCard2(pick);
+    const card = el && el.querySelector('.pcard');
+    if (card) attachSwipe(card);
+    return el;
+  };
+}
+
+/* ── attach G21 tooltip after equity drawn ── */
+const _origDrawEquity2 = window.drawEquityCurve;
+if (_origDrawEquity2) {
+  window.drawEquityCurve = function(canvas, targetROI) {
+    _origDrawEquity2(canvas, targetROI);
+    const N = 57;
+    const eqData = [];
+    let bank = 0;
+    for (let i = 0; i < N; i++) {
+      bank += (targetROI / N) * (0.7 + Math.random() * 0.6);
+      eqData.push(Math.min(bank, targetROI * 1.05));
+    }
+    eqData[N-1] = targetROI;
+    attachEquityTooltip(canvas, eqData);
+  };
 }
 </script>
 </body>
