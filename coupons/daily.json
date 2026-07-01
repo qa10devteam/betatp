@@ -1,10 +1,59 @@
 {
-  "date": "2026-06-27",
-  "top_singles": [],
-  "system_2_3": null,
-  "system_3_4": null,
-  "generated_at": "2026-06-27T11:07:32.438103+00:00",
-  "pipeline_picks": [],
-  "n_picks": 0,
-  "avg_edge": 0.0
+  "date": "2026-07-01",
+  "tournament": "Wimbledon",
+  "surface": "Grass",
+  "round": "R2",
+  "is_demo": true,
+  "demo_note": "Live predictions available on match days (08:00 UTC)",
+  "n_value_bets": 4,
+  "value_bets": [
+    {
+      "match": "DJOKOVIC N. vs WU Y.",
+      "player_a": "Djokovic N.",
+      "player_b": "Wu Y.",
+      "surface": "Grass",
+      "tournament": "Wimbledon",
+      "round": "R2",
+      "market_id": "ou36",
+      "market_label": "Over/Under 36.5 Games",
+      "model_prob": 0.684,
+      "implied_prob": 0.532,
+      "edge": 0.152,
+      "ev": 0.286,
+      "sts_odds": 1.88,
+      "kelly_pct": 0.03,
+      "auc": 0.8925,
+      "confidence": "MEDIUM",
+      "is_value": true
+    },
+    {
+      "match": "MEDVEDEV D. vs CILIC M.",
+      "player_a": "Medvedev D.",
+      "player_b": "Cilic M.",
+      "surface": "Grass",
+      "tournament": "Wimbledon",
+      "round": "R2",
+      "market_id": "straight",
+      "market_label": "Straight Sets",
+      "model_prob": 0.712,
+      "implied_prob": 0.541,
+      "edge": 0.171,
+      "ev": 0.316,
+      "sts_odds": 1.85,
+      "kelly_pct": 0.035,
+      "auc": 0.9354,
+      "confidence": "HIGH",
+      "is_value": true
+    }
+  ],
+  "coupons": [
+    {
+      "name": "MAX VALUE AKO 2-fold",
+      "total_odds": 3.48,
+      "stake": 5.0,
+      "potential_win": 17.4,
+      "picks": []
+    }
+  ],
+  "generated_at": "2026-07-01T17:10:28.749912Z"
 }

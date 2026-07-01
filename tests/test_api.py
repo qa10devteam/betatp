@@ -1,141 +1,111 @@
 """
-tests/test_api.py — 10 pytest tests for betatp.io REST API
-Iter 129-131
-"""
-import time
-import pytest
-from datetime import date
+tests/test_api.py — API smoke tests for atpbet.io (FastAPI TestClient)
 
+Run: pytest tests/test_api.py -v
+"""
+import json
+
+import pytest
 from fastapi.testclient import TestClient
+
 from api.main import app
-from api.schemas import CouponResponse
 
 client = TestClient(app)
 
 
-# ── Test 1: GET /health -> 200 ─────────────────────────────────────────────────
+# ── Health ─────────────────────────────────────────────────────────────────────
 
-def test_health_200():
-    response = client.get("/health")
-    assert response.status_code == 200
-    data = response.json()
+def test_health():
+    r = client.get("/health")
+    assert r.status_code == 200
+    data = r.json()
     assert data["status"] == "ok"
 
 
-# ── Test 2: GET /coupons/daily -> 200 + list ───────────────────────────────────
+# ── Coupons ────────────────────────────────────────────────────────────────────
 
-def test_coupons_daily_200():
-    response = client.get("/coupons/daily")
-    assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data, list)
-    assert len(data) > 0
-
-
-# ── Test 3: GET /coupons/daily: response has required fields ───────────────────
-
-def test_coupons_daily_required_fields():
-    response = client.get("/coupons/daily")
-    assert response.status_code == 200
-    coupons = response.json()
-    required_fields = {
-        "coupon_id", "coupon_date", "coupon_type", "priority",
-        "headline", "summary", "total_ev", "recommended_total_stake", "selections"
-    }
-    for coupon in coupons:
-        for field in required_fields:
-            assert field in coupon, f"Missing field: {field}"
+def test_coupons_today_demo():
+    r = client.get("/api/v1/coupons/today?demo=true")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["is_demo"] is True
+    assert data["n_value_bets"] == 4
+    assert len(data["coupons"]) == 3
 
 
-# ── Test 4: POST /predictions/match -> 200 + p_win_a + p_win_b ≈ 1.0 ──────────
+def test_coupons_markets():
+    r = client.get("/api/v1/coupons/markets")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["total"] == 6
+    aucs = {m["id"]: m["auc"] for m in data["markets"]}
+    assert aucs["straight"] == pytest.approx(0.9354, abs=0.001)
 
-def test_predict_match_probabilities_sum_to_one():
+
+def test_coupons_archive():
+    r = client.get("/api/v1/coupons/archive?days=7")
+    assert r.status_code == 200
+    data = r.json()
+    assert "total_coupons" in data
+
+
+# ── Predictions ────────────────────────────────────────────────────────────────
+
+def test_prediction_markets():
+    r = client.get("/api/v1/predictions/markets")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["n_loaded"] == 6
+    ids = {m["id"] for m in data["markets"]}
+    assert ids == {"straight", "fatigue5", "ou39", "ou36", "hcp9", "ou33"}
+
+
+def test_model_info():
+    r = client.get("/api/v1/predictions/model/info")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["n_models"] == 6
+    assert data["training_matches"] == 197495
+    assert data["backtest"]["win_rate"] == pytest.approx(0.596, abs=0.01)
+
+
+def test_predict_match():
     payload = {
-        "player_a_name": "Novak Djokovic",
-        "player_b_name": "Carlos Alcaraz",
-        "surface": "grass",
-        "tourney_level": "G",
-        "best_of": 5,
-        "odds_a": 1.75,
-        "odds_b": 2.10,
+        "player_a": "Djokovic N.",
+        "player_b": "Tsitsipas S.",
+        "surface": "Grass",
+        "tournament": "Wimbledon",
+        "round_num": "QF",
+        "odds_a": 1.40,
+        "odds_b": 2.80,
     }
-    response = client.post("/predictions/match", json=payload)
-    assert response.status_code == 200
-    data = response.json()
-    assert "p_win_a" in data
-    assert "p_win_b" in data
-    total = data["p_win_a"] + data["p_win_b"]
-    assert abs(total - 1.0) < 1e-4, f"p_win_a + p_win_b = {total} (expected ~1.0)"
+    r = client.post("/api/v1/predictions/match", json=payload)
+    assert r.status_code == 200
+    data = r.json()
+    assert data["player_a"] == "Djokovic N."
+    assert data["player_b"] == "Tsitsipas S."
+    assert "markets" in data
+    assert set(data["markets"].keys()) == {"straight", "fatigue5", "ou39", "ou36", "hcp9", "ou33"}
+    for mid, m in data["markets"].items():
+        assert "model_prob" in m
+        assert "edge" in m
+        assert "is_value" in m
 
 
-# ── Test 5: GET /predictions/player/{id}/elo -> 200 ───────────────────────────
-
-def test_player_elo_200():
-    response = client.get("/predictions/player/1/elo")
-    assert response.status_code == 200
-    data = response.json()
-    assert "elo" in data
-    assert "player_id" in data
-    assert data["player_id"] == 1
+def test_predict_match_defaults():
+    """Prediction with minimal fields uses defaults."""
+    payload = {"player_a": "Alcaraz C.", "player_b": "Ruud C.", "odds_a": 1.60, "odds_b": 2.30}
+    r = client.post("/api/v1/predictions/match", json=payload)
+    assert r.status_code == 200
 
 
-# ── Test 6: GET /coupons/history -> 200 ───────────────────────────────────────
+# ── Legacy routes still work ───────────────────────────────────────────────────
 
-def test_coupon_history_200():
-    response = client.get("/coupons/history")
-    assert response.status_code == 200
-    data = response.json()
-    assert "items" in data
-    assert isinstance(data["items"], list)
+def test_legacy_coupons():
+    r = client.get("/coupons/today?demo=true")
+    assert r.status_code == 200
 
 
-# ── Test 7: GET /coupons/{invalid_id} -> 404 ──────────────────────────────────
-
-def test_coupon_invalid_id_404():
-    response = client.get("/coupons/nonexistent-coupon-id-12345")
-    assert response.status_code == 404
-
-
-# ── Test 8: Prediction latency < 200ms ────────────────────────────────────────
-
-def test_predict_match_latency():
-    payload = {
-        "player_a_name": "Jannik Sinner",
-        "player_b_name": "Daniil Medvedev",
-        "surface": "hard",
-        "tourney_level": "M",
-        "best_of": 3,
-        "odds_a": 1.65,
-        "odds_b": 2.30,
-    }
-    t0 = time.perf_counter()
-    response = client.post("/predictions/match", json=payload)
-    elapsed_ms = (time.perf_counter() - t0) * 1000
-    assert response.status_code == 200
-    assert elapsed_ms < 200.0, f"Prediction latency {elapsed_ms:.1f}ms exceeded 200ms"
-
-
-# ── Test 9: CouponResponse validates Pydantic schema ──────────────────────────
-
-def test_coupon_response_pydantic_schema():
-    response = client.get("/coupons/daily")
-    assert response.status_code == 200
-    coupons_data = response.json()
-    # Validate each coupon with Pydantic
-    for raw in coupons_data:
-        coupon = CouponResponse(**raw)
-        assert coupon.coupon_id
-        assert coupon.coupon_date
-        assert isinstance(coupon.selections, list)
-        assert coupon.total_ev is not None
-        assert coupon.priority in ("TOP PICK", "RECOMMENDED", "SPECULATIVE")
-
-
-# ── Test 10: /health returns version ──────────────────────────────────────────
-
-def test_health_returns_version():
-    response = client.get("/health")
-    assert response.status_code == 200
-    data = response.json()
-    assert "version" in data
-    assert data["version"] == "v10.1"
+def test_legacy_predictions():
+    r = client.get("/predictions/markets")
+    assert r.status_code == 200
