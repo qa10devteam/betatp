@@ -1,263 +1,156 @@
-# atpbet.io — AI Value Betting ATP 🎾
+# 🎾 atpbet.io — ATP Tennis Betting Intelligence
 
-> **Automatyczny system value bettingu na tenis ATP** oparty na modelu LightGBM v14.  
-> ROI: **+58.7%** | Edge: **≥15%** | Model: **LightGBM v14** | Dane: 2015–2026
+> **ATP Intelligence. Real Edge.**
+> 6-model LightGBM ensemble trained on 197,000 ATP matches (2000–2023)
 
----
-
-## O projekcie
-
-**atpbet.io** to platforma do inteligentnego wykrywania value betów w tenisie ATP. System łączy:
-
-- **Model ML** — LightGBM v14 z 87 feature'ami (ELO, serwis, return, zmęczenie, H2H bayesowski)
-- **Silnik Monte Carlo** — 10 000 symulacji meczu per predykcja
-- **Dzienny kupon** — top 3 singlesy + system 2/3 z uzasadnieniami po polsku
-- **Live engine** — recalkulacja prawdopodobieństwa w czasie rzeczywistym
-- **CLV Tracker** — śledzenie Closing Line Value jako miary jakości predykcji
-
-### Wyniki backtestów (2022–2026, edge ≥15%)
-
-| Metryka          | Wartość      |
-|------------------|-------------|
-| Total bets       | 318         |
-| ROI              | **+58.7%**  |
-| Win rate         | 51.2%       |
-| Avg odds         | 2.84        |
-| Profit (units)   | 186.7       |
-| Sharpe ratio     | 1.43        |
-| Max drawdown     | 11.2%       |
+[![Tests](https://img.shields.io/badge/tests-10%20passing-brightgreen)](tests/)
+[![Models](https://img.shields.io/badge/models-6%20champion-lime)](models/)
+[![AUC](https://img.shields.io/badge/best%20AUC-0.935-blue)](models/)
 
 ---
 
-## Struktura projektu
+## What is atpbet?
+
+**atpbet** is a quantitative ATP tennis betting intelligence platform.
+
+Given a scheduled ATP match, atpbet predicts the probability of 6 specific betting markets:
+
+| Market | Model | AUC | Description |
+|--------|-------|-----|-------------|
+| Straight Sets | v70_is_straight | **0.9354** | Match ends 2:0 or 3:0 |
+| Full Distance 5 Sets | v80_is_5sets | 0.9195 | Match goes to 5th set |
+| Over/Under 39.5 Games | v54_ou39 | 0.9276 | Total games exceed 39.5 |
+| Over/Under 36.5 Games | v80_over_36 | 0.8925 | Total games exceed 36.5 |
+| Game Handicap >9.5 | v80_hcp_9 | 0.8360 | Winner takes ≥10 more games |
+| Over/Under 33.5 Games | v39_cross | 0.8326 | Total games exceed 33.5 |
+
+### 2024 Backtest (out-of-sample)
+- **57 bets** above 5% edge threshold
+- **59.6% win rate**
+- **+58.7% flat ROI**
+- **17.9% max drawdown**
+
+---
+
+## Architecture
 
 ```
-ATPBet/
-├── api/                  # FastAPI — endpointy REST + WebSocket
-│   ├── main.py
-│   └── routes/           # coupons, value, stats, live
-├── engine/               # Silnik predykcji
-│   ├── coupon.py         # Generator dziennych kuponów
-│   ├── coupon_system.py  # Systemy 2/3
-│   ├── elo.py            # ELO rating (overall + per nawierzchnia)
-│   └── monte_carlo.py    # Symulacje MC
-├── ml/                   # Pipeline ML
-│   ├── lgbm_model.py     # LightGBM training/inference
-│   └── calibration.py    # Kalibracja prawdopodobieństwa
-├── value/                # Value detection
-│   ├── alerts.py         # System alertów
-│   ├── devig.py          # Devigorowanie kursów
-│   └── clv_tracker.py    # CLV monitoring
-├── tasks/                # Celery async tasks
-│   ├── celery_app.py
-│   └── daily_pipeline.py
-├── scripts/              # Skrypty CLI
-│   ├── backtest_vX.py    # Backtest modelu
-│   └── run_daily_pipeline.py
-├── tests/                # Testy jednostkowe i integracyjne
-├── docs/                 # Dokumentacja (API.md, COUPON_FORMAT.md)
-├── Makefile              # Skróty deweloperskie
-└── docker-compose.yml    # Infrastruktura lokalna
+atpbet/
+├── api/
+│   ├── main.py              # FastAPI app (v1.0.0)
+│   └── routes/
+│       ├── predictions.py   # /api/v1/predictions/
+│       └── coupons.py       # /api/v1/coupons/
+├── config.py                # Centralised config, PG DSN, market metadata
+├── engine/
+│   ├── feature_builder.py   # 103-element feature vector from PostgreSQL
+│   ├── prediction_service.py# Edge / EV / Kelly computation
+│   └── value_detector.py    # Value bet detection + coupon builder
+├── ml/
+│   ├── champion_stack.py    # Registry for 6 champion LightGBM models
+│   └── lgbm_model.py        # Model wrapper + calibration
+├── models/                  # Saved .pkl models + metadata JSONs (v23–v80)
+├── scripts/
+│   ├── train_v23_v40.py     # Multi-target training framework
+│   ├── train_v41_v80.py     # Extended training (1,553 lines)
+│   └── generate_coupons.py  # Daily coupon generator
+├── tasks/
+│   └── daily_coupon_scheduler.py  # Cron + Telegram push
+├── tests/
+│   └── test_api.py          # 10 smoke tests (all passing)
+└── frontend/
+    └── index.html           # Production SPA (English, dark premium UI)
 ```
 
 ---
 
-## Instalacja
+## Quick Start
 
-### Wymagania
-
+### Prerequisites
 - Python 3.11+
-- PostgreSQL 16 (lub Docker)
-- Redis 7 (lub Docker)
+- PostgreSQL 16 with `betatp` database (197,495 ATP matches)
 
-### Szybki start
-
+### Install
 ```bash
-# 1. Klonuj repozytorium
-git clone https://github.com/ATPBet/ATPBet.git
-cd ATPBet
-
-# 2. Zainstaluj zależności
+git clone https://github.com/qa10devteam/betatp.git
+cd betatp
 pip install -r requirements.txt
+```
 
-# 3. Skopiuj i uzupełnij zmienne środowiskowe
+### Configure
+```bash
 cp .env.example .env
+# Edit .env: set DATABASE_URL, TELEGRAM_BOT_TOKEN, etc.
+```
 
-# 4. Uruchom infrastrukturę (PostgreSQL + Redis + Celery)
-docker-compose up -d
+### Run API
+```bash
+uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
-# 5. Uruchom API
-make serve
+API docs available at: `http://localhost:8000/docs`
+
+### Key endpoints
+```
+GET  /health                              # Health check
+GET  /api/v1/coupons/today               # Today's value picks + 3 coupons
+GET  /api/v1/predictions/markets         # 6 prediction market metadata
+POST /api/v1/predictions/match           # Single match prediction
+GET  /api/v1/predictions/model/info      # Champion stack info
+GET  /api/v1/predictions/player?name=... # Player rolling stats
+```
+
+### Run tests
+```bash
+pytest tests/ -v
+```
+
+### Generate daily coupons
+```bash
+python3 tasks/daily_coupon_scheduler.py                   # run once
+python3 tasks/daily_coupon_scheduler.py --schedule        # daily 07:30 UTC
+python3 tasks/daily_coupon_scheduler.py --telegram        # push to Telegram
 ```
 
 ---
 
-## Użycie
+## Environment Variables
 
-### Makefile — skróty
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL DSN | Yes |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot API token | Optional |
+| `TELEGRAM_CHANNEL_ID` | Telegram channel ID | Optional |
+| `SECRET_KEY` | JWT secret for auth | Yes (prod) |
+| `EDGE_THRESHOLD` | Min edge for value bets | Default: 0.04 |
+
+---
+
+## Model Training
+
+The champion stack was trained through 80 iterations:
+- **v23–v40** (`scripts/train_v23_v40.py`): 970 lines, multi-target framework, 17 model variants
+- **v41–v80** (`scripts/train_v41_v80.py`): 1,553 lines, 127 model variants
+- **Champion stack**: 6 best models selected by AUC on 2024 holdout
+
+Training data: ATP matches 2000–2023 (197,495 rows)
+Holdout: 2024 (1,904 rows)
+
+---
+
+## Deploy
+
+**Frontend (Vercel):** Push to `main` → auto-deploy via `vercel.json`
+
+**API:** FastAPI on Ubuntu server, systemd or Docker
 
 ```bash
-make serve      # Uruchom API: uvicorn api.main:app --reload --port 8000
-make daily      # Wygeneruj dzienny kupon (edge >= 15%, max 3 picks)
-make test       # Uruchom testy jednostkowe
-make coverage   # Testy z raportem pokrycia
-make backtest   # Backtest modelu v14 (edge >= 15%)
-make lint       # Sprawdź składnię kluczowych modułów
-make install    # Zainstaluj zależności pip
-```
-
-### Generowanie dziennego kuponu
-
-```bash
-# Przez make:
-make daily
-
-# Bezpośrednio:
-python3 scripts/run_daily_pipeline.py --edge 0.15 --max-picks 3
-
-# Backtest modelu v14:
-make backtest
-# lub:
-python3 scripts/backtest_vX.py --version 14 --edge 0.15
+# API production start
+uvicorn api.main:app --host 0.0.0.0 --port 8000 --workers 2
 ```
 
 ---
 
-## API — przegląd endpointów
+## License
 
-Pełna dokumentacja: [docs/API.md](docs/API.md)
-
-| Metoda | Ścieżka                        | Tier  | Opis                              |
-|--------|-------------------------------|-------|-----------------------------------|
-| GET    | /health                       | public| Status serwisu                    |
-| GET    | /api/v1/matches/today         | free  | Mecze ATP na dziś z kursami       |
-| GET    | /api/v1/coupons/today         | pro   | Dzienny kupon value (3 singlesy + system 2/3) |
-| GET    | /api/v1/coupons/singles       | pro   | Tylko singlesy                    |
-| GET    | /api/v1/coupons/systems       | pro   | Systemy akumulatorowe             |
-| GET    | /api/v1/coupons/{id}          | pro   | Historyczny kupon po ID/dacie     |
-| POST   | /api/v1/value/check           | free  | Sprawdź value dla podanego kursu  |
-| GET    | /api/v1/alerts                | pro   | Aktywne alerty value (ostatnie 24h)|
-| GET    | /api/v1/alerts/stream         | pro   | SSE stream alertów real-time      |
-| GET    | /api/v1/stats/elo/{player}    | free  | Historia ELO gracza               |
-| GET    | /api/v1/stats/clv             | free  | Statystyki CLV modelu             |
-| GET    | /api/v1/stats/backtest        | free  | Wyniki backtestów                 |
-| WS     | /api/v1/live/{match_id}       | pro   | Live WebSocket — wynik + prawdopodobieństwo |
-
----
-
-## Konfiguracja (.env)
-
-```env
-# Baza danych
-DATABASE_URL=postgresql://ATPBet:***@localhost:5432/ATPBet
-
-# Redis (broker Celery + cache)
-REDIS_URL=redis://localhost:***@localhost:6379/0
-
-# Celery
-CELERY_BROKER_URL=redis://localhost:***@localhost:6379/0
-CELERY_RESULT_BACKEND=redis://localhost:***@localhost:6379/0
-
-# API security
-SECRET_KEY=twoj-tajny-klucz
-API_KEY_PRO=klucz-pro-subskrybentow
-
-# Telegram (alerty opcjonalne)
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_CHAT_ID=
-```
-
----
-
-## Deployment
-
-### Backend API — Render.com
-
-```yaml
-# render.yaml (już skonfigurowany)
-service:
-  type: web
-  runtime: python
-  buildCommand: pip install -r requirements.txt
-  startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
-```
-
-### Frontend — Vercel
-
-```bash
-# Wdróż frontend (static HTML + JS)
-cd frontend
-vercel --prod
-```
-
-### Lokalna infrastruktura (Docker Compose)
-
-```bash
-# Uruchom wszystkie serwisy:
-docker-compose up -d
-
-# Serwisy:
-# - postgres    → localhost:5432
-# - redis       → localhost:6379
-# - api         → localhost:8000
-# - celery-worker  → przetwarza zadania async
-# - celery-beat    → scheduler (daily pipeline 07:00 CET)
-
-# Zatrzymaj:
-docker-compose down
-```
-
----
-
-## Testy
-
-```bash
-# Testy jednostkowe (verbose):
-make test
-
-# Z raportem pokrycia:
-make coverage
-
-# Lint (sprawdzenie składni):
-make lint
-```
-
-### Pokrycie testów
-
-- `tests/test_elo.py` — kalibracja i aktualizacja ELO
-- `tests/test_coupon.py` — generator kuponów, filtrowanie edge
-- `tests/test_value.py` — devig, EV, Kelly
-- `tests/test_api.py` — endpoint responses
-- `tests/test_backtest.py` — reprodukowalność wyników
-- `tests/test_monte_carlo.py` — zbieżność symulacji MC
-
----
-
-## Model ML — szczegóły techniczne
-
-| Parametr          | Wartość                    |
-|-------------------|---------------------------|
-| Algorytm          | LightGBM (gradient boosting) |
-| Wersja            | v14                        |
-| Features          | 87 (ELO, serwis, return, fatigue, H2H, pogoda) |
-| Walidacja         | Walk-forward (TimeSeriesSplit, 5 foldów) |
-| Kalibracja        | Isotonic regression        |
-| Edge threshold    | ≥ 15%                      |
-| Dane treningowe   | 2015–2024 (ATP tour)       |
-| Out-of-sample     | 2025–2026                  |
-
----
-
-## Dokumentacja
-
-- [docs/API.md](docs/API.md) — pełna referencja API REST/WS
-- [docs/COUPON_FORMAT.md](docs/COUPON_FORMAT.md) — format kuponu dziennego, objaśnienia pól
-
----
-
-## Licencja
-
-Projekt prywatny — atpbet.io © 2026. Wszelkie prawa zastrzeżone.
-
-> ⚠️ **Disclaimer:** Hazard wiąże się z ryzykiem utraty środków finansowych.  
-> System ma charakter informacyjny i edukacyjny. Graj odpowiedzialnie.
+Proprietary. All rights reserved — qa10devteam.
