@@ -1,0 +1,26 @@
+{
+  "version": "v26_tiebreak",
+  "target": "has_tiebreak",
+  "target_desc": "Czy w meczu b\u0119dzie przynajmniej 1 tie-break?",
+  "trained_at": "20260629_1954",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 36,
+  "base_rate_train": 0.3867,
+  "mean_wf_auc": 0.6206,
+  "holdout_auc": 0.6062,
+  "holdout_bs": 0.2323,
+  "top_features": {
+    "age_diff": 193,
+    "ace_rate_l": 181,
+    "pin_prob_w": 177,
+    "combined_serve": 176,
+    "ace_rate_w": 174,
+    "df_rate_w": 152,
+    "hold_pct_w": 151,
+    "rank_ratio": 143,
+    "b365_prob_w": 139,
+    "df_rate_l": 138
+  },
+  "duration_sec": 121.2
+}

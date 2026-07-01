@@ -1,0 +1,28 @@
+{
+  "version": "v69_bo5_gamediff",
+  "target": "game_diff",
+  "target_desc": "BO5 game_diff regression",
+  "type": "regression",
+  "trained_at": "20260701_0758",
+  "n_train": 4971,
+  "n_holdout": 481,
+  "n_features": 103,
+  "target_mean": 6.8,
+  "mean_wf_rmse": 3.2,
+  "mean_wf_corr": 0.3564,
+  "holdout_rmse": 2.961,
+  "holdout_corr": 0.3687,
+  "top_features": {
+    "combined_aces": 96,
+    "age_l": 85,
+    "svpt_per_game_l": 79,
+    "svpt_per_game_w": 78,
+    "pin_log_odds": 77,
+    "pin_prob_w": 75,
+    "age_diff": 73,
+    "ace_per_set_w": 71,
+    "tb_rate_combined": 70,
+    "odds_consensus_w": 66
+  },
+  "duration_sec": 3.4
+}

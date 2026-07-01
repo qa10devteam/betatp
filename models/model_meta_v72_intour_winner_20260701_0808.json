@@ -1,0 +1,25 @@
+{
+  "version": "v72_intour_winner",
+  "target": "elo_fav_won",
+  "target_desc": "In-tournament Elo \u2192 winner prediction",
+  "trained_at": "20260701_0808",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 45,
+  "mean_wf_auc": 1.0,
+  "holdout_auc": 1.0,
+  "holdout_bs": 0.2183,
+  "top_features": {
+    "elo_diff": 1,
+    "tour_n_l": 0,
+    "in_elo_w": 0,
+    "in_elo_l": 0,
+    "tour_n_w": 0,
+    "in_elo_diff": 0,
+    "tour_n_diff": 0,
+    "elo_w": 0,
+    "elo_l": 0,
+    "surf_elo_w": 0
+  },
+  "duration_sec": 28.2
+}

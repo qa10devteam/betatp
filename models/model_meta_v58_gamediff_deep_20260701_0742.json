@@ -1,0 +1,28 @@
+{
+  "version": "v58_gamediff_deep",
+  "target": "game_diff",
+  "target_desc": "Game diff (handicap) DEEP model",
+  "type": "regression",
+  "trained_at": "20260701_0742",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "target_mean": 5.06,
+  "mean_wf_rmse": 2.495,
+  "mean_wf_corr": 0.4448,
+  "holdout_rmse": 2.425,
+  "holdout_corr": 0.422,
+  "top_features": {
+    "combined_aces": 436,
+    "df_rate_l": 341,
+    "elo_pin_diff": 334,
+    "odds_implied_vig": 333,
+    "break_pct_w": 330,
+    "pin_prob_w": 326,
+    "svpt_per_game_l": 310,
+    "svpt_per_game_w": 309,
+    "age_diff": 297,
+    "age_w": 296
+  },
+  "duration_sec": 10.5
+}

@@ -1,0 +1,25 @@
+{
+  "version": "v65_gs_ou39.5",
+  "target": "gs_ou_39.5",
+  "target_desc": "Grand Slam O/U 39.5 gem\u00f3w specialist",
+  "trained_at": "20260701_0753",
+  "n_train": 4929,
+  "n_holdout": 481,
+  "n_features": 103,
+  "mean_wf_auc": 0.6411,
+  "holdout_auc": 0.6353,
+  "holdout_bs": 0.2322,
+  "top_features": {
+    "pin_prob_w": 61,
+    "combined_aces": 50,
+    "surf_elo_x_surf_form": 44,
+    "break_pct_w": 42,
+    "tb_wr_w": 42,
+    "elo_pin_diff": 41,
+    "svpt_per_game_l": 39,
+    "age_l": 38,
+    "pin_log_odds": 35,
+    "df_rate_l": 35
+  },
+  "duration_sec": 2.4
+}

@@ -1,0 +1,25 @@
+{
+  "version": "v80_hcp_9",
+  "target": "hcp_9",
+  "target_desc": "ULTIMATE HCP gemowy >9.5",
+  "trained_at": "20260701_0833",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.8717,
+  "holdout_auc": 0.836,
+  "holdout_bs": 0.0425,
+  "top_features": {
+    "break_pct_w": 299,
+    "df_rate_l": 295,
+    "odds_implied_vig": 263,
+    "tb_rate_combined": 254,
+    "avg_game_len_l": 243,
+    "avg_game_len_w": 243,
+    "2ndWon_pct_w": 241,
+    "combined_aces": 231,
+    "rank_l_log": 229,
+    "1stWon_pct_l": 229
+  },
+  "duration_sec": 159.6
+}

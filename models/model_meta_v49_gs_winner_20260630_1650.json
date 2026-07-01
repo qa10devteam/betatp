@@ -1,0 +1,25 @@
+{
+  "version": "v49_gs_winner",
+  "target": "elo_fav_won",
+  "target_desc": "Grand Slam only winner model (pe\u0142ne features)",
+  "trained_at": "20260630_1650",
+  "n_train": 4929,
+  "n_holdout": 481,
+  "n_features": 103,
+  "mean_wf_auc": 1.0,
+  "holdout_auc": 1.0,
+  "holdout_bs": 0.1966,
+  "top_features": {
+    "elo_diff": 1,
+    "pin_log_odds": 0,
+    "pin_prob_w": 0,
+    "odds_consensus_w": 0,
+    "rank_diff": 0,
+    "rank_ratio": 0,
+    "b365_prob_w": 0,
+    "rank_w_log": 0,
+    "rank_l_log": 0,
+    "age_w": 0
+  },
+  "duration_sec": 0.4
+}

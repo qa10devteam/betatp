@@ -1,0 +1,25 @@
+{
+  "version": "v80_is_5sets",
+  "target": "is_5sets",
+  "target_desc": "ULTIMATE P(5 set\u00f3w)",
+  "trained_at": "20260701_0838",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.9262,
+  "holdout_auc": 0.9198,
+  "holdout_bs": 0.0507,
+  "top_features": {
+    "pin_prob_w": 45,
+    "svpt_per_game_l": 37,
+    "elo_pin_diff": 36,
+    "df_rate_l": 31,
+    "age_l": 30,
+    "avg_game_len_w": 30,
+    "2ndWon_pct_w": 29,
+    "combined_break": 29,
+    "break_pct_l": 28,
+    "hold_diff": 28
+  },
+  "duration_sec": 82.9
+}

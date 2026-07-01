@@ -1,0 +1,25 @@
+{
+  "version": "v60_clay_ou33",
+  "target": "over_33",
+  "target_desc": "Surface-specific [clay] O/U 33.5 \u2014 pe\u0142ne features",
+  "trained_at": "20260701_0744",
+  "n_train": 7201,
+  "n_holdout": 561,
+  "n_features": 103,
+  "mean_wf_auc": 0.8005,
+  "holdout_auc": 0.8175,
+  "holdout_bs": 0.104,
+  "top_features": {
+    "combined_aces": 88,
+    "market_x_serve": 87,
+    "age_diff": 76,
+    "tb_rate_combined": 49,
+    "clutch_x_round": 48,
+    "avg_game_len_w": 46,
+    "combined_break": 44,
+    "b365_prob_w": 43,
+    "clutch_diff": 43,
+    "break_diff": 42
+  },
+  "duration_sec": 39.9
+}

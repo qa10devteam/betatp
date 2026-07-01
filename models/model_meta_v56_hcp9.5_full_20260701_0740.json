@@ -1,0 +1,25 @@
+{
+  "version": "v56_hcp9.5_full",
+  "target": "hcp_9.5",
+  "target_desc": "HCP gemowy >9.5 \u2014 pe\u0142ne features",
+  "trained_at": "20260701_0740",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.8712,
+  "holdout_auc": 0.8338,
+  "holdout_bs": 0.0426,
+  "top_features": {
+    "avg_game_len_w": 107,
+    "df_rate_l": 98,
+    "pin_prob_w": 95,
+    "combined_aces": 86,
+    "b365_prob_w": 73,
+    "svpt_per_game_l": 69,
+    "combined_serve": 69,
+    "df_rate_w": 65,
+    "tb_rate_combined": 65,
+    "is_bo5": 64
+  },
+  "duration_sec": 122.3
+}

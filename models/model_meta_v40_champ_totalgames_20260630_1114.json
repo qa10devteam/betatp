@@ -1,0 +1,29 @@
+{
+  "version": "v40_champ_totalgames",
+  "target": "total_games",
+  "target_desc": "CHAMPION total_games regression \u2014 tuned + full feats",
+  "type": "regression",
+  "trained_at": "20260630_1114",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 45,
+  "target_mean": 26.67,
+  "target_std": 9.15,
+  "mean_wf_rmse": 7.099,
+  "mean_wf_corr": 0.6412,
+  "holdout_rmse": 6.887,
+  "holdout_corr": 0.6819,
+  "top_features": {
+    "pin_prob_w": 272,
+    "pin_log_odds": 224,
+    "ace_rate_l": 198,
+    "ace_rate_w": 198,
+    "combined_serve": 192,
+    "df_rate_l": 181,
+    "age_diff": 157,
+    "break_pct_w": 141,
+    "break_pct_l": 139,
+    "tb_rate_w": 137
+  },
+  "duration_sec": 3.7
+}

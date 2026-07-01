@@ -1,0 +1,26 @@
+{
+  "version": "v25_hcp7.5",
+  "target": "hcp_gem_7.5",
+  "target_desc": "Handicap gemowy: faworyt wygrywa >7.5 gemami",
+  "trained_at": "20260629_1950",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 36,
+  "base_rate_train": 0.179,
+  "mean_wf_auc": 0.7796,
+  "holdout_auc": 0.7686,
+  "holdout_bs": 0.1063,
+  "top_features": {
+    "pin_prob_w": 174,
+    "b365_prob_w": 162,
+    "ace_rate_w": 150,
+    "avg_game_len_combined": 148,
+    "break_pct_w": 148,
+    "combined_serve": 146,
+    "pin_log_odds": 142,
+    "df_rate_w": 137,
+    "rank_ratio": 134,
+    "surface_enc": 128
+  },
+  "duration_sec": 241.0
+}

@@ -1,0 +1,25 @@
+{
+  "version": "v48_clutch_5sets",
+  "target": "is_5sets",
+  "target_desc": "Clutch + fatigue \u2192 P(mecz 5 set\u00f3w) [tylko BO5]",
+  "trained_at": "20260630_1650",
+  "n_train": 4971,
+  "n_holdout": 481,
+  "n_features": 47,
+  "mean_wf_auc": 0.6338,
+  "holdout_auc": 0.625,
+  "holdout_bs": 0.1805,
+  "top_features": {
+    "age_l": 75,
+    "rank_ratio": 73,
+    "elo_pin_diff": 71,
+    "pin_log_odds": 64,
+    "odds_implied_vig": 64,
+    "elo_w": 55,
+    "tb_wr_w": 54,
+    "surf_elo_l": 51,
+    "age_w": 48,
+    "age_diff": 47
+  },
+  "duration_sec": 2.0
+}

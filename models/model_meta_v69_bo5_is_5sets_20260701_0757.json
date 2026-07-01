@@ -1,0 +1,25 @@
+{
+  "version": "v69_bo5_is_5sets",
+  "target": "is_5sets",
+  "target_desc": "BO5 P(5 set\u00f3w)",
+  "trained_at": "20260701_0757",
+  "n_train": 4971,
+  "n_holdout": 481,
+  "n_features": 103,
+  "mean_wf_auc": 0.6355,
+  "holdout_auc": 0.6,
+  "holdout_bs": 0.184,
+  "top_features": {
+    "elo_pin_diff": 130,
+    "df_rate_w": 119,
+    "avg_game_len_w": 115,
+    "break_pct_l": 114,
+    "df_rate_l": 114,
+    "elo_x_form": 112,
+    "age_diff": 108,
+    "age_l": 106,
+    "hold_pct_w": 101,
+    "age_w": 101
+  },
+  "duration_sec": 4.2
+}

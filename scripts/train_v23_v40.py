@@ -131,8 +131,11 @@ def load_full_dataset():
     """Wczytuje dataset z parsowanymi wynikami i features."""
     log("Wczytywanie danych...")
     df = pd.read_parquet(ODDS_PAR)
-    df["tourney_date"] = pd.to_datetime(df["tourney_date"].astype(str), format="%Y%m%d", errors="coerce")
-    df["year"] = df["tourney_date"].dt.year.fillna(0).astype(int)
+    # tourney_date is already Timestamp in parquet
+    if not pd.api.types.is_datetime64_any_dtype(df["tourney_date"]):
+        df["tourney_date"] = pd.to_datetime(df["tourney_date"].astype(str), format="%Y%m%d", errors="coerce")
+    if "year" not in df.columns or df["year"].isna().all():
+        df["year"] = df["tourney_date"].dt.year.fillna(0).astype(int)
     
     # Weather
     if WFEAT_PAR.exists():
@@ -144,7 +147,9 @@ def load_full_dataset():
     # Parse scores
     log("  Parsowanie wyników meczów...")
     parsed = df['score'].apply(parse_score)
-    score_df = pd.DataFrame(parsed.tolist(), index=df.index)
+    # parse_score returns dict or None — replace None with empty dict for DataFrame
+    parsed_clean = parsed.apply(lambda x: x if x is not None else {})
+    score_df = pd.DataFrame(parsed_clean.tolist(), index=df.index)
     for col in ['n_sets','total_games','w_games','l_games','game_diff','n_tiebreaks','set1_winner_won']:
         if col in score_df.columns:
             df[col] = score_df[col]

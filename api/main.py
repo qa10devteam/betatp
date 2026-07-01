@@ -1,5 +1,5 @@
 """
-api/main.py — FastAPI application entry point dla betatp.io
+api/main.py — FastAPI application entry point dla atpbet.io
 """
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,9 +30,9 @@ DATA_DIR = BASE_DIR / "data"
 
 # ── App ────────────────────────────────────────────────────────────────────────
 app = FastAPI(
-    title="betatp.io API",
-    description="Profesjonalne kupony tenisowe ATP",
-    version="10.1",
+    title="atpbet.io API",
+    description="ATP Tennis Betting Intelligence",
+    version="1.0.0",
 )
 
 app.add_middleware(
@@ -50,9 +50,14 @@ try:
 except Exception:
     pass
 
-app.include_router(coupons_router, prefix="/coupons", tags=["coupons"])
-app.include_router(predictions_router, prefix="/predictions", tags=["predictions"])
-app.include_router(live_router, prefix="/live", tags=["live"])
+# ── Include routers under /api/v1/ ────────────────────────────────────────────
+app.include_router(coupons_router, prefix="/api/v1/coupons", tags=["coupons"])
+app.include_router(predictions_router, prefix="/api/v1/predictions", tags=["predictions"])
+app.include_router(live_router, prefix="/api/v1/live", tags=["live"])
+
+# Legacy paths (keep for backwards compat)
+app.include_router(coupons_router, prefix="/coupons", tags=["coupons-legacy"], include_in_schema=False)
+app.include_router(predictions_router, prefix="/predictions", tags=["predictions-legacy"], include_in_schema=False)
 
 if value_router is not None:
     app.include_router(value_router)
@@ -64,16 +69,16 @@ if stats_router is not None:
 # ── Startup event ──────────────────────────────────────────────────────────────
 @app.on_event("startup")
 async def startup():
-    print("[betatp] API starting up...")
-    print("[betatp] Health:     http://localhost:8000/health")
-    print("[betatp] Dashboard:  http://localhost:8000/")
-    print("[betatp] Docs:       http://localhost:8000/docs")
+    print("[ATPBet] API starting up...")
+    print("[ATPBet] Health:     http://localhost:8000/health")
+    print("[ATPBet] Dashboard:  http://localhost:8000/")
+    print("[ATPBet] Docs:       http://localhost:8000/docs")
 
 
 # ── Frontend ───────────────────────────────────────────────────────────────────
 @app.get("/", include_in_schema=False)
 async def serve_frontend():
-    """Serwuje główny dashboard (frontend/index.html)."""
+    """Serves główny dashboard (frontend/index.html)."""
     index = FRONTEND_DIR / "index.html"
     if not index.exists():
         raise HTTPException(status_code=404, detail="Frontend index.html not found")
@@ -83,8 +88,8 @@ async def serve_frontend():
 # ── Static data files ──────────────────────────────────────────────────────────
 @app.get("/data/{filename}", include_in_schema=False)
 async def serve_data(filename: str):
-    """Serwuje pliki danych (JSON / CSV) z katalogu data/."""
-    # Zabezpieczenie przed path traversal
+    """Serves pliki danych (JSON / CSV) z katalogu data/."""
+    # Path traversal protection
     if ".." in filename or "/" in filename:
         raise HTTPException(status_code=400, detail="Invalid filename")
     if not (filename.endswith(".json") or filename.endswith(".csv")):

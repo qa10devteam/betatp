@@ -1,0 +1,28 @@
+{
+  "version": "v80_n_sets",
+  "target": "n_sets",
+  "target_desc": "ULTIMATE n_sets regression",
+  "type": "regression",
+  "trained_at": "20260701_1125",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "target_mean": 2.66,
+  "mean_wf_rmse": 0.558,
+  "mean_wf_corr": 0.7217,
+  "holdout_rmse": 0.573,
+  "holdout_corr": 0.7461,
+  "top_features": {
+    "df_rate_w": 422,
+    "elo_pin_diff": 409,
+    "df_rate_l": 369,
+    "2ndWon_pct_w": 361,
+    "age_diff": 356,
+    "odds_implied_vig": 355,
+    "age_w": 343,
+    "break_pct_l": 340,
+    "svpt_per_game_w": 333,
+    "surf_elo_diff": 324
+  },
+  "duration_sec": 14.3
+}

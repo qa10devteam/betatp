@@ -1,0 +1,28 @@
+{
+  "version": "v50_grass_game_diff",
+  "target": "game_diff",
+  "target_desc": "Grass handicap gemowy",
+  "type": "regression",
+  "trained_at": "20260630_1650",
+  "n_train": 2402,
+  "n_holdout": 208,
+  "n_features": 103,
+  "target_mean": 5.22,
+  "mean_wf_rmse": 2.634,
+  "mean_wf_corr": 0.4757,
+  "holdout_rmse": 2.379,
+  "holdout_corr": 0.4966,
+  "top_features": {
+    "odds_implied_vig": 116,
+    "elo_pin_diff": 83,
+    "b365_prob_w": 82,
+    "svpt_per_game_l": 76,
+    "hold_pct_w": 68,
+    "market_x_serve": 62,
+    "pin_prob_w": 61,
+    "combined_serve": 61,
+    "surf_elo_diff": 59,
+    "serve_dom_l": 59
+  },
+  "duration_sec": 2.2
+}

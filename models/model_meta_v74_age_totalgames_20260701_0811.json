@@ -1,0 +1,28 @@
+{
+  "version": "v74_age_totalgames",
+  "target": "total_games",
+  "target_desc": "Age interaction \u2192 total_games",
+  "type": "regression",
+  "trained_at": "20260701_0811",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 110,
+  "target_mean": 26.67,
+  "mean_wf_rmse": 7.111,
+  "mean_wf_corr": 0.64,
+  "holdout_rmse": 6.921,
+  "holdout_corr": 0.6774,
+  "top_features": {
+    "combined_aces": 234,
+    "elo_pin_diff": 147,
+    "pin_log_odds": 136,
+    "df_rate_l": 135,
+    "pin_prob_w": 123,
+    "tb_rate_w": 121,
+    "df_rate_w": 111,
+    "break_pct_w": 108,
+    "odds_consensus_w": 105,
+    "market_width": 104
+  },
+  "duration_sec": 5.7
+}

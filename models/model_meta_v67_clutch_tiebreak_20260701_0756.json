@@ -1,0 +1,25 @@
+{
+  "version": "v67_clutch_tiebreak",
+  "target": "has_tb",
+  "target_desc": "Clutch + serve \u2192 P(tie-break) z nowymi features",
+  "trained_at": "20260701_0756",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 78,
+  "mean_wf_auc": 0.62,
+  "holdout_auc": 0.6092,
+  "holdout_bs": 0.2322,
+  "top_features": {
+    "combined_aces": 178,
+    "elo_pin_diff": 107,
+    "avg_game_len_w": 106,
+    "combined_break": 104,
+    "pin_prob_w": 103,
+    "surf_elo_x_surf_form": 102,
+    "age_w": 97,
+    "svpt_per_game_l": 94,
+    "break_diff": 94,
+    "df_rate_w": 91
+  },
+  "duration_sec": 148.6
+}

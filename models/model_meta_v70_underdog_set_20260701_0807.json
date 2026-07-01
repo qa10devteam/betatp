@@ -1,0 +1,25 @@
+{
+  "version": "v70_underdog_set",
+  "target": "underdog_set",
+  "target_desc": "Pipeline P(underdog wins set)",
+  "trained_at": "20260701_0807",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.6212,
+  "holdout_auc": 0.6334,
+  "holdout_bs": 0.2324,
+  "top_features": {
+    "pin_prob_w": 49,
+    "is_bo5": 38,
+    "pin_x_elo": 35,
+    "market_width": 32,
+    "pin_log_odds": 32,
+    "svpt_per_game_w": 32,
+    "serve_x_elo": 29,
+    "surf_form_diff": 29,
+    "age_diff": 26,
+    "elo_pin_diff": 26
+  },
+  "duration_sec": 75.2
+}

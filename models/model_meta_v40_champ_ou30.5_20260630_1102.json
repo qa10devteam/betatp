@@ -1,0 +1,26 @@
+{
+  "version": "v40_champ_ou30.5",
+  "target": "champ_over_30.5",
+  "target_desc": "CHAMPION O/U 30.5 gem\u00f3w (tuned + full feats)",
+  "trained_at": "20260630_1102",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 45,
+  "base_rate_train": 0.2907,
+  "mean_wf_auc": 0.7646,
+  "holdout_auc": 0.7665,
+  "holdout_bs": 0.1618,
+  "top_features": {
+    "pin_log_odds": 190,
+    "ace_rate_l": 151,
+    "df_rate_l": 121,
+    "combined_serve": 111,
+    "pin_prob_w": 99,
+    "odds_consensus_w": 93,
+    "2nd_won_w": 92,
+    "avg_game_len_combined": 89,
+    "df_rate_w": 89,
+    "break_pct_w": 84
+  },
+  "duration_sec": 145.5
+}

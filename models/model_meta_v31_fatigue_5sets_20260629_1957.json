@@ -1,0 +1,26 @@
+{
+  "version": "v31_fatigue_5sets",
+  "target": "is_5sets",
+  "target_desc": "Fatigue-focused: P(mecz idzie do 5 set\u00f3w)",
+  "trained_at": "20260629_1957",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 40,
+  "base_rate_train": 0.0429,
+  "mean_wf_auc": 0.9248,
+  "holdout_auc": 0.9195,
+  "holdout_bs": 0.0487,
+  "top_features": {
+    "pin_prob_w": 71,
+    "2nd_won_w": 65,
+    "age_diff": 59,
+    "ace_rate_w": 55,
+    "df_rate_w": 54,
+    "rank_ratio": 53,
+    "pin_log_odds": 52,
+    "break_pct_l": 50,
+    "combined_break": 50,
+    "hold_pct_l": 48
+  },
+  "duration_sec": 90.8
+}

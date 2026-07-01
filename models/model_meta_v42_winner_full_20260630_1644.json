@@ -1,0 +1,25 @@
+{
+  "version": "v42_winner_full",
+  "target": "elo_fav_won",
+  "target_desc": "P(Elo favourite wygrywa) \u2014 pe\u0142ne features, max depth",
+  "trained_at": "20260630_1644",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 1.0,
+  "holdout_auc": 0.9996,
+  "holdout_bs": 0.2183,
+  "top_features": {
+    "elo_prob_w": 1,
+    "pin_log_odds": 0,
+    "pin_prob_w": 0,
+    "odds_consensus_w": 0,
+    "rank_diff": 0,
+    "rank_ratio": 0,
+    "b365_prob_w": 0,
+    "rank_w_log": 0,
+    "rank_l_log": 0,
+    "age_w": 0
+  },
+  "duration_sec": 32.9
+}

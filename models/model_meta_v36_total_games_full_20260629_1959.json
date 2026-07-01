@@ -1,0 +1,29 @@
+{
+  "version": "v36_total_games_full",
+  "target": "total_games",
+  "target_desc": "Full-feature total_games regression (all available features)",
+  "type": "regression",
+  "trained_at": "20260629_1959",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 40,
+  "target_mean": 26.67,
+  "target_std": 9.15,
+  "mean_wf_rmse": 7.111,
+  "mean_wf_corr": 0.6399,
+  "holdout_rmse": 6.891,
+  "holdout_corr": 0.682,
+  "top_features": {
+    "pin_prob_w": 229,
+    "ace_rate_l": 213,
+    "pin_log_odds": 193,
+    "age_diff": 183,
+    "ace_rate_w": 175,
+    "df_rate_l": 174,
+    "break_pct_w": 166,
+    "combined_serve": 162,
+    "combined_break": 139,
+    "hold_pct_l": 137
+  },
+  "duration_sec": 4.1
+}

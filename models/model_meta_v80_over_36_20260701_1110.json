@@ -1,0 +1,25 @@
+{
+  "version": "v80_over_36",
+  "target": "over_36",
+  "target_desc": "ULTIMATE O/U 36.5 gem\u00f3w",
+  "trained_at": "20260701_1110",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.8619,
+  "holdout_auc": 0.8909,
+  "holdout_bs": 0.09,
+  "top_features": {
+    "combined_aces": 179,
+    "df_rate_l": 121,
+    "age_diff": 102,
+    "avg_game_len_l": 100,
+    "odds_implied_vig": 92,
+    "df_rate_w": 91,
+    "age_l": 87,
+    "clutch_x_round": 87,
+    "svpt_per_game_l": 83,
+    "market_x_serve": 82
+  },
+  "duration_sec": 108.7
+}

@@ -1,0 +1,25 @@
+{
+  "version": "v80_over_30",
+  "target": "over_30",
+  "target_desc": "ULTIMATE O/U 30.5 gem\u00f3w",
+  "trained_at": "20260701_0825",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.7607,
+  "holdout_auc": 0.7624,
+  "holdout_bs": 0.1633,
+  "top_features": {
+    "combined_aces": 274,
+    "df_rate_l": 252,
+    "age_l": 216,
+    "tb_rate_combined": 209,
+    "surf_elo_x_surf_form": 207,
+    "svpt_per_game_l": 204,
+    "df_rate_w": 199,
+    "pin_log_odds": 198,
+    "hold_diff": 196,
+    "elo_pin_diff": 192
+  },
+  "duration_sec": 128.4
+}

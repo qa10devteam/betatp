@@ -1,0 +1,25 @@
+{
+  "version": "v51_straight_sets",
+  "target": "is_straight",
+  "target_desc": "P(faworyt wygrywa bez straty seta \u2014 3:0 lub 2:0)",
+  "trained_at": "20260630_1652",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.6204,
+  "holdout_auc": 0.6322,
+  "holdout_bs": 0.2329,
+  "top_features": {
+    "pin_prob_w": 52,
+    "is_bo5": 33,
+    "pin_log_odds": 31,
+    "pin_x_elo": 30,
+    "serve_x_elo": 30,
+    "age_diff": 28,
+    "market_width": 26,
+    "2ndWon_pct_w": 25,
+    "df_rate_l": 25,
+    "surf_elo_x_surf_form": 23
+  },
+  "duration_sec": 88.7
+}

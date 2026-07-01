@@ -1,0 +1,28 @@
+{
+  "version": "v60_grass_totalgames",
+  "target": "total_games",
+  "target_desc": "Surface-specific [grass] total_games regression",
+  "type": "regression",
+  "trained_at": "20260701_0743",
+  "n_train": 2402,
+  "n_holdout": 208,
+  "n_features": 103,
+  "target_mean": 31.42,
+  "mean_wf_rmse": 8.172,
+  "mean_wf_corr": 0.649,
+  "holdout_rmse": 8.194,
+  "holdout_corr": 0.6576,
+  "top_features": {
+    "odds_implied_vig": 71,
+    "tb_rate_l": 68,
+    "df_rate_w": 67,
+    "hold_pct_l": 65,
+    "combined_serve": 64,
+    "serve_dom_l": 60,
+    "is_bo5": 59,
+    "clutch_diff": 58,
+    "odds_consensus_w": 57,
+    "pin_log_odds": 57
+  },
+  "duration_sec": 2.1
+}

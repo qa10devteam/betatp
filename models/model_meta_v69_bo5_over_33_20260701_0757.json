@@ -1,0 +1,25 @@
+{
+  "version": "v69_bo5_over_33",
+  "target": "over_33",
+  "target_desc": "BO5 O/U 33.5 gem\u00f3w",
+  "trained_at": "20260701_0757",
+  "n_train": 4971,
+  "n_holdout": 481,
+  "n_features": 103,
+  "mean_wf_auc": 0.6483,
+  "holdout_auc": 0.6102,
+  "holdout_bs": 0.2325,
+  "top_features": {
+    "df_rate_w": 82,
+    "age_l": 81,
+    "pin_log_odds": 77,
+    "ace_per_set_l": 73,
+    "combined_aces": 60,
+    "age_diff": 59,
+    "odds_implied_vig": 59,
+    "2ndWon_pct_w": 59,
+    "ace_rate_w": 59,
+    "market_width": 58
+  },
+  "duration_sec": 3.4
+}

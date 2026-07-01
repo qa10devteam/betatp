@@ -1,0 +1,28 @@
+{
+  "version": "v66_fatigue_gamediff",
+  "target": "game_diff",
+  "target_desc": "Fatigue-aware game_diff regression",
+  "type": "regression",
+  "trained_at": "20260701_0753",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 87,
+  "target_mean": 5.06,
+  "mean_wf_rmse": 2.489,
+  "mean_wf_corr": 0.4487,
+  "holdout_rmse": 2.414,
+  "holdout_corr": 0.4298,
+  "top_features": {
+    "combined_aces": 225,
+    "pin_prob_w": 153,
+    "avg_game_len_w": 118,
+    "elo_pin_diff": 118,
+    "odds_consensus_w": 110,
+    "pin_log_odds": 109,
+    "tb_rate_combined": 108,
+    "market_width": 107,
+    "age_w": 104,
+    "surf_elo_diff": 104
+  },
+  "duration_sec": 5.8
+}

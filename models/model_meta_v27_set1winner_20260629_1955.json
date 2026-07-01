@@ -1,0 +1,26 @@
+{
+  "version": "v27_set1winner",
+  "target": "set1_predicts_match",
+  "target_desc": "Czy zwyci\u0119zca 1. seta wygrywa mecz?",
+  "trained_at": "20260629_1955",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 28,
+  "base_rate_train": 0.8052,
+  "mean_wf_auc": 0.5691,
+  "holdout_auc": 0.5642,
+  "holdout_bs": 0.1681,
+  "top_features": {
+    "2nd_won_w": 121,
+    "break_pct_l": 111,
+    "df_rate_l": 102,
+    "df_rate_w": 95,
+    "rank_ratio": 94,
+    "hold_pct_w": 92,
+    "2nd_won_l": 90,
+    "1st_won_w": 88,
+    "pin_prob_w": 87,
+    "age_diff": 84
+  },
+  "duration_sec": 93.0
+}

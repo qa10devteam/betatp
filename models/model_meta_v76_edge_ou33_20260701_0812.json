@@ -1,0 +1,25 @@
+{
+  "version": "v76_edge_ou33",
+  "target": "over_33",
+  "target_desc": "Market edge \u2192 O/U 33.5",
+  "trained_at": "20260701_0812",
+  "n_train": 15070,
+  "n_holdout": 1313,
+  "n_features": 104,
+  "mean_wf_auc": 0.8112,
+  "holdout_auc": 0.8129,
+  "holdout_bs": 0.1172,
+  "top_features": {
+    "combined_aces": 87,
+    "pin_log_odds": 67,
+    "age_w": 65,
+    "age_diff": 64,
+    "avg_game_len_l": 62,
+    "b365_prob_w": 60,
+    "tb_rate_combined": 58,
+    "df_rate_w": 54,
+    "elo_pin_diff": 52,
+    "odds_consensus_w": 51
+  },
+  "duration_sec": 73.6
+}

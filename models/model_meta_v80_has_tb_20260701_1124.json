@@ -1,0 +1,25 @@
+{
+  "version": "v80_has_tb",
+  "target": "has_tb",
+  "target_desc": "ULTIMATE P(tie-break)",
+  "trained_at": "20260701_1124",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.6182,
+  "holdout_auc": 0.6039,
+  "holdout_bs": 0.2329,
+  "top_features": {
+    "combined_aces": 281,
+    "break_diff": 227,
+    "df_rate_l": 209,
+    "elo_pin_diff": 203,
+    "odds_implied_vig": 193,
+    "avg_game_len_l": 187,
+    "age_diff": 174,
+    "2ndWon_pct_l": 173,
+    "svpt_per_game_l": 164,
+    "surf_elo_x_surf_form": 163
+  },
+  "duration_sec": 124.4
+}

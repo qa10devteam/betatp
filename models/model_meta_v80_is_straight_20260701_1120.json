@@ -1,0 +1,25 @@
+{
+  "version": "v80_is_straight",
+  "target": "is_straight",
+  "target_desc": "ULTIMATE P(straight sets 3:0)",
+  "trained_at": "20260701_1120",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.9483,
+  "holdout_auc": 0.9341,
+  "holdout_bs": 0.0603,
+  "top_features": {
+    "df_rate_w": 145,
+    "age_l": 125,
+    "odds_implied_vig": 118,
+    "age_diff": 118,
+    "rank_x_form": 94,
+    "surf_elo_w": 92,
+    "break_pct_w": 88,
+    "df_rate_l": 87,
+    "svpt_per_game_w": 83,
+    "break_pct_l": 78
+  },
+  "duration_sec": 91.2
+}

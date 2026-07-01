@@ -1,0 +1,25 @@
+{
+  "version": "v54_ou42.5_full",
+  "target": "ou_42.5",
+  "target_desc": "O/U 42.5 gem\u00f3w \u2014 pe\u0142ne features + Elo",
+  "trained_at": "20260630_1706",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.9361,
+  "holdout_auc": 0.9328,
+  "holdout_bs": 0.0548,
+  "top_features": {
+    "elo_pin_diff": 65,
+    "combined_aces": 65,
+    "df_rate_w": 46,
+    "age_diff": 45,
+    "odds_implied_vig": 42,
+    "surf_elo_x_surf_form": 42,
+    "svpt_per_game_l": 40,
+    "tb_wr_w": 39,
+    "pin_log_odds": 37,
+    "ace_rate_w": 37
+  },
+  "duration_sec": 90.5
+}

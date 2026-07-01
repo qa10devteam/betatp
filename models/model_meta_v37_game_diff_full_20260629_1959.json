@@ -1,0 +1,29 @@
+{
+  "version": "v37_game_diff_full",
+  "target": "game_diff",
+  "target_desc": "Full-feature game_diff regression (handicap target)",
+  "type": "regression",
+  "trained_at": "20260629_1959",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 40,
+  "target_mean": 5.06,
+  "target_std": 2.81,
+  "mean_wf_rmse": 2.496,
+  "mean_wf_corr": 0.4432,
+  "holdout_rmse": 2.42,
+  "holdout_corr": 0.4237,
+  "top_features": {
+    "pin_prob_w": 255,
+    "ace_rate_w": 219,
+    "ace_rate_l": 211,
+    "age_diff": 194,
+    "pin_log_odds": 187,
+    "df_rate_l": 182,
+    "combined_serve": 174,
+    "b365_prob_w": 165,
+    "surface_enc": 153,
+    "tb_rate_w": 151
+  },
+  "duration_sec": 4.3
+}

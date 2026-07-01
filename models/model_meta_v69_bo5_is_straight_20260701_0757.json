@@ -1,0 +1,25 @@
+{
+  "version": "v69_bo5_is_straight",
+  "target": "is_straight",
+  "target_desc": "BO5 P(3:0 straight sets)",
+  "trained_at": "20260701_0757",
+  "n_train": 4971,
+  "n_holdout": 481,
+  "n_features": 103,
+  "mean_wf_auc": 0.6432,
+  "holdout_auc": 0.6129,
+  "holdout_bs": 0.2391,
+  "top_features": {
+    "df_rate_w": 90,
+    "pin_log_odds": 81,
+    "age_l": 55,
+    "pin_x_elo": 50,
+    "serve_x_elo": 48,
+    "svpt_per_game_w": 47,
+    "age_diff": 46,
+    "df_rate_l": 46,
+    "serve_diff": 44,
+    "break_pct_w": 42
+  },
+  "duration_sec": 2.7
+}

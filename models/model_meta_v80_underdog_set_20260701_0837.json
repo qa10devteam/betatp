@@ -1,0 +1,25 @@
+{
+  "version": "v80_underdog_set",
+  "target": "underdog_set",
+  "target_desc": "ULTIMATE P(underdog wins set)",
+  "trained_at": "20260701_0837",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.6152,
+  "holdout_auc": 0.6263,
+  "holdout_bs": 0.2318,
+  "top_features": {
+    "odds_implied_vig": 176,
+    "df_rate_l": 176,
+    "svpt_per_game_w": 160,
+    "age_diff": 156,
+    "elo_pin_diff": 155,
+    "2ndWon_pct_w": 154,
+    "age_l": 149,
+    "df_rate_w": 145,
+    "surf_elo_l": 138,
+    "rank_ratio": 131
+  },
+  "duration_sec": 111.7
+}

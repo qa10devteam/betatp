@@ -1,0 +1,32 @@
+{
+  "version": "v45_nsets_momentum",
+  "target": "n_sets_class",
+  "target_desc": "Momentum + clutch \u2192 multinomial n_sets (2/3/4+ sety)",
+  "type": "multiclass",
+  "n_classes": 3,
+  "trained_at": "20260630_1650",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 97,
+  "class_dist": {
+    "0": 0.495,
+    "1": 0.392,
+    "2": 0.113
+  },
+  "mean_wf_mauc": 0.7661,
+  "holdout_ll": 0.6618,
+  "holdout_macro_auc": 0.7747,
+  "top_features": {
+    "df_rate_w": 635,
+    "odds_implied_vig": 614,
+    "age_w": 597,
+    "2ndWon_pct_w": 570,
+    "df_rate_l": 529,
+    "age_l": 526,
+    "break_pct_l": 522,
+    "elo_pin_diff": 506,
+    "age_diff": 505,
+    "surf_elo_x_surf_form": 495
+  },
+  "duration_sec": 20.5
+}

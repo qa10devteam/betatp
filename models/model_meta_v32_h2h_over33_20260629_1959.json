@@ -1,0 +1,26 @@
+{
+  "version": "v32_h2h_over33",
+  "target": "over_33",
+  "target_desc": "H2H closeness: wyr\u00f3wnane H2H \u2192 wi\u0119cej gem\u00f3w?",
+  "trained_at": "20260629_1959",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 38,
+  "base_rate_train": 0.1895,
+  "mean_wf_auc": 0.8111,
+  "holdout_auc": 0.8286,
+  "holdout_bs": 0.1143,
+  "top_features": {
+    "pin_log_odds": 127,
+    "age_diff": 115,
+    "pin_prob_w": 107,
+    "ace_rate_l": 106,
+    "b365_prob_w": 90,
+    "tb_rate_w": 90,
+    "rank_ratio": 89,
+    "df_rate_w": 87,
+    "avg_game_len_w": 87,
+    "rank_diff": 84
+  },
+  "duration_sec": 98.7
+}

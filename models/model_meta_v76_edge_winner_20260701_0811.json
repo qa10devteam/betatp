@@ -1,0 +1,25 @@
+{
+  "version": "v76_edge_winner",
+  "target": "elo_fav_won",
+  "target_desc": "Market edge winner model (|elo_prob - pin_prob| > 5%)",
+  "trained_at": "20260701_0811",
+  "n_train": 15070,
+  "n_holdout": 1313,
+  "n_features": 104,
+  "mean_wf_auc": 1.0,
+  "holdout_auc": 1.0,
+  "holdout_bs": 0.2227,
+  "top_features": {
+    "elo_diff": 1,
+    "pin_prob_w": 0,
+    "b365_prob_w": 0,
+    "pin_log_odds": 0,
+    "rank_diff": 0,
+    "rank_ratio": 0,
+    "rank_w_log": 0,
+    "odds_consensus_w": 0,
+    "rank_l_log": 0,
+    "age_diff": 0
+  },
+  "duration_sec": 20.8
+}

@@ -1,0 +1,25 @@
+{
+  "version": "v75_upset_ou33",
+  "target": "over_33",
+  "target_desc": "Upset match O/U 33.5 (du\u017ce r\u00f3\u017cnice rankingowe)",
+  "trained_at": "20260701_0811",
+  "n_train": 2970,
+  "n_holdout": 283,
+  "n_features": 105,
+  "mean_wf_auc": 0.8362,
+  "holdout_auc": 0.8185,
+  "holdout_bs": 0.1589,
+  "top_features": {
+    "2ndWon_pct_w": 40,
+    "elo_pin_diff": 37,
+    "age_w": 34,
+    "surf_form_diff": 34,
+    "odds_consensus_w": 33,
+    "combined_serve": 31,
+    "combined_aces": 30,
+    "tb_rate_combined": 30,
+    "rank_w_log": 27,
+    "is_bo5": 26
+  },
+  "duration_sec": 1.4
+}

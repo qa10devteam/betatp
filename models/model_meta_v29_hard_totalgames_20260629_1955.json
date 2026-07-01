@@ -1,0 +1,29 @@
+{
+  "version": "v29_hard_totalgames",
+  "target": "total_games",
+  "target_desc": "Surface-specific total_games regression [Hard]",
+  "type": "regression",
+  "trained_at": "20260629_1955",
+  "n_train": 12615,
+  "n_holdout": 1135,
+  "n_features": 36,
+  "target_mean": 26.52,
+  "target_std": 8.83,
+  "mean_wf_rmse": 7.079,
+  "mean_wf_corr": 0.6142,
+  "holdout_rmse": 6.747,
+  "holdout_corr": 0.6551,
+  "top_features": {
+    "pin_prob_w": 248,
+    "ace_rate_l": 215,
+    "age_diff": 207,
+    "df_rate_l": 193,
+    "ace_rate_w": 188,
+    "odds_consensus_w": 167,
+    "df_rate_w": 164,
+    "tb_rate_w": 163,
+    "hold_diff": 160,
+    "2nd_won_l": 153
+  },
+  "duration_sec": 3.3
+}

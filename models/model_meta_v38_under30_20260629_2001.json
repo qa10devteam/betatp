@@ -1,0 +1,26 @@
+{
+  "version": "v38_under30",
+  "target": "under_30",
+  "target_desc": "Quantile: P(total_games \u2264 30)",
+  "trained_at": "20260629_2001",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 36,
+  "base_rate_train": 0.7093,
+  "mean_wf_auc": 0.7628,
+  "holdout_auc": 0.7634,
+  "holdout_bs": 0.1626,
+  "top_features": {
+    "pin_log_odds": 160,
+    "ace_rate_l": 152,
+    "age_diff": 126,
+    "df_rate_l": 118,
+    "pin_prob_w": 117,
+    "combined_serve": 116,
+    "rank_diff": 114,
+    "break_pct_w": 107,
+    "df_rate_w": 101,
+    "avg_game_len_combined": 97
+  },
+  "duration_sec": 114.2
+}

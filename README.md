@@ -1,4 +1,4 @@
-# betatp.io — AI Value Betting ATP 🎾
+# atpbet.io — AI Value Betting ATP 🎾
 
 > **Automatyczny system value bettingu na tenis ATP** oparty na modelu LightGBM v14.  
 > ROI: **+58.7%** | Edge: **≥15%** | Model: **LightGBM v14** | Dane: 2015–2026
@@ -7,7 +7,7 @@
 
 ## O projekcie
 
-**betatp.io** to platforma do inteligentnego wykrywania value betów w tenisie ATP. System łączy:
+**atpbet.io** to platforma do inteligentnego wykrywania value betów w tenisie ATP. System łączy:
 
 - **Model ML** — LightGBM v14 z 87 feature'ami (ELO, serwis, return, zmęczenie, H2H bayesowski)
 - **Silnik Monte Carlo** — 10 000 symulacji meczu per predykcja
@@ -32,7 +32,7 @@
 ## Struktura projektu
 
 ```
-betatp/
+ATPBet/
 ├── api/                  # FastAPI — endpointy REST + WebSocket
 │   ├── main.py
 │   └── routes/           # coupons, value, stats, live
@@ -74,8 +74,8 @@ betatp/
 
 ```bash
 # 1. Klonuj repozytorium
-git clone https://github.com/betatp/betatp.git
-cd betatp
+git clone https://github.com/ATPBet/ATPBet.git
+cd ATPBet
 
 # 2. Zainstaluj zależności
 pip install -r requirements.txt
@@ -149,7 +149,7 @@ Pełna dokumentacja: [docs/API.md](docs/API.md)
 
 ```env
 # Baza danych
-DATABASE_URL=postgresql://betatp:***@localhost:5432/betatp
+DATABASE_URL=postgresql://ATPBet:***@localhost:5432/ATPBet
 
 # Redis (broker Celery + cache)
 REDIS_URL=redis://localhost:***@localhost:6379/0
@@ -257,7 +257,7 @@ make lint
 
 ## Licencja
 
-Projekt prywatny — betatp.io © 2026. Wszelkie prawa zastrzeżone.
+Projekt prywatny — atpbet.io © 2026. Wszelkie prawa zastrzeżone.
 
 > ⚠️ **Disclaimer:** Hazard wiąże się z ryzykiem utraty środków finansowych.  
 > System ma charakter informacyjny i edukacyjny. Graj odpowiedzialnie.

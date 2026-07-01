@@ -1,0 +1,25 @@
+{
+  "version": "v70_is_straight",
+  "target": "is_straight",
+  "target_desc": "Pipeline P(straight sets)",
+  "trained_at": "20260701_0806",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.9496,
+  "holdout_auc": 0.9354,
+  "holdout_bs": 0.0624,
+  "top_features": {
+    "age_diff": 49,
+    "df_rate_w": 48,
+    "pin_prob_w": 47,
+    "tb_wr_l": 41,
+    "odds_implied_vig": 31,
+    "break_pct_w": 29,
+    "tb_wr_w": 28,
+    "break_pct_l": 27,
+    "df_rate_l": 27,
+    "pin_log_odds": 27
+  },
+  "duration_sec": 96.6
+}

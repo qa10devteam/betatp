@@ -1,0 +1,26 @@
+{
+  "version": "v23_ou36.5",
+  "target": "over_36.5",
+  "target_desc": "Over/Under 36.5 total gem\u00f3w w meczu",
+  "trained_at": "20260629_1938",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 36,
+  "base_rate_train": 0.1302,
+  "mean_wf_auc": 0.8613,
+  "holdout_auc": 0.8916,
+  "holdout_bs": 0.0773,
+  "top_features": {
+    "df_rate_w": 270,
+    "age_diff": 239,
+    "df_rate_l": 210,
+    "ace_rate_w": 209,
+    "ace_rate_l": 209,
+    "pin_prob_w": 204,
+    "rank_ratio": 192,
+    "2nd_won_w": 191,
+    "break_pct_w": 190,
+    "tb_rate_l": 183
+  },
+  "duration_sec": 142.3
+}

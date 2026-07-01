@@ -1,0 +1,25 @@
+{
+  "version": "v60_hard_ou33",
+  "target": "over_33",
+  "target_desc": "Surface-specific [hard] O/U 33.5 \u2014 pe\u0142ne features",
+  "trained_at": "20260701_0745",
+  "n_train": 12615,
+  "n_holdout": 1135,
+  "n_features": 103,
+  "mean_wf_auc": 0.7836,
+  "holdout_auc": 0.8153,
+  "holdout_bs": 0.1166,
+  "top_features": {
+    "tb_rate_combined": 49,
+    "pin_prob_w": 41,
+    "age_l": 32,
+    "svpt_per_game_l": 32,
+    "2ndWon_pct_w": 30,
+    "age_diff": 29,
+    "surf_elo_x_surf_form": 29,
+    "rank_ratio": 28,
+    "combined_aces": 27,
+    "b365_prob_w": 27
+  },
+  "duration_sec": 52.4
+}

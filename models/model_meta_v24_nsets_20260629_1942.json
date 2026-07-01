@@ -1,0 +1,33 @@
+{
+  "version": "v24_nsets",
+  "target": "n_sets_class",
+  "target_desc": "Multinomial: P(2 sety) vs P(3 sety) vs P(4+ set\u00f3w)",
+  "type": "multiclass",
+  "n_classes": 3,
+  "trained_at": "20260629_1942",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 36,
+  "class_dist": {
+    "0": 0.495,
+    "1": 0.392,
+    "2": 0.113
+  },
+  "mean_wf_ll": 0.6727,
+  "mean_wf_macro_auc": 0.7628,
+  "holdout_ll": 0.6631,
+  "holdout_macro_auc": 0.7688,
+  "top_features": {
+    "age_diff": 1228,
+    "df_rate_w": 1157,
+    "rank_ratio": 1061,
+    "df_rate_l": 1054,
+    "rank_diff": 1047,
+    "2nd_won_w": 981,
+    "break_pct_l": 949,
+    "2nd_won_l": 938,
+    "break_pct_w": 932,
+    "ace_rate_w": 899
+  },
+  "duration_sec": 17.8
+}

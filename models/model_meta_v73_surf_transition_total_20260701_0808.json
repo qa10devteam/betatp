@@ -1,0 +1,28 @@
+{
+  "version": "v73_surf_transition_total",
+  "target": "total_games",
+  "target_desc": "Surface transition \u2192 total_games",
+  "type": "regression",
+  "trained_at": "20260701_0808",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 106,
+  "target_mean": 26.67,
+  "mean_wf_rmse": 7.102,
+  "mean_wf_corr": 0.6412,
+  "holdout_rmse": 6.917,
+  "holdout_corr": 0.6787,
+  "top_features": {
+    "combined_aces": 245,
+    "pin_prob_w": 142,
+    "elo_pin_diff": 129,
+    "df_rate_l": 115,
+    "pin_log_odds": 115,
+    "tb_rate_w": 102,
+    "ace_per_set_l": 92,
+    "break_pct_w": 90,
+    "hold_pct_l": 89,
+    "age_diff": 87
+  },
+  "duration_sec": 5.6
+}

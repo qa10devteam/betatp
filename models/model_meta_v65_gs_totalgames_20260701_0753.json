@@ -1,0 +1,28 @@
+{
+  "version": "v65_gs_totalgames",
+  "target": "total_games",
+  "target_desc": "Grand Slam total_games regression",
+  "type": "regression",
+  "trained_at": "20260701_0753",
+  "n_train": 4929,
+  "n_holdout": 481,
+  "n_features": 103,
+  "target_mean": 36.8,
+  "mean_wf_rmse": 9.335,
+  "mean_wf_corr": 0.3311,
+  "holdout_rmse": 9.057,
+  "holdout_corr": 0.3044,
+  "top_features": {
+    "combined_aces": 110,
+    "break_pct_w": 84,
+    "pin_log_odds": 83,
+    "pin_prob_w": 82,
+    "age_l": 64,
+    "df_rate_l": 63,
+    "odds_implied_vig": 58,
+    "ace_per_set_l": 58,
+    "odds_consensus_w": 54,
+    "break_pct_l": 52
+  },
+  "duration_sec": 3.3
+}

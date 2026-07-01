@@ -1,0 +1,25 @@
+{
+  "version": "v44_return_ou36",
+  "target": "over_36",
+  "target_desc": "Return dominance + fatigue \u2192 O/U 36.5 gem\u00f3w",
+  "trained_at": "20260630_1649",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 84,
+  "mean_wf_auc": 0.8641,
+  "holdout_auc": 0.8896,
+  "holdout_bs": 0.0784,
+  "top_features": {
+    "combined_aces": 210,
+    "clutch_x_round": 172,
+    "odds_implied_vig": 170,
+    "df_rate_w": 164,
+    "age_diff": 136,
+    "surf_elo_x_surf_form": 135,
+    "tb_rate_combined": 131,
+    "df_rate_l": 129,
+    "avg_game_len_l": 128,
+    "tb_rate_l": 126
+  },
+  "duration_sec": 193.2
+}

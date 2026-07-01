@@ -1,0 +1,25 @@
+{
+  "version": "v80_hcp_5",
+  "target": "hcp_5",
+  "target_desc": "ULTIMATE HCP gemowy >5.5",
+  "trained_at": "20260701_0830",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.7104,
+  "holdout_auc": 0.7008,
+  "holdout_bs": 0.2043,
+  "top_features": {
+    "combined_aces": 281,
+    "df_rate_l": 226,
+    "combined_break": 210,
+    "tb_rate_combined": 209,
+    "pin_prob_w": 198,
+    "break_diff": 192,
+    "age_diff": 188,
+    "ace_per_set_w": 184,
+    "tb_rate_w": 179,
+    "b365_prob_w": 173
+  },
+  "duration_sec": 130.5
+}

@@ -1,5 +1,5 @@
 """
-api/routes/live.py — WebSocket live in-play endpoint dla betatp.io
+api/routes/live.py — WebSocket live in-play endpoint for atpbet.io
 """
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import json

@@ -1,0 +1,25 @@
+{
+  "version": "v65_gs_ou33.5",
+  "target": "gs_ou_33.5",
+  "target_desc": "Grand Slam O/U 33.5 gem\u00f3w specialist",
+  "trained_at": "20260701_0753",
+  "n_train": 4929,
+  "n_holdout": 481,
+  "n_features": 103,
+  "mean_wf_auc": 0.6481,
+  "holdout_auc": 0.6115,
+  "holdout_bs": 0.2315,
+  "top_features": {
+    "df_rate_w": 92,
+    "ace_per_set_l": 87,
+    "age_l": 70,
+    "combined_aces": 62,
+    "pin_log_odds": 59,
+    "age_diff": 56,
+    "odds_consensus_w": 54,
+    "rank_ratio": 51,
+    "market_width": 49,
+    "odds_implied_vig": 49
+  },
+  "duration_sec": 3.5
+}

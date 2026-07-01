@@ -1,0 +1,25 @@
+{
+  "version": "v50_grass_over_33",
+  "target": "over_33",
+  "target_desc": "Grass O/U 33.5 gem\u00f3w",
+  "trained_at": "20260630_1650",
+  "n_train": 2402,
+  "n_holdout": 208,
+  "n_features": 103,
+  "mean_wf_auc": 0.806,
+  "holdout_auc": 0.7894,
+  "holdout_bs": 0.1837,
+  "top_features": {
+    "odds_implied_vig": 61,
+    "df_rate_w": 47,
+    "avg_game_len_w": 47,
+    "b365_prob_w": 44,
+    "market_x_serve": 43,
+    "is_bo5": 42,
+    "age_l": 40,
+    "odds_consensus_w": 38,
+    "combined_serve": 38,
+    "ace_per_set_l": 36
+  },
+  "duration_sec": 1.6
+}

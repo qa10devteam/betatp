@@ -1,0 +1,28 @@
+{
+  "version": "v77_total_games",
+  "target": "total_games",
+  "target_desc": "Serve+Elo \u2192 total_games",
+  "type": "regression",
+  "trained_at": "20260701_0817",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 73,
+  "target_mean": 26.67,
+  "mean_wf_rmse": 7.103,
+  "mean_wf_corr": 0.6411,
+  "holdout_rmse": 6.904,
+  "holdout_corr": 0.68,
+  "top_features": {
+    "combined_aces": 246,
+    "pin_log_odds": 132,
+    "elo_pin_diff": 131,
+    "pin_prob_w": 127,
+    "odds_implied_vig": 116,
+    "df_rate_l": 116,
+    "market_width": 114,
+    "hold_pct_l": 113,
+    "break_pct_w": 104,
+    "tb_rate_w": 103
+  },
+  "duration_sec": 4.5
+}

@@ -1,0 +1,32 @@
+{
+  "version": "v80_nsets_multi",
+  "target": "n_sets_class",
+  "target_desc": "ULTIMATE n_sets multinomial (2/3/4+ set\u00f3w)",
+  "type": "multiclass",
+  "n_classes": 3,
+  "trained_at": "20260701_1126",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "class_dist": {
+    "0": 0.495,
+    "1": 0.392,
+    "2": 0.113
+  },
+  "mean_wf_mauc": 0.7682,
+  "holdout_ll": 0.6616,
+  "holdout_macro_auc": 0.7749,
+  "top_features": {
+    "odds_implied_vig": 645,
+    "df_rate_w": 604,
+    "age_w": 586,
+    "elo_pin_diff": 564,
+    "2ndWon_pct_w": 555,
+    "age_diff": 523,
+    "break_pct_l": 522,
+    "df_rate_l": 513,
+    "age_l": 497,
+    "surf_elo_x_surf_form": 496
+  },
+  "duration_sec": 27.5
+}

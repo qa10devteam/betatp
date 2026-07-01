@@ -1,0 +1,25 @@
+{
+  "version": "v56_hcp3.5_full",
+  "target": "hcp_3.5",
+  "target_desc": "HCP gemowy >3.5 \u2014 pe\u0142ne features",
+  "trained_at": "20260630_1709",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.6528,
+  "holdout_auc": 0.6586,
+  "holdout_bs": 0.1968,
+  "top_features": {
+    "combined_aces": 143,
+    "elo_pin_diff": 125,
+    "df_rate_l": 109,
+    "tb_rate_w": 92,
+    "pin_log_odds": 92,
+    "svpt_per_game_l": 85,
+    "tb_rate_combined": 79,
+    "pin_prob_w": 78,
+    "ace_per_set_w": 78,
+    "avg_game_len_w": 78
+  },
+  "duration_sec": 127.1
+}

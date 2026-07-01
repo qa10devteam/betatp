@@ -1,0 +1,25 @@
+{
+  "version": "v75_upset_winner",
+  "target": "elo_fav_won",
+  "target_desc": "Upset model: P(favourite wins | big rank gap)",
+  "trained_at": "20260701_0811",
+  "n_train": 2970,
+  "n_holdout": 283,
+  "n_features": 105,
+  "mean_wf_auc": 1.0,
+  "holdout_auc": 1.0,
+  "holdout_bs": 0.2104,
+  "top_features": {
+    "elo_diff": 1,
+    "pin_log_odds": 0,
+    "b365_prob_w": 0,
+    "odds_consensus_w": 0,
+    "rank_diff": 0,
+    "rank_ratio": 0,
+    "rank_w_log": 0,
+    "rank_l_log": 0,
+    "pin_prob_w": 0,
+    "age_diff": 0
+  },
+  "duration_sec": 0.3
+}

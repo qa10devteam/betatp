@@ -1,0 +1,25 @@
+{
+  "version": "v77_over_36",
+  "target": "over_36",
+  "target_desc": "Serve+Elo \u2192 O/U 36.5",
+  "trained_at": "20260701_0817",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 73,
+  "mean_wf_auc": 0.8613,
+  "holdout_auc": 0.8877,
+  "holdout_bs": 0.0797,
+  "top_features": {
+    "combined_aces": 174,
+    "df_rate_l": 88,
+    "tb_rate_combined": 85,
+    "clutch_x_round": 83,
+    "df_rate_w": 80,
+    "pin_prob_w": 80,
+    "odds_implied_vig": 76,
+    "surf_elo_x_surf_form": 75,
+    "rank_ratio": 74,
+    "combined_break": 74
+  },
+  "duration_sec": 126.4
+}

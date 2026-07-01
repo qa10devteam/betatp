@@ -1,0 +1,25 @@
+{
+  "version": "v56_hcp7.5_full",
+  "target": "hcp_7.5",
+  "target_desc": "HCP gemowy >7.5 \u2014 pe\u0142ne features",
+  "trained_at": "20260701_0738",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 103,
+  "mean_wf_auc": 0.782,
+  "holdout_auc": 0.7633,
+  "holdout_bs": 0.1068,
+  "top_features": {
+    "combined_aces": 151,
+    "tb_rate_combined": 97,
+    "pin_log_odds": 95,
+    "b365_prob_w": 92,
+    "combined_serve": 92,
+    "elo_pin_diff": 89,
+    "market_width": 88,
+    "pin_prob_w": 86,
+    "avg_game_len_w": 84,
+    "df_rate_l": 78
+  },
+  "duration_sec": 134.2
+}

@@ -1,0 +1,25 @@
+{
+  "version": "v73_surf_transition_ou33",
+  "target": "over_33",
+  "target_desc": "Surface transition \u2192 O/U 33.5",
+  "trained_at": "20260701_0809",
+  "n_train": 22218,
+  "n_holdout": 1904,
+  "n_features": 106,
+  "mean_wf_auc": 0.814,
+  "holdout_auc": 0.8284,
+  "holdout_bs": 0.118,
+  "top_features": {
+    "combined_aces": 94,
+    "pin_log_odds": 52,
+    "tb_rate_w": 50,
+    "market_x_serve": 49,
+    "avg_game_len_l": 46,
+    "pin_prob_w": 45,
+    "market_width": 42,
+    "age_l": 41,
+    "b365_prob_w": 40,
+    "ace_per_set_l": 38
+  },
+  "duration_sec": 90.1
+}

@@ -1,0 +1,28 @@
+{
+  "version": "v69_bo5_totalgames",
+  "target": "total_games",
+  "target_desc": "BO5 total_games regression",
+  "type": "regression",
+  "trained_at": "20260701_0757",
+  "n_train": 4971,
+  "n_holdout": 481,
+  "n_features": 103,
+  "target_mean": 36.8,
+  "mean_wf_rmse": 9.318,
+  "mean_wf_corr": 0.3371,
+  "holdout_rmse": 9.048,
+  "holdout_corr": 0.3066,
+  "top_features": {
+    "pin_log_odds": 110,
+    "combined_aces": 106,
+    "break_pct_w": 87,
+    "age_l": 80,
+    "ace_per_set_l": 69,
+    "ace_per_set_w": 67,
+    "df_rate_w": 65,
+    "age_diff": 62,
+    "pin_x_elo": 62,
+    "df_rate_l": 60
+  },
+  "duration_sec": 3.6
+}
