@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>atpbet — Pro Dashboard</title>
+<meta name="description" content="atpbet Pro Dashboard — 12 AI picks, live edge, coupon builder, equity tracker. Wimbledon 2024.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+:root {
+  --bg:      #08090f;
+  --bg2:     #0c0d18;
+  --card:    #0f1020;
+  --card2:   #131428;
+  --card3:   #171930;
+  --border:  rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.13);
+  --lime:    #c2ff3d;
+  --lime-dim:#89b82a;
+  --gold:    #ffd84d;
+  --silver:  #a8b5c8;
+  --text:    #e8eaf0;
+  --muted:   #5a6070;
+  --radius:  14px;
+  --nav-h:   64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Outfit',system-ui,sans-serif;
+  overflow-x:hidden;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+a{text-decoration:none;color:inherit}
+canvas{display:block}
+
+/* ─── AURORA ─────────────────────────────────────────── */
+#aurora{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.1}
+
+/* ─── TOP NAV ────────────────────────────────────────── */
+.topnav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:var(--nav-h);
+  background:rgba(8,9,15,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 24px;gap:16px;
+}
+.tnav-logo{
+  font-size:16px;font-weight:800;color:var(--lime);
+  letter-spacing:-.02em;padding-right:20px;
+  border-right:1px solid var(--border2);
+}
+.tnav-links{display:flex;align-items:center;gap:2px;flex:1}
+.tnav-link{
+  font-size:13px;font-weight:500;color:var(--muted);
+  padding:6px 14px;border-radius:8px;
+  transition:all .15s;display:flex;align-items:center;gap:6px;
+  cursor:pointer;
+}
+.tnav-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.tnav-link.active{color:var(--lime);background:rgba(194,255,61,.08)}
+.tnav-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--lime);flex-shrink:0;
+  animation:navPulse 1.4s ease-in-out infinite;
+}
+@keyframes navPulse{0%,100%{opacity:.4} 50%{opacity:1}}
+.tnav-right{display:flex;align-items:center;gap:12px;margin-left:auto}
+.tnav-badge{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;font-family:'JetBrains Mono',monospace;
+  padding:4px 10px;border-radius:100px;
+  background:rgba(194,255,61,.1);color:var(--lime);
+  border:1px solid rgba(194,255,61,.2);
+}
+.tnav-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(194,255,61,.3),rgba(0,200,180,.2));
+  border:1.5px solid rgba(194,255,61,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--lime);cursor:pointer;
+}
+.tnav-alert{
+  position:relative;cursor:pointer;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;transition:.15s;color:var(--muted);font-size:16px;
+}
+.tnav-alert:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.alert-badge{
+  position:absolute;top:4px;right:4px;
+  width:8px;height:8px;border-radius:50%;
+  background:var(--lime);border:1.5px solid var(--bg);
+}
+
+/* ─── MAIN LAYOUT ────────────────────────────────────── */
+.main-layout{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  min-height:100vh;
+  padding-top:var(--nav-h);
+  position:relative;z-index:1;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────── */
+.sidebar{
+  position:fixed;
+  top:var(--nav-h);left:0;bottom:0;
+  width:220px;
+  background:var(--bg);
+  border-right:1px solid var(--border);
+  padding:24px 12px;
+  display:flex;flex-direction:column;gap:4px;
+  overflow-y:auto;z-index:50;
+}
+.sidebar-section{
+  font-size:9px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+  padding:8px 12px 4px;margin-top:8px;
+}
+.sidebar-link{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:10px;
+  font-size:13px;font-weight:500;color:var(--muted);
+  cursor:pointer;transition:all .15s;
+}
+.sidebar-link:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.sidebar-link.active{color:var(--lime);background:rgba(194,255,61,.07)}
+.sidebar-link .sl-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.sidebar-count{
+  margin-left:auto;font-size:10px;font-family:'JetBrains Mono',monospace;
+  padding:2px 6px;border-radius:100px;background:rgba(194,255,61,.1);color:var(--lime);
+  font-weight:700;
+}
+.sidebar-footer{
+  margin-top:auto;padding-top:16px;border-top:1px solid var(--border);
+  font-size:12px;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+}
+.sidebar-footer strong{color:var(--lime)}
+
+/* ─── CONTENT AREA ───────────────────────────────────── */
+.content{
+  margin-left:220px;
+  padding:28px 28px 80px;
+  min-width:0;
+}
+
+/* ─── DASHBOARD HEADER ───────────────────────────────── */
+.dash-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:24px;flex-wrap:wrap;gap:12px;
+}
+.dash-title{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.dash-meta{font-size:13px;color:var(--muted);margin-top:3px}
+.dash-meta strong{color:var(--lime)}
+.header-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.btn-sm{
+  font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;
+  transition:all .15s;
+}
+.btn-sm.outline{border:1px solid var(--border2);color:var(--muted)}
+.btn-sm.outline:hover{border-color:rgba(255,255,255,.2);color:var(--text);background:rgba(255,255,255,.04)}
+.btn-sm.lime{background:var(--lime);color:#08090f}
+.btn-sm.lime:hover{background:#d6ff5a}
+
+/* ─── KPI STRIP ──────────────────────────────────────── */
+.kpi-strip{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:10px;margin-bottom:24px;
+  min-width:0;overflow:visible;
+}
+@media(max-width:1400px){
+  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+}
+
+.kpi{
+  background:var(--card2);border-radius:12px;
+  padding:16px 18px;border:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.kpi::before{
+  content:'';position:absolute;inset:0;border-radius:12px;padding:1px;
+  background:linear-gradient(135deg,rgba(194,255,61,.12),transparent 60%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.kpi-label{
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px;
+}
+.kpi-val{
+  font-size:26px;font-weight:800;font-family:'JetBrains Mono',monospace;
+  color:var(--lime);letter-spacing:-.03em;line-height:1;
+}
+.kpi-val.neutral{color:var(--text)}
+.kpi-val.red{color:#ff6b6b}
+.kpi-change{
+  font-size:11px;margin-top:5px;font-family:'JetBrains Mono',monospace;
+}
+.kpi-change.up{color:#4ade80}
+.kpi-change.down{color:#f87171}
+
+/* ─── GRID ───────────────────────────────────────────── */
+.dash-grid{
+  display:grid;grid-template-columns:1fr 340px;
+  gap:16px;align-items:start;
+}
+
+/* ─── PICKS PANEL ────────────────────────────────────── */
+.panel{
+  background:var(--card2);border-radius:16px;
+  border:1px solid var(--border);overflow:hidden;
+}
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 20px;border-bottom:1px solid var(--border);
+}
+.panel-title{font-size:15px;font-weight:700;color:var(--text)}
+.panel-count{
+  font-size:11px;font-family:'JetBrains Mono',monospace;
+  padding:3px 8px;border-radius:100px;
+  background:rgba(194,255,61,.1);color:var(--lime);font-weight:700;
+}
+.picks-list{display:flex;flex-direction:column}
+
+/* ─── PICK ROW ───────────────────────────────────────── */
+.pick-row{
+  display:grid;
+  grid-template-columns:3fr 1fr 1fr 1fr 1fr 36px;
+  align-items:center;gap:8px;
+  padding:14px 20px;
+  border-bottom:1px solid var(--border);
+  transition:background .15s;cursor:default;
+}
+.pick-row:last-child{border-bottom:none}
+.pick-row:hover{background:rgba(255,255,255,.025)}
+
+/* Tier indicator left bar */
+.pick-row.gold{border-left:3px solid var(--gold)}
+.pick-row.lime-tier{border-left:3px solid var(--lime)}
+.pick-row.silver{border-left:3px solid var(--silver)}
+
+.pr-match{min-width:0}
+.pr-matchup{
+font-size:13px;font-weight:700;color:var(--text);
+white-space:normal;overflow:visible;text-overflow:unset;
+}
+.pr-market{
+  font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;
+}
+
+.pr-val{text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px}
+.pr-val.lime{color:var(--lime);font-weight:700}
+.pr-val.gold{color:var(--gold);font-weight:700}
+.pr-val.muted{color:var(--muted)}
+
+.pr-conf{
+  display:flex;gap:3px;align-items:center;justify-content:center;
+}
+.conf-dot{
+  width:7px;height:7px;border-radius:50%;
+}
+.conf-dot.on{background:var(--lime)}
+.conf-dot.off{background:rgba(255,255,255,.1)}
+
+.pr-add{
+  width:28px;height:28px;border-radius:7px;
+  border:1px solid var(--border2);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:all .15s;
+}
+.pr-add:hover{border-color:rgba(194,255,61,.3);color:var(--lime);background:rgba(194,255,61,.06)}
+
+/* picks header row */
+.picks-col-header{
+  display:grid;
+  grid-template-columns:3fr 1fr 1fr 1fr 1fr 36px;
+  gap:8px;padding:10px 20px;
+  background:rgba(0,0,0,.25);
+  border-bottom:1px solid var(--border);
+}
+.pch{
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;text-align:right;
+}
+.pch:first-child{text-align:left}
+
+/* ─── EQUITY CHART ───────────────────────────────────── */
+.equity-panel{
+  background:var(--card2);border-radius:16px;
+  border:1px solid var(--border);overflow:hidden;
+  margin-bottom:16px;
+}
+.equity-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 20px 0;
+}
+.equity-roi{
+  font-size:28px;font-weight:800;color:var(--lime);
+  font-family:'JetBrains Mono',monospace;letter-spacing:-.03em;
+}
+.equity-meta{font-size:12px;color:var(--muted);margin-top:3px}
+
+/* ─── COUPON BUILDER ─────────────────────────────────── */
+.coupon-panel{
+  background:var(--card2);border-radius:16px;
+  border:1px solid var(--border);overflow:hidden;
+}
+.coupon-picks-list{
+  display:flex;flex-direction:column;gap:0;
+}
+.coupon-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.coupon-item:last-child{border-bottom:none}
+.ci-match{font-weight:600;color:var(--text)}
+.ci-market{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.ci-odds{
+  font-family:'JetBrains Mono',monospace;font-weight:700;
+  color:var(--lime);font-size:14px;
+  flex-shrink:0;
+}
+.ci-rm{
+  width:22px;height:22px;border-radius:5px;
+  border:1px solid rgba(255,100,100,.2);color:rgba(255,100,100,.5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;cursor:pointer;transition:.15s;margin-left:8px;
+  flex-shrink:0;
+}
+.ci-rm:hover{border-color:rgba(255,100,100,.4);color:#ff6b6b;background:rgba(255,100,100,.06)}
+
+.coupon-footer{
+  padding:16px 18px;background:rgba(0,0,0,.2);
+}
+.coupon-total-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'JetBrains Mono',monospace;margin-bottom:12px;
+}
+.ct-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.ct-val{font-size:18px;font-weight:800;color:var(--lime)}
+.coupon-stake-row{
+  display:flex;align-items:center;gap:8px;margin-bottom:12px;
+}
+.coupon-stake-row input{
+  flex:1;padding:9px 12px;border-radius:8px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border2);
+  color:var(--text);font-size:14px;font-family:'JetBrains Mono',monospace;
+  outline:none;transition:.15s;
+}
+.coupon-stake-row input:focus{border-color:rgba(194,255,61,.3)}
+.coupon-stake-row input::placeholder{color:var(--muted)}
+.stake-currency{
+  font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--muted);
+}
+.coupon-submit{
+  width:100%;padding:11px;border-radius:10px;
+  background:var(--lime);color:#08090f;
+  font-size:13px;font-weight:800;transition:.15s;
+  letter-spacing:.02em;
+}
+.coupon-submit:hover{background:#d6ff5a}
+
+/* ─── TELEGRAM ALERT PANEL ───────────────────────────── */
+.alert-panel{
+  background:var(--card2);border-radius:16px;
+  border:1px solid var(--border);padding:18px;
+  margin-bottom:16px;
+}
+.alert-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.alert-row:last-child{margin-bottom:0}
+.alert-info{display:flex;flex-direction:column;gap:3px}
+.alert-name{font-size:13px;font-weight:600;color:var(--text)}
+.alert-desc{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+/* Toggle switch */
+.toggle{
+  position:relative;width:38px;height:22px;flex-shrink:0;
+}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{
+  position:absolute;inset:0;border-radius:100px;
+  background:rgba(255,255,255,.1);cursor:pointer;transition:.2s;
+}
+.toggle input:checked + .toggle-slider{background:rgba(194,255,61,.25);border:1px solid rgba(194,255,61,.4)}
+.toggle-slider::before{
+  content:'';position:absolute;
+  height:16px;width:16px;left:3px;bottom:3px;
+  border-radius:50%;background:var(--muted);transition:.2s;
+}
+.toggle input:checked + .toggle-slider::before{
+  transform:translateX(16px);background:var(--lime);
+}
+
+/* ─── CLV TRACKER ────────────────────────────────────── */
+.clv-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.clv-row:last-child{border-bottom:none}
+.clv-match{font-size:12px;color:var(--text)}
+.clv-market{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px}
+.clv-result{text-align:right}
+.clv-clv{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.clv-clv.pos{color:#4ade80}
+.clv-clv.neg{color:#f87171}
+.clv-sub{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* ─── TABS ───────────────────────────────────────────── */
+.tabs{display:flex;gap:2px;padding:0 20px;border-bottom:1px solid var(--border)}
+.tab{
+  font-size:12px;font-weight:600;color:var(--muted);
+  padding:12px 14px;border-bottom:2px solid transparent;
+  cursor:pointer;transition:.15s;
+  font-family:'JetBrains Mono',monospace;letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--lime);border-bottom-color:var(--lime)}
+
+/* ─── MARKET FILTER PILLS ────────────────────────────── */
+.filter-pills{
+  display:flex;gap:6px;padding:14px 20px;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.fp{
+  font-size:11px;font-weight:600;
+  padding:5px 12px;border-radius:100px;
+  border:1px solid var(--border);
+  color:var(--muted);cursor:pointer;transition:.15s;
+  font-family:'JetBrains Mono',monospace;
+}
+.fp:hover{color:var(--text);border-color:var(--border2)}
+.fp.active{background:rgba(194,255,61,.1);color:var(--lime);border-color:rgba(194,255,61,.25)}
+
+/* ─── STAT TABLE ─────────────────────────────────────── */
+.stat-table{width:100%;border-collapse:collapse}
+.stat-table th{
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;
+  padding:10px 16px;text-align:right;
+  background:rgba(0,0,0,.2);
+  border-bottom:1px solid var(--border);
+}
+.stat-table th:first-child{text-align:left}
+.stat-table td{
+  padding:12px 16px;font-size:13px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.stat-table tr:last-child td{border-bottom:none}
+.stat-table td:not(:first-child){text-align:right;font-family:'JetBrains Mono',monospace}
+.stat-table td.lime{color:var(--lime);font-weight:700}
+.stat-table td.gold{color:var(--gold);font-weight:700}
+.stat-table td.muted{color:var(--muted)}
+.stat-table tr:hover td{background:rgba(255,255,255,.02)}
+.model-tier{
+  display:inline-block;width:8px;height:8px;border-radius:50%;
+  margin-right:6px;vertical-align:middle;
+}
+
+/* ─── ONBOARDING TOAST ───────────────────────────────── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  z-index:500;
+  background:var(--card2);border:1px solid rgba(194,255,61,.25);
+  border-radius:14px;padding:14px 20px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 40px rgba(194,255,61,.06);
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+  white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-icon{font-size:18px}
+.toast-msg{font-size:13px;font-weight:600;color:var(--text)}
+.toast-msg span{color:var(--lime)}
+.toast-close{
+  margin-left:8px;font-size:12px;color:var(--muted);cursor:pointer;
+  padding:2px 6px;border-radius:4px;
+}
+.toast-close:hover{color:var(--text)}
+
+/* ─── MOBILE ─────────────────────────────────────────── */
+@media(max-width:1100px){
+  .kpi-strip{grid-template-columns:repeat(3,1fr)}
+  .dash-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .content{margin-left:0;padding:16px 16px 60px}
+  .main-layout{grid-template-columns:1fr}
+  .kpi-strip{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<canvas id="aurora"></canvas>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="index.html" class="tnav-logo">atpbet</a>
+  <div class="tnav-links">
+    <div class="tnav-link active"><span class="tnav-dot"></span>Dashboard</div>
+    <div class="tnav-link" onclick="showTab('picks')">Today's Picks</div>
+    <div class="tnav-link" onclick="showTab('perf')">Performance</div>
+    <div class="tnav-link" onclick="showTab('clv')">CLV Tracker</div>
+  </div>
+  <div class="tnav-right">
+    <span class="tnav-badge">PRO MEMBER</span>
+    <div class="tnav-alert">
+      🔔
+      <div class="alert-badge"></div>
+    </div>
+    <div class="tnav-avatar">M</div>
+  </div>
+</nav>
+
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Main</div>
+    <div class="sidebar-link active"><span class="sl-icon">⚡</span>Dashboard</div>
+    <div class="sidebar-link"><span class="sl-icon">🎾</span>Today's Picks <span class="sidebar-count">12</span></div>
+    <div class="sidebar-link"><span class="sl-icon">📋</span>Coupon Builder</div>
+    <div class="sidebar-link"><span class="sl-icon">📈</span>Equity Curve</div>
+
+    <div class="sidebar-section">Analysis</div>
+    <div class="sidebar-link"><span class="sl-icon">🏆</span>CLV Tracker</div>
+    <div class="sidebar-link"><span class="sl-icon">🤖</span>Model Insights</div>
+    <div class="sidebar-link"><span class="sl-icon">🏟️</span>Surface Stats</div>
+
+    <div class="sidebar-section">Settings</div>
+    <div class="sidebar-link"><span class="sl-icon">🔔</span>Alerts</div>
+    <div class="sidebar-link"><span class="sl-icon">🔗</span>API Access</div>
+    <div class="sidebar-link"><span class="sl-icon">⚙️</span>Preferences</div>
+
+    <div class="sidebar-footer">
+      Wimbledon R2 &bull; Day 3<br>
+      <strong>12 picks</strong> computed &bull; 08:04 UTC
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- Dashboard header -->
+    <div class="dash-header">
+      <div>
+        <div class="dash-title">Good morning, Mateusz 👋</div>
+        <div class="dash-meta"><strong>12 picks</strong> detected today &bull; Wimbledon R2 &bull; Grass surface</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-sm outline">Export CSV</button>
+        <button class="btn-sm lime" onclick="showToast('Telegram connected! You\'ll get picks at 08:30 UTC.')">+ Telegram Alert</button>
+      </div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="kpi-strip" id="kpi-strip">
+      <div class="kpi">
+        <div class="kpi-label">Season ROI</div>
+        <div class="kpi-val" data-count="58.7" data-prefix="+" data-suffix="%">+0%</div>
+        <div class="kpi-change up">+58.7% vs benchmark</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Win Rate</div>
+        <div class="kpi-val" data-count="59.6" data-suffix="%">0%</div>
+        <div class="kpi-change up">+9.6pp vs 50/50</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Today's Picks</div>
+        <div class="kpi-val neutral">12</div>
+        <div class="kpi-change up">↑ 3 Gold tier</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Edge</div>
+        <div class="kpi-val" data-count="12.4" data-suffix="%">0%</div>
+        <div class="kpi-change up">vs 8.1% historical</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Max Drawdown</div>
+        <div class="kpi-val red" data-count="17.9" data-prefix="-" data-suffix="%">-0%</div>
+        <div class="kpi-change down">2024 worst streak: -3</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="dash-grid">
+
+      <!-- LEFT: Picks + equity -->
+      <div>
+
+        <!-- Equity mini -->
+        <div class="equity-panel" style="margin-bottom:16px">
+          <div class="equity-header">
+            <div>
+              <div class="kpi-label" style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px">2024 Equity Curve</div>
+              <div class="equity-roi" id="equity-roi">+0%</div>
+              <div class="equity-meta">57 bets &bull; flat stake &bull; 5% edge threshold</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn-sm outline" style="font-size:11px" onclick="setRange('month')">1M</button>
+              <button class="btn-sm outline" style="font-size:11px;background:rgba(194,255,61,.08);color:var(--lime);border-color:rgba(194,255,61,.2)" onclick="setRange('ytd')">YTD</button>
+              <button class="btn-sm outline" style="font-size:11px" onclick="setRange('all')">All</button>
+            </div>
+          </div>
+          <canvas id="equity-canvas" height="120" style="width:100%;padding:0 20px 16px;margin-top:16px"></canvas>
+        </div>
+
+        <!-- Picks panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Today's Value Picks</span>
+            <span class="panel-count" id="pick-count">12 picks</span>
+          </div>
+          <div class="tabs">
+            <div class="tab active" onclick="filterPicks('all',this)">All 12</div>
+            <div class="tab" onclick="filterPicks('gold',this)">Gold 🥇</div>
+            <div class="tab" onclick="filterPicks('high',this)">High Conf</div>
+            <div class="tab" onclick="filterPicks('ou',this)">O/U</div>
+          </div>
+          <div class="filter-pills">
+            <div class="fp active" onclick="toggleFP(this,'ALL')">All</div>
+            <div class="fp" onclick="toggleFP(this,'GS')">Grand Slam</div>
+            <div class="fp" onclick="toggleFP(this,'GRASS')">Grass</div>
+            <div class="fp" onclick="toggleFP(this,'OU')">O/U Markets</div>
+            <div class="fp" onclick="toggleFP(this,'EDGE10')">Edge >10%</div>
+          </div>
+          <div class="picks-col-header">
+            <div class="pch" style="text-align:left">Match / Market</div>
+            <div class="pch">Edge</div>
+            <div class="pch">EV</div>
+            <div class="pch">Kelly</div>
+            <div class="pch">Conf</div>
+            <div class="pch"></div>
+          </div>
+          <div class="picks-list" id="picks-list">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Coupon + Alerts + CLV -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Coupon Builder -->
+        <div class="coupon-panel">
+          <div class="panel-header">
+            <span class="panel-title">AKO Coupon Builder</span>
+            <button class="btn-sm outline" onclick="clearCoupon()" style="font-size:11px">Clear</button>
+          </div>
+          <div class="coupon-picks-list" id="coupon-list">
+            <div class="coupon-item">
+              <div>
+                <div class="ci-match">Sinner J. vs Borges N.</div>
+                <div class="ci-market">O/U 36.5 Games</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="ci-odds">1.88</div>
+                <button class="ci-rm" onclick="removeFromCoupon(this)">&#x2715;</button>
+              </div>
+            </div>
+            <div class="coupon-item">
+              <div>
+                <div class="ci-match">Djokovic N. vs Wu Y.</div>
+                <div class="ci-market">O/U 33.5 Games</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="ci-odds">1.92</div>
+                <button class="ci-rm" onclick="removeFromCoupon(this)">&#x2715;</button>
+              </div>
+            </div>
+            <div class="coupon-item">
+              <div>
+                <div class="ci-match">Medvedev D. vs Cilic M.</div>
+                <div class="ci-market">Straight Sets</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="ci-odds">2.05</div>
+                <button class="ci-rm" onclick="removeFromCoupon(this)">&#x2715;</button>
+              </div>
+            </div>
+          </div>
+          <div class="coupon-footer">
+            <div class="coupon-total-row">
+              <span class="ct-label">Total odds</span>
+              <span class="ct-val" id="coupon-odds">7.41</span>
+            </div>
+            <div class="coupon-total-row" style="margin-bottom:10px">
+              <span class="ct-label">Combined EV</span>
+              <span style="font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#4ade80">+38.4%</span>
+            </div>
+            <div class="coupon-stake-row">
+              <input type="number" value="50" min="1" id="stake-input" onchange="updatePayout()">
+              <span class="stake-currency">PLN</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-family:'JetBrains Mono',monospace">
+              <span style="font-size:11px;color:var(--muted)">Potential win</span>
+              <span style="font-size:16px;font-weight:800;color:var(--lime)" id="payout-val">370.50 PLN</span>
+            </div>
+            <button class="coupon-submit" onclick="showToast('Coupon saved! PDF available in your email.')">Save Coupon &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Telegram Alerts -->
+        <div class="alert-panel">
+          <div class="panel-header" style="padding:0 0 14px;border-bottom:1px solid var(--border);margin-bottom:14px">
+            <span class="panel-title">Telegram Alerts</span>
+            <span style="font-size:11px;color:#4ade80;font-family:'JetBrains Mono',monospace">Connected</span>
+          </div>
+          <div class="alert-row">
+            <div class="alert-info">
+              <div class="alert-name">Daily picks digest</div>
+              <div class="alert-desc">Daily at 08:30 UTC</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-slider"></div></label>
+          </div>
+          <div class="alert-row">
+            <div class="alert-info">
+              <div class="alert-name">Edge &gt;15% alert</div>
+              <div class="alert-desc">Instant notification</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-slider"></div></label>
+          </div>
+          <div class="alert-row">
+            <div class="alert-info">
+              <div class="alert-name">Odds movement alert</div>
+              <div class="alert-desc">When Pinnacle moves &gt;5%</div>
+            </div>
+            <label class="toggle"><input type="checkbox"><div class="toggle-slider"></div></label>
+          </div>
+          <div class="alert-row">
+            <div class="alert-info">
+              <div class="alert-name">Result notifications</div>
+              <div class="alert-desc">Win/loss after match</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-slider"></div></label>
+          </div>
+        </div>
+
+        <!-- CLV Tracker (last 5) -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">CLV Tracker</span>
+            <span style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace">Last 7 days</span>
+          </div>
+          <div style="padding:12px 18px">
+            <div class="clv-row">
+              <div><div class="clv-match">Alcaraz vs Fognini</div><div class="clv-market">Straight Sets</div></div>
+              <div class="clv-result"><div class="clv-clv pos">+4.2%</div><div class="clv-sub">Won &bull; CLV beating</div></div>
+            </div>
+            <div class="clv-row">
+              <div><div class="clv-match">Paul vs Kwon</div><div class="clv-market">O/U 36.5 Games</div></div>
+              <div class="clv-result"><div class="clv-clv pos">+6.8%</div><div class="clv-sub">Won &bull; CLV beating</div></div>
+            </div>
+            <div class="clv-row">
+              <div><div class="clv-match">Zverev vs Munar</div><div class="clv-market">HCP &gt;9.5 Games</div></div>
+              <div class="clv-result"><div class="clv-clv neg">-1.4%</div><div class="clv-sub">Lost &bull; CLV neutral</div></div>
+            </div>
+            <div class="clv-row">
+              <div><div class="clv-match">Ruud vs Giustino</div><div class="clv-market">Straight Sets</div></div>
+              <div class="clv-result"><div class="clv-clv pos">+8.1%</div><div class="clv-sub">Won &bull; CLV beating</div></div>
+            </div>
+            <div class="clv-row">
+              <div><div class="clv-match">Hurkacz vs Ofner</div><div class="clv-market">HCP &gt;9.5 Games</div></div>
+              <div class="clv-result"><div class="clv-clv pos">+3.7%</div><div class="clv-sub">Won &bull; CLV beating</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon">⚡</span>
+  <span class="toast-msg" id="toast-msg">Action completed</span>
+  <span class="toast-close" onclick="hideToast()">&#x2715;</span>
+</div>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ─── AURORA ──────────────────────────────────────────────────────
+(()=>{
+  const cv=document.getElementById('aurora');
+  const gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
+  if(!gl)return;
+  const vs=`attribute vec2 a;void main(){gl_Position=vec4(a,0,1);}`;
+  const fs=`precision mediump float;
+uniform float uT;uniform vec2 uR;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float sn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1)),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*sn(p);p*=2.1;a*=.5;}return v;}
+void main(){
+vec2 uv=gl_FragCoord.xy/uR;float t=uT*.035;
+vec2 q=vec2(fbm(uv+vec2(t*.4,t*.25)),fbm(uv+vec2(1.8,7.4)+t*.2));
+vec2 r=vec2(fbm(uv+q+vec2(1.5+t*.15,8.2+t*.1)),fbm(uv+q+vec2(7.3+t*.1,2.4+t*.15)));
+float f=fbm(uv+r);
+vec3 bg=vec3(.004,.005,.018),lime=vec3(.76,1.,.24),teal=vec3(.0,.85,.78);
+vec3 col=mix(bg,lime,clamp(f*f*.14,0.,1.));
+col=mix(col,teal,clamp((f*f*f+f)*.06,0.,1.));col*=.2+.8*f;
+vec2 vp=uv*2.-1.;col*=max(0.,1.-dot(vp*.48,vp*.48));
+gl_FragColor=vec4(col,1.);}`;
+  const mk=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);return sh;};
+  const p=gl.createProgram();gl.attachShader(p,mk(gl.VERTEX_SHADER,vs));gl.attachShader(p,mk(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);gl.useProgram(p);
+  const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const al=gl.getAttribLocation(p,'a');gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);
+  const uT=gl.getUniformLocation(p,'uT'),uR=gl.getUniformLocation(p,'uR');
+  const rz=()=>{cv.width=innerWidth;cv.height=innerHeight;gl.viewport(0,0,cv.width,cv.height);gl.uniform2f(uR,cv.width,cv.height);};
+  rz();window.addEventListener('resize',rz);
+  const st=Date.now();let last=0;
+  (function draw(ts){requestAnimationFrame(draw);if(ts-last<40)return;last=ts;gl.uniform1f(uT,(Date.now()-st)/1e3);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);})();
+})();
+
+// ─── PICKS DATA ───────────────────────────────────────────────────
+const PICKS = [
+  { matchup:'SINNER J. vs BORGES N.', market:'O/U 36.5 Games', edge:14.2, ev:26.9, kelly:2.8, conf:3, tier:'gold', surface:'GS' },
+  { matchup:'MEDVEDEV D. vs CILIC M.', market:'Straight Sets',  edge:17.1, ev:34.2, kelly:3.4, conf:3, tier:'gold', surface:'GS' },
+  { matchup:'ALCARAZ C. vs FOGNINI F.', market:'Straight Sets', edge:9.4,  ev:18.8, kelly:1.9, conf:3, tier:'gold', surface:'GS' },
+  { matchup:'DJOKOVIC N. vs WU Y.',    market:'O/U 33.5 Games', edge:11.8, ev:23.6, kelly:2.4, conf:3, tier:'lime', surface:'GS' },
+  { matchup:'ZVEREV A. vs MUNAR J.',   market:'HCP >9.5 Games', edge:12.6, ev:25.2, kelly:2.5, conf:3, tier:'lime', surface:'GS' },
+  { matchup:'PAUL T. vs KWON S.',      market:'O/U 36.5 Games', edge:8.9,  ev:17.8, kelly:1.8, conf:2, tier:'silver', surface:'GS' },
+  { matchup:'HURKACZ H. vs OFNER S.',  market:'HCP >9.5 Games', edge:11.2, ev:22.4, kelly:2.2, conf:3, tier:'lime', surface:'GS' },
+  { matchup:'RUUD C. vs GIUSTINO L.',  market:'Straight Sets',  edge:7.8,  ev:15.6, kelly:1.6, conf:2, tier:'silver', surface:'GS' },
+  { matchup:'RUBLEV A. vs DRAPER J.',  market:'O/U 39.5 Games', edge:10.4, ev:20.8, kelly:2.1, conf:2, tier:'lime', surface:'GS' },
+  { matchup:'FRITZ T. vs STRUFF J.',   market:'Straight Sets',  edge:8.2,  ev:16.4, kelly:1.6, conf:2, tier:'silver', surface:'GS' },
+  { matchup:'NORRIE C. vs ETCHEVERRY', market:'O/U 36.5 Games', edge:6.7,  ev:13.4, kelly:1.3, conf:2, tier:'silver', surface:'GS' },
+  { matchup:'TSITSIPAS S. vs WAWRINKA',market:'HCP >9.5 Games', edge:13.7, ev:27.4, kelly:2.7, conf:3, tier:'lime',   surface:'GS' },
+];
+
+let activeFilter = 'all';
+function filterPicks(type, el) {
+  activeFilter = type;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderPicks();
+}
+function toggleFP(el, key) {
+  document.querySelectorAll('.fp').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function confDots(n) {
+  return [1,2,3].map(i=>`<div class="conf-dot ${i<=n?'on':'off'}"></div>`).join('');
+}
+
+function renderPicks() {
+  const list = document.getElementById('picks-list');
+  let data = [...PICKS];
+  if (activeFilter === 'gold') data = data.filter(p=>p.tier==='gold');
+  if (activeFilter === 'high') data = data.filter(p=>p.conf===3);
+  if (activeFilter === 'ou')   data = data.filter(p=>p.market.includes('O/U'));
+  document.getElementById('pick-count').textContent = data.length + ' picks';
+
+  list.innerHTML = data.map((p,i) => `
+    <div class="pick-row ${p.tier}" style="animation-delay:${i*0.04}s;opacity:0;transform:translateY(8px)" id="pr${i}">
+      <div class="pr-match">
+        <div class="pr-matchup">${p.matchup}</div>
+        <div class="pr-market">${p.market}</div>
+      </div>
+      <div class="pr-val ${p.tier==='gold'?'gold':'lime'}">+${p.edge}%</div>
+      <div class="pr-val lime">+${p.ev}%</div>
+      <div class="pr-val muted">${p.kelly}%</div>
+      <div class="pr-val"><div class="pr-conf">${confDots(p.conf)}</div></div>
+      <button class="pr-add" onclick="addToCoupon('${p.matchup}','${p.market}',${(1.8+p.edge/100).toFixed(2)},this)" title="Add to coupon">+</button>
+    </div>
+  `).join('');
+
+  // Stagger animate
+  data.forEach((_,i)=>{
+    const el=document.getElementById('pr'+i);
+    if(!el)return;
+    gsap.to(el,{opacity:1,y:0,duration:.35,ease:'power2.out',delay:i*.04});
+  });
+}
+
+// ─── COUPON ───────────────────────────────────────────────────────
+function addToCoupon(matchup, market, odds, btn) {
+  const list = document.getElementById('coupon-list');
+  // Check if already there
+  const existing = [...list.querySelectorAll('.ci-match')].find(el=>el.textContent===matchup.split(' vs ')[0]+' vs '+matchup.split(' vs ')[1].split('(')[0].trim());
+  if(existing){showToast('Already in coupon!');return;}
+  if(list.children.length>=6){showToast('Max 6 picks per coupon.');return;}
+  const item = document.createElement('div');
+  item.className='coupon-item';
+  item.style.opacity='0';
+  item.innerHTML=`
+    <div>
+      <div class="ci-match">${matchup.split('.')[0]}. vs ${matchup.split('vs')[1].trim().split('.')[0]}.</div>
+      <div class="ci-market">${market}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="ci-odds">${odds}</div>
+      <button class="ci-rm" onclick="removeFromCoupon(this)">&#x2715;</button>
+    </div>`;
+  list.appendChild(item);
+  gsap.to(item,{opacity:1,duration:.25,ease:'power2.out'});
+  btn.textContent='✓'; btn.style.background='rgba(194,255,61,.1)'; btn.style.color='var(--lime)';
+  recalcCoupon();
+  showToast('Added to coupon!');
+}
+function removeFromCoupon(btn) {
+  const item=btn.closest('.coupon-item');
+  gsap.to(item,{opacity:0,x:-10,duration:.2,onComplete:()=>{item.remove();recalcCoupon();}});
+}
+function clearCoupon() {
+  document.getElementById('coupon-list').innerHTML='';
+  recalcCoupon();
+}
+function recalcCoupon() {
+  const odds=[...document.querySelectorAll('.ci-odds')].map(el=>parseFloat(el.textContent));
+  const total=odds.reduce((a,b)=>a*b,1);
+  document.getElementById('coupon-odds').textContent=total.toFixed(2);
+  updatePayout();
+}
+function updatePayout() {
+  const stake=parseFloat(document.getElementById('stake-input').value)||0;
+  const odds=parseFloat(document.getElementById('coupon-odds').textContent)||1;
+  document.getElementById('payout-val').textContent=(stake*odds).toFixed(2)+' PLN';
+}
+
+// ─── EQUITY CURVE ─────────────────────────────────────────────────
+function drawEquity() {
+  const cv=document.getElementById('equity-canvas');
+  const W=cv.offsetWidth||600, H=120;
+  cv.width=W*devicePixelRatio; cv.height=H*devicePixelRatio;
+  const ctx=cv.getContext('2d'); ctx.scale(devicePixelRatio,devicePixelRatio);
+
+  const bets=[1,0,1,1,0,1,1,1,0,1,0,1,1,0,0,1,1,1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1,1,1,0,0,1,1,1,0,1,1,0,1,1,1,0,1,1,1,0,1,1];
+  const odds=[1.78,1.90,1.85,1.88,2.05,1.82,1.95,1.87,1.93,1.85,2.10,1.88,1.92,1.80,1.75,1.87,1.90,1.84,2.08,1.88,1.94,1.89,1.86,1.91,1.93,2.02,1.87,1.84,1.90,1.88,1.85,1.93,1.89,1.86,2.04,1.91,1.87,1.90,1.84,1.80,1.89,1.93,1.87,2.06,1.85,1.88,1.92,1.90,1.87,1.84,1.89,1.93,1.88,1.85,2.01,1.90,1.87];
+  let eq=0; const pts=[0];
+  bets.forEach((w,i)=>{eq+=w?(odds[i]-1):-1; pts.push(eq);});
+
+  const minY=Math.min(...pts)-1, maxY=Math.max(...pts)+1;
+  const PL=6,PR=6,PT=8,PB=12;
+  const iW=W-PL-PR, iH=H-PT-PB;
+  const tX=i=>(i/(pts.length-1))*iW+PL;
+  const tY=v=>H-PB-((v-minY)/(maxY-minY))*iH;
+
+  // Fill
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(194,255,61,.15)');
+  grad.addColorStop(1,'rgba(194,255,61,0)');
+  ctx.beginPath(); ctx.moveTo(tX(0),H-PB);
+  pts.forEach((_,i)=>ctx.lineTo(tX(i),tY(pts[i])));
+  ctx.lineTo(tX(pts.length-1),H-PB); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+
+  // Line
+  ctx.beginPath(); ctx.strokeStyle='#c2ff3d'; ctx.lineWidth=2;
+  ctx.shadowColor='rgba(194,255,61,.35)'; ctx.shadowBlur=6;
+  ctx.moveTo(tX(0),tY(pts[0]));
+  pts.forEach((_,i)=>{if(i)ctx.lineTo(tX(i),tY(pts[i]));});
+  ctx.stroke(); ctx.shadowBlur=0;
+
+  // End dot
+  ctx.beginPath(); ctx.arc(tX(pts.length-1),tY(pts[pts.length-1]),5,0,Math.PI*2);
+  ctx.fillStyle='#c2ff3d'; ctx.fill();
+
+  // +58.7% label
+  ctx.fillStyle='rgba(194,255,61,.7)'; ctx.font='bold 11px JetBrains Mono,monospace';
+  ctx.fillText('+58.7%',tX(pts.length-1)-38,tY(pts[pts.length-1])-10);
+}
+
+// ─── KPI COUNT-UPS ────────────────────────────────────────────────
+document.querySelectorAll('.kpi-val[data-count]').forEach(el=>{
+  const target=parseFloat(el.dataset.count);
+  const prefix=el.dataset.prefix||'';
+  const suffix=el.dataset.suffix||'';
+  const d=target%1!==0?1:0;
+  const obj={v:0};
+  gsap.to(obj,{v:target,duration:1.6,ease:'power2.out',delay:.3,
+    onUpdate(){el.textContent=prefix+(d?obj.v.toFixed(d):Math.round(obj.v))+suffix;}
+  });
+});
+
+// Equity ROI count-up
+gsap.to({v:0},{v:58.7,duration:1.8,ease:'power2.out',delay:.5,
+  onUpdate:function(){document.getElementById('equity-roi').textContent='+'+this._targets[0].v.toFixed(1)+'%';}
+});
+
+// ─── TOAST ────────────────────────────────────────────────────────
+let toastTimer=null;
+function showToast(msg) {
+  document.getElementById('toast-msg').innerHTML=msg;
+  document.getElementById('toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(hideToast,3200);
+}
+function hideToast() { document.getElementById('toast').classList.remove('show'); }
+
+// ─── TABS (nav) ───────────────────────────────────────────────────
+function showTab(t){showToast('Navigating to '+t+'...');}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+renderPicks();
+window.addEventListener('resize',drawEquity);
+setTimeout(drawEquity,100);
+
+// Welcome toast
+setTimeout(()=>{
+  showToast('<span>12 picks ready</span> — Wimbledon R2 &bull; 08:04 UTC');
+},900);
+
+console.log('%catpbet.io Pro Dashboard', 'color:#c2ff3d;font-weight:bold');
+</script>
+</body>
+</html>
